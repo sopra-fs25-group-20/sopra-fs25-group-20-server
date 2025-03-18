@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Test
  * User Controller
  * This class is responsible for handling all REST request that are related to
  * the user.
