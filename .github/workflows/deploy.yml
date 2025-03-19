@@ -1,0 +1,54 @@
+name: Deploy Backend to Cloud Run using GHCR & GAR
+
+on:
+  workflow_run:
+    workflows: ["Run Tests and SonarQube Analysis"]
+    types:
+      - completed
+
+jobs:
+  build-deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Login to GitHub Container Registry (GHCR)
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: dreamfarer
+        password: ${{ secrets.GHCR_PAT }}
+
+    - name: Authenticate with Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Login to Google Artifact Registry (GAR)
+      run: |
+        gcloud auth configure-docker europe-west1-docker.pkg.dev
+
+    - name: Build and Push Docker Image
+      run: |
+        GHCR_IMAGE="ghcr.io/sopra-fs25-group-20/sopra-fs25-group-20-server:latest"
+        GAR_IMAGE="europe-west1-docker.pkg.dev/sopra-fs25-group-20-server/docker-repo/sopra-fs25-group-20-server:latest"
+        docker build -f Dockerfile . \
+          --tag $GHCR_IMAGE \
+          --tag $GAR_IMAGE
+        docker push $GHCR_IMAGE
+        docker push $GAR_IMAGE
+
+    - name: Deploy to Google Cloud Run
+      run: |
+        gcloud run deploy spyquest-backend \
+          --image=europe-west1-docker.pkg.dev/sopra-fs25-group-20-server/docker-repo/sopra-fs25-group-20-server:latest \
+          --platform=managed \
+          --region=europe-west1 \
+          --allow-unauthenticated \
+          --port=8080
