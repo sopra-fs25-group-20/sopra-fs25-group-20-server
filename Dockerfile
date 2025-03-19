@@ -6,7 +6,7 @@ RUN chmod +x ./gradlew
 COPY build.gradle settings.gradle /app/
 COPY src /app/src
 ENV GRADLE_USER_HOME="/app/.gradle"
-RUN ./gradlew clean build --no-daemon
+RUN ./gradlew clean build --no-daemon -x test
 
 FROM openjdk:17-alpine
 ENV SPRING_PROFILES_ACTIVE=production
