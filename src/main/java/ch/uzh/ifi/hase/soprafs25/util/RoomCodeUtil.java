@@ -4,6 +4,10 @@ import java.util.UUID;
 
 public class RoomCodeUtil {
 
+    private RoomCodeUtil() {
+
+    }
+
     public static String generateRoomCode() {
         return UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
