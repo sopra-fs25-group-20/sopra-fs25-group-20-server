@@ -8,8 +8,7 @@ import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.util.RandomColorUtil;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -29,7 +28,7 @@ public class JoinRoomService {
         Room room = getRoom(roomCode);
         validateNicknameNotInRoom(room, player.getNickname());
 
-        player.setRoom(room);
+        room.addPlayer(player);
         player.setColor(RandomColorUtil.getRandomColor());
         return playerRepository.save(player);
     }
