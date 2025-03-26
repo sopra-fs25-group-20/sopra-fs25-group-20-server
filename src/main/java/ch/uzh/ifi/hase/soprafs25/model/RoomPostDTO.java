@@ -4,6 +4,10 @@ public class RoomPostDTO {
 
     private String nickname;
 
+    public RoomPostDTO() {
+
+    }
+    
     public RoomPostDTO(String nickname) {
         this.nickname = nickname;
     }
