@@ -2,13 +2,15 @@ package ch.uzh.ifi.hase.soprafs25.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Room")
 public class Room implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long roomId;
 
     @Column(nullable = false, unique = true)
@@ -16,6 +18,14 @@ public class Room implements Serializable {
 
     @Column
     private Long adminPlayerId;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Player> players = new ArrayList<>();
+
+    public void addPlayer(Player player) {
+        this.players.add(player);
+        player.setRoom(this);
+    }
 
     public Long getRoomId() {
         return roomId;
@@ -39,5 +49,13 @@ public class Room implements Serializable {
 
     public void setAdminPlayerId(Long adminPlayerID) {
         this.adminPlayerId = adminPlayerID;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 }
