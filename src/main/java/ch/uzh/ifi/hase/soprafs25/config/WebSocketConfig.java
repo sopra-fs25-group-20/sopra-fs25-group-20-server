@@ -14,6 +14,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${cors.allowed-origins}")
     private String[] allowedOrigins;
 
+    private final CustomHandshakeInterceptor customHandshakeInterceptor;
+
+    public WebSocketConfig(CustomHandshakeInterceptor customHandshakeInterceptor) {
+        this.customHandshakeInterceptor = customHandshakeInterceptor;
+    }
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -23,6 +29,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
+                .addInterceptors(customHandshakeInterceptor)
                 .setAllowedOrigins(allowedOrigins);
     }
 }
