@@ -7,6 +7,7 @@ public class ChatMessage {
     private String color;
 
     public ChatMessage() {
+        // No args constructor is needed for JSON deserialization
     }
 
     public String getNickname() {
