@@ -28,8 +28,8 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) throws Exception {
 
-        if (request instanceof ServletServerHttpRequest) {
-            HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
+        if (request instanceof ServletServerHttpRequest servletRequestWrapper) {
+            HttpServletRequest servletRequest = servletRequestWrapper.getServletRequest();
             String nickname = servletRequest.getParameter("nickname");
             String code = servletRequest.getParameter("code");
 
@@ -55,5 +55,6 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                                ServerHttpResponse response,
                                WebSocketHandler wsHandler,
                                Exception exception) {
+        // Method must be overridden, but no post handshake is needed currently
     }
 }
