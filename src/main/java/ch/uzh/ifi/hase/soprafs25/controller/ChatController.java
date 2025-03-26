@@ -25,6 +25,11 @@ public class ChatController {
         Map<String, Object> sessionAttributes =
                 (Map<String, Object>) socketMessage.getHeaders().get("simpSessionAttributes");
 
+        if (sessionAttributes == null) {
+            // This is an extra check to our check in CustomInterceptor
+            throw new IllegalStateException("Missing session attributes in WebSocket message headers");
+        }
+
         String nickname = (String) sessionAttributes.get("nickname");
         String code = (String) sessionAttributes.get("code");
         String color = (String) sessionAttributes.get("color");
