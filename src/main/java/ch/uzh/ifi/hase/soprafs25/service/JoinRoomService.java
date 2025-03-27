@@ -25,12 +25,18 @@ public class JoinRoomService {
 
 
     public Player joinRoom(String roomCode, Player player) {
-        Room room = getRoom(roomCode);
-        validateNicknameNotInRoom(room, player.getNickname());
+        Room room = validateJoin(roomCode, player.getNickname());
 
         room.addPlayer(player);
         player.setColor(RandomColorUtil.getRandomColor());
         return playerRepository.save(player);
+    }
+
+    public Room validateJoin(String roomCode, String nickname) {
+        Room room = getRoom(roomCode);
+        validateNicknameNotInRoom(room, nickname);
+
+        return room;
     }
 
     private Room getRoom(String roomCode) {
