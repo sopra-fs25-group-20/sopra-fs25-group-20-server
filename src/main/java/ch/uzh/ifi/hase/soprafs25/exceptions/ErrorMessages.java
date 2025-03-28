@@ -3,11 +3,11 @@ package ch.uzh.ifi.hase.soprafs25.exceptions;
 public enum ErrorMessages {
     ROOM_NOT_FOUND("Room with room code: %s was not found"),
     NICKNAME_ALREADY_IN_ROOM("Nickname %s is already in room %s"),
-    IMAGE_LOADING_FAILED("Failed to load mock image from classpath");
+    IMAGE_LOADING_FAILED("Failed to load image");
 
     private final String message;
 
-    private ErrorMessages(String message) {
+    ErrorMessages(String message) {
         this.message = message;
     }
 

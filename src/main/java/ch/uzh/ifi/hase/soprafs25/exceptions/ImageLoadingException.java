@@ -4,4 +4,8 @@ public class ImageLoadingException extends RuntimeException {
     public ImageLoadingException(Throwable cause) {
         super(ErrorMessages.IMAGE_LOADING_FAILED.getMessage(), cause);
     }
+
+    public String getErrorMessage() {
+        return ErrorMessages.IMAGE_LOADING_FAILED.getMessage();
+    }
 }
