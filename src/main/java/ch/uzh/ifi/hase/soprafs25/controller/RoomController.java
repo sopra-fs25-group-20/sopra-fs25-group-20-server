@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.model.CreateRoomDTO;
-import ch.uzh.ifi.hase.soprafs25.model.JoinRoomDTO;
 import ch.uzh.ifi.hase.soprafs25.model.RoomPostDTO;
 import ch.uzh.ifi.hase.soprafs25.service.CreateRoomService;
 import ch.uzh.ifi.hase.soprafs25.service.JoinRoomService;
@@ -31,24 +30,15 @@ public class RoomController {
 
         return new CreateRoomDTO(
                 createdPlayer.getNickname(),
-                createdPlayer.getColor(),
                 createdPlayer.getRoom().getCode()
         );
     }
 
-    @PostMapping("/join/{code}")
+    @PostMapping("/validate")
     @ResponseStatus(HttpStatus.OK)
-    public JoinRoomDTO joinRoom(@PathVariable String code,
-                                @RequestBody RoomPostDTO roomPostDTO) {
-        Player player = new Player();
-        player.setNickname(roomPostDTO.getNickname());
-
-        Player createdPlayer = joinRoomService.joinRoom(code, player);
-
-        return new JoinRoomDTO(
-                createdPlayer.getNickname(),
-                createdPlayer.getColor(),
-                createdPlayer.getRoom().getCode()
-        );
+    public void validateRoomAndNickname(@RequestBody RoomPostDTO roomPostDTO) {
+        String nickname = roomPostDTO.getNickname();
+        String code = roomPostDTO.getCode();
+        joinRoomService.validateJoin(code, nickname);
     }
 }
