@@ -34,11 +34,11 @@ public class RoomController {
         );
     }
 
-    @PostMapping("/validate/{code}")
+    @PostMapping("/validate")
     @ResponseStatus(HttpStatus.OK)
-    public void validateRoomAndNickname(@PathVariable String code,
-                                         @RequestBody RoomPostDTO roomPostDTO) {
+    public void validateRoomAndNickname(@RequestBody RoomPostDTO roomPostDTO) {
         String nickname = roomPostDTO.getNickname();
+        String code = roomPostDTO.getCode();
         joinRoomService.validateJoin(code, nickname);
     }
 }
