@@ -30,7 +30,6 @@ public class RoomController {
 
         return new CreateRoomDTO(
                 createdPlayer.getNickname(),
-                createdPlayer.getColor(),
                 createdPlayer.getRoom().getCode()
         );
     }
