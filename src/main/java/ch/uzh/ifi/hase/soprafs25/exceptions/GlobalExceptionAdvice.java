@@ -26,4 +26,12 @@ public class GlobalExceptionAdvice {
         log.error("NicknameAlreadyInRoomException -> caught:", ex);
         return new ErrorResponseDTO(ex.getMessage());
     }
+
+    @ExceptionHandler(ImageLoadingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // 500
+    @ResponseBody
+    public ErrorResponseDTO handleImageLoadingException(ImageLoadingException ex) {
+        log.error("ImageLoadingException -> caught:", ex.getCause());
+        return new ErrorResponseDTO(ex.getErrorMessage());
+    }
 }
