@@ -6,6 +6,8 @@ import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -36,7 +38,7 @@ public class CreateRoomServiceTest {
         joinedPlayer.setRoom(joinedRoom);
 
         when(roomRepository.save(any(Room.class))).thenReturn(room);
-        when(joinedRoomService.joinRoom(eq("ROOM1"), any(Player.class))).thenReturn(joinedPlayer);
+        when(joinRoomService.joinRoom(eq("ROOM1"), any(Player.class))).thenReturn(joinedPlayer);
 
         Player result = createRoomService.createRoom(player);
 
