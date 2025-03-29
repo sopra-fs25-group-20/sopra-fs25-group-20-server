@@ -28,7 +28,7 @@ public class JoinRoomService {
         Room room = validateJoin(roomCode, player.getNickname());
 
         room.addPlayer(player);
-        player.setColor(RandomColorUtil.getRandomColor());
+        player.setColor(RandomColorUtil.assignColor(roomCode));
         return playerRepository.save(player);
     }
 
