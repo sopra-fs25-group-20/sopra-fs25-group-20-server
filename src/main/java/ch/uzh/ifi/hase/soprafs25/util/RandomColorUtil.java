@@ -17,15 +17,35 @@ public class RandomColorUtil {
         "#008F7A" // Dark Teal
     );
 
-    public static String getAvailableColor(Set<String> usedColors) {
+    private static final Map<String, Set<String>> roomColorMap = new HashMap<>();
+
+    public static String assignColor(String roomId) {
+        roomColorMap.putIfAbsent(roomId, new HashSet<>());
+        Set<String> usedColors = roomColorMap.get(roomId);
+
         for (String color : COLOR_PALETTE) {
             if (!usedColors.contains(color)) {
+                usedColors.add(color);
                 return color;
             }
         }
-        throw new IllegalStateException("No available colors left in this room.");
+        throw new IllegalStateException("No available colors left in this room: " + roomId);
     }
 
+    public static void releaseColor(String roomId, String color) {
+        Set<String> usedColors = roomColorMap.get(roomId);
+        if (usedColors != null) {
+            usedColors.remove(color);
+            if (usedColors.isEmpty()) {
+                roomColorMap.remove(roomId);
+            }
+        }
+    }
+
+    public static void clearRoom(String roomId) {
+        roomColorMap.remove(roomId);
+    }
+    
     public static List<String> getColorPalette() {
         return COLOR_PALETTE;
     }
