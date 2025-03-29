@@ -31,7 +31,8 @@ public class CreateRoomServiceTest {
         Player joinedPlayer = new Player();
         joinedPlayer.setId(1L);
         joinedPlayer.setNickname("TestUser");
-        Room joinedRoom.setCode("ROOM1");
+        Room joinedRoom = new Room();
+        joinedRoom.setCode("ROOM1");
         joinedPlayer.setRoom(joinedRoom);
 
         when(roomRepository.save(any(Room.class))).thenReturn(room);
