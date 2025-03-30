@@ -5,7 +5,6 @@ public class VoteCastDTO {
 
     private String voter;
     private boolean voteYes;
-    private String roomCode;
 
     public String getVoter() {
         return voter;
@@ -21,13 +20,5 @@ public class VoteCastDTO {
 
     public void setVoteYes(boolean voteYes) {
         this.voteYes = voteYes;
-    }
-
-    public String getRoomCode() {
-        return roomCode;
-    }
-
-    public void setRoomCode(String roomCode) {
-        this.roomCode = roomCode;
     }
 }
