@@ -3,7 +3,7 @@
 SpyQuest is a social deduction game where players identify a hidden spy. Innocents know the correct street-view photo, but the spy doesn't. Through questioning, innocents try to expose the spy, while the spy gathers clues to guess the photo. Vote out the spy or outsmart the innocents to win!
 
 ## How to Run
-You can either play the [live version](https://spyquest.whtvr.ch/) of SpyQuest or deploy the backend using Docker:
+You can either play the [live version](https://spyquest.whtvr.ch/) of SpyQuest or deploy the backend using Docker and your own [Google API key](https://developers.google.com/maps/documentation/javascript/get-api-key):
 ```bash
-docker run -p 8080:8080 ghcr.io/sopra-fs25-group-20/sopra-fs25-group-20-server:latest
+docker run -e GOOGLE_MAPS_API_KEY=[INSERT] -p 8080:8080 ghcr.io/sopra-fs25-group-20/sopra-fs25-group-20-server:latest
 ```

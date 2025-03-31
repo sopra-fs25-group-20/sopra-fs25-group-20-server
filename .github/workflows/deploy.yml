@@ -93,4 +93,5 @@ jobs:
             --platform=managed \
             --region=europe-west1 \
             --allow-unauthenticated \
-            --port=8080
+            --port=8080 \
+            --set-env-vars GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
