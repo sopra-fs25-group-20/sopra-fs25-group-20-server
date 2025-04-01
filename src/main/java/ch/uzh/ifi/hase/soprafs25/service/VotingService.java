@@ -42,4 +42,12 @@ public class VotingService {
         sessions.remove(roomCode);
     }
 
+    public boolean hasVoted(String roomCode, String voter) {
+        VotingSession session = sessions.get(roomCode);
+        return session != null && session.getVotes().containsKey(voter);
+    }
+
+    public boolean isVoteSessionActive(String roomCode) {
+        return sessions.containsKey(roomCode);
+    }
 }
