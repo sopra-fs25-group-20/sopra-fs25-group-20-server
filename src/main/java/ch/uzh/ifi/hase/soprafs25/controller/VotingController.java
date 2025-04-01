@@ -32,6 +32,9 @@ public class VotingController {
     @MessageMapping("/vote/start")
     public void startVote(@Payload VoteStartDTO startDTO, Message<?> socketMessage) {
         Map<String, Object> session = (Map<String, Object>) socketMessage.getHeaders().get("simpSessionAttributes");
+        if (session == null || !session.containsKey("code")) {
+            throw new IllegalStateException("Missing session attributes in WebSocket message headers");
+        }
         String roomCode = (String) session.get("code");
 
         if (!votingService.isVoteSessionActive(roomCode)) {
@@ -43,6 +46,9 @@ public class VotingController {
     @MessageMapping("/vote/cast")
     public void castVote(@Payload VoteCastDTO castDTO, Message<?> socketMessage) {
         Map<String, Object> session = (Map<String, Object>) socketMessage.getHeaders().get("simpSessionAttributes");
+        if (session == null || !session.containsKey("code")) {
+            throw new IllegalStateException("Missing session attributes in WebSocket message headers");
+        }
         String roomCode = (String) session.get("code");
 
         if (!votingService.hasVoted(roomCode, castDTO.getVoter())) {
