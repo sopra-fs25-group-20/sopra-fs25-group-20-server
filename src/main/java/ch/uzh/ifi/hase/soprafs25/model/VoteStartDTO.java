@@ -4,7 +4,6 @@ public class VoteStartDTO {
 
     private String initiator;
     private String target;
-    private String roomCode;
 
     public String getInitiator () {
         return initiator;
@@ -20,13 +19,4 @@ public class VoteStartDTO {
     public void setTarget(String target) {
         this.target = target;
     }
-    
-    public String getRoomCode() {
-        return roomCode;
-    }
-
-    public void setRoomCode(String roomCode) {
-        this.roomCode = roomCode;
-    }
 }
-
