@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service("googleImageService")
 public class GoogleImageService implements ImageService {
 
-    private static final int MAX_ATTEMPTS = 30;
 
     private final StreetViewMetadataService metadataService;
     private final RestTemplate restTemplate = new RestTemplate();
