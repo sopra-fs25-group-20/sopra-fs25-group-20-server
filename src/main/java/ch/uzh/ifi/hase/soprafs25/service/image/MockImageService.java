@@ -10,7 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 public class    MockImageService implements ImageService {
 
     @Override
-    public byte[] fetchImage(double lat, double lng) {
+    public byte[] fetchImage() {
         try {
             // load static image from class path
             ClassPathResource resource = new ClassPathResource("static/mock-image.jpg");

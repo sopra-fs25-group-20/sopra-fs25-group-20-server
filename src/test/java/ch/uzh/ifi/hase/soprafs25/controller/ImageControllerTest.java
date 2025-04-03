@@ -12,12 +12,12 @@ public class ImageControllerTest {
     public void testGetImageReturnsBytes() {
         ImageService mockService = mock(ImageService.class);
         byte[] fakeImage = new byte[]{1, 2, 3};
-        when(mockService.fetchImage(anyDouble(), anyDouble())).thenReturn(fakeImage);
+        when(mockService.fetchImage()).thenReturn(fakeImage);
 
         ImageController controller = new ImageController(mockService);
         byte[] response = controller.getImage();
 
         assertArrayEquals(fakeImage, response);
-        verify(mockService).fetchImage(anyDouble(), anyDouble());
+        verify(mockService).fetchImage();
     }
 }
