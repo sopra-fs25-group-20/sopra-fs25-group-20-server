@@ -1,16 +1,18 @@
 package ch.uzh.ifi.hase.soprafs25.service.image;
 
+import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service("googleImageService")
 public class GoogleImageService implements ImageService {
 
-    private static final String IMAGE_API_URL = "https://maps.googleapis.com/maps/api/streetview";
-    private static final int MAX_ATTEMPTS = 38;
+    private static final int MAX_ATTEMPTS = 30;
 
     private final StreetViewMetadataService metadataService;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -22,16 +24,35 @@ public class GoogleImageService implements ImageService {
         this.metadataService = metadataService;
     }
 
-  ImageLoadingException(new Throwable("No StreetView image available after multiple attempts."));
+    @Override
+    public byte[] fetchImage() {
+
+            double lat = ThreadLocalRandom.current().nextDouble(-90.0, 90.0); //NOSONAR
+            double lng = ThreadLocalRandom.current().nextDouble(-180.0, 180.0); //NOSONAR
+
+            String status = metadataService.getStatus(lat, lng);
+
+            if ("OK".equals(status)) {
+                return fetchStreetViewImage(lat, lng);
+            }
+
+        throw new ImageLoadingException(new Throwable("No StreetView image available after multiple attempts."));
     }
 
     private byte[] fetchStreetViewImage(double lat, double lng) {
-        String url = UriComponentsBuilder.fromHttpUrl(IMAGE_API_URL)
+        URI uri = UriComponentsBuilder.newInstance()
+                .scheme("https")
+                .host("maps.googleapis.com")
+                .path("/maps/api/streetview")
                 .queryParam("size", "400x400")
                 .queryParam("location", lat + "," + lng)
+                .queryParam("radius", 50000)
                 .queryParam("key", apiKey)
-                .toUriString();
+                .build()
+                .encode()
+                .toUri();
 
-        return restTemplate.getForObject(url, byte[].class);
+        return restTemplate.getForObject(uri, byte[].class);
     }
 }
+
