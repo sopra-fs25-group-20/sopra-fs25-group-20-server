@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service("googleImageService")
 public class GoogleImageService implements ImageService {
 
+    private static final int MAX_ATTEMPTS = 30;
 
     private final StreetViewMetadataService metadataService;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -25,7 +26,9 @@ public class GoogleImageService implements ImageService {
 
     @Override
     public byte[] fetchImage() {
+        int attempt = 0;
 
+        while (attempt < MAX_ATTEMPTS) {
             double lat = ThreadLocalRandom.current().nextDouble(-90.0, 90.0); //NOSONAR
             double lng = ThreadLocalRandom.current().nextDouble(-180.0, 180.0); //NOSONAR
 
@@ -34,6 +37,9 @@ public class GoogleImageService implements ImageService {
             if ("OK".equals(status)) {
                 return fetchStreetViewImage(lat, lng);
             }
+
+            attempt++;
+        }
 
         throw new ImageLoadingException(new Throwable("No StreetView image available after multiple attempts."));
     }
