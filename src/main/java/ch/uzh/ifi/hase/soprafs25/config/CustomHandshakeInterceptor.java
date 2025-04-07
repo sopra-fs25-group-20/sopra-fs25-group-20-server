@@ -26,28 +26,29 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request,
                                    ServerHttpResponse response,
                                    WebSocketHandler wsHandler,
-                                   Map<String, Object> attributes) throws Exception {
+                                   Map<String, Object> attributes) {
 
-        if (request instanceof ServletServerHttpRequest servletRequestWrapper) {
-            HttpServletRequest servletRequest = servletRequestWrapper.getServletRequest();
-            String nickname = servletRequest.getParameter("nickname");
-            String code = servletRequest.getParameter("code");
-
-            if (nickname == null || code == null) {
-                response.setStatusCode(HttpStatus.BAD_REQUEST);
-                return false;
-            }
-            attributes.put("nickname", nickname);
-            attributes.put("code", code);
-
-            Player player = new Player();
-            player.setNickname(nickname);
-            Player createdPlayer = joinRoomService.joinRoom(code, player);
-
-            attributes.put("color", createdPlayer.getColor());
-            return true;
+        if (!(request instanceof ServletServerHttpRequest servletRequestWrapper)) {
+            return false;
         }
-        return false;
+
+        HttpServletRequest servletRequest = servletRequestWrapper.getServletRequest();
+        String nickname = servletRequest.getParameter("nickname");
+        String code = servletRequest.getParameter("code");
+
+        if (nickname == null || code == null) {
+            response.setStatusCode(HttpStatus.BAD_REQUEST);
+            return false;
+        }
+        attributes.put("nickname", nickname);
+        attributes.put("code", code);
+
+        Player player = new Player();
+        player.setNickname(nickname);
+        Player createdPlayer = joinRoomService.joinRoom(code, player);
+
+        attributes.put("color", createdPlayer.getColor());
+        return true;
     }
 
     @Override
