@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs25.config;
 
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.service.JoinRoomService;
+import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
@@ -17,9 +18,12 @@ import java.util.Map;
 public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
     private final JoinRoomService joinRoomService;
+    private final PlayerConnectionService playerConnectionService;
 
-    public CustomHandshakeInterceptor(JoinRoomService joinRoomService) {
+    public CustomHandshakeInterceptor(JoinRoomService joinRoomService,
+                                      PlayerConnectionService playerConnectionService) {
         this.joinRoomService = joinRoomService;
+        this.playerConnectionService = playerConnectionService;
     }
 
     @Override
@@ -41,14 +45,18 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
             return false;
         }
 
-        Player player = new Player();
-        player.setNickname(nickname);
-        Player createdPlayer = joinRoomService.joinRoom(code, player);
+        if (playerConnectionService.isOnline(nickname, code)) {
+            response.setStatusCode(HttpStatus.CONFLICT);
+            return false;
+        }
+
+        Player createdPlayer = joinPlayer(nickname, code);
 
         attributes.put("nickname", nickname);
         attributes.put("code", code);
         attributes.put("color", createdPlayer.getColor());
 
+        playerConnectionService.markConnected(createdPlayer.getNickname(), createdPlayer.getRoom().getCode());
         return true;
     }
 
@@ -70,5 +78,11 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
         }
 
         return true;
+    }
+
+    private Player joinPlayer(String nickname, String code) {
+        Player player = new Player();
+        player.setNickname(nickname);
+        return joinRoomService.joinRoom(code, player);
     }
 }
