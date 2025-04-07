@@ -34,7 +34,7 @@ public class JoinRoomService {
 
     public Room validateJoin(String roomCode, String nickname) {
         Room room = getRoom(roomCode);
-        validateNicknameNotInRoom(room, nickname);
+        validateNicknameNotActive(room, nickname);
 
         return room;
     }
@@ -47,9 +47,10 @@ public class JoinRoomService {
         return room;
     }
 
-    private void validateNicknameNotInRoom(Room room, String nickname) {
-        Player playerInRoom = playerRepository.findByNicknameAndRoom(nickname, room);
-        if (playerInRoom != null) {
+    private void validateNicknameNotActive(Room room, String nickname) {
+        Player player = playerRepository.findByNicknameAndRoom(nickname, room);
+
+        if (player != null && player.isConnected()) {
             throw new NicknameAlreadyInRoomException(room.getCode(), nickname);
         }
     }
