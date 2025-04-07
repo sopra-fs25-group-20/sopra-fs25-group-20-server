@@ -36,18 +36,19 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
         String nickname = servletRequest.getParameter("nickname");
         String code = servletRequest.getParameter("code");
 
-        if (nickname == null || code == null) {
+        if (!isValidHandshakeParams(nickname, code)) {
             response.setStatusCode(HttpStatus.BAD_REQUEST);
             return false;
         }
-        attributes.put("nickname", nickname);
-        attributes.put("code", code);
 
         Player player = new Player();
         player.setNickname(nickname);
         Player createdPlayer = joinRoomService.joinRoom(code, player);
 
+        attributes.put("nickname", nickname);
+        attributes.put("code", code);
         attributes.put("color", createdPlayer.getColor());
+
         return true;
     }
 
@@ -57,5 +58,17 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                                WebSocketHandler wsHandler,
                                Exception exception) {
         // Method must be overridden, but no post handshake is needed currently
+    }
+
+    private boolean isValidHandshakeParams(String nickname, String code) {
+        if (nickname == null || nickname.isBlank()) {
+            return false;
+        }
+
+        if (code == null || !code.matches("^[A-Z0-9]{6}$")) {
+            return false;
+        }
+
+        return true;
     }
 }
