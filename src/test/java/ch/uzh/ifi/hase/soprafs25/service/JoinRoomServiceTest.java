@@ -54,11 +54,12 @@ public class JoinRoomServiceTest {
     }
 
     @Test
-    public void joinRoomNicknameExists() {
+    public void joinRoomNicknameExistsAndConnected() {
         Room room = new Room();
         room.setCode("ROOM99");
         Player existing = new Player();
         existing.setNickname("duplicate");
+        existing.setConnected(true);
 
         when(roomRepository.findByCode("ROOM99")).thenReturn(room);
         when(playerRepository.findByNicknameAndRoom("duplicate", room)).thenReturn(existing);
