@@ -26,6 +26,9 @@ public class Player implements Serializable {
     @JoinColumn(name = "roomId", nullable = false)
     private Room room;
 
+    @Column(nullable = false)
+    private boolean connected;
+
     public Long getId() {
         return id;
     }
@@ -64,5 +67,13 @@ public class Player implements Serializable {
 
     public void setRoom(Room room) {
         this.room = room;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
     }
 }
