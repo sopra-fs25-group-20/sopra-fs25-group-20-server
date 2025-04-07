@@ -1,11 +1,15 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.entity.Room;
+import ch.uzh.ifi.hase.soprafs25.entity.VotingSession;
 import ch.uzh.ifi.hase.soprafs25.model.VoteStartDTO;
+import ch.uzh.ifi.hase.soprafs25.model.VoteState;
 import ch.uzh.ifi.hase.soprafs25.model.VoteCastDTO;
 import ch.uzh.ifi.hase.soprafs25.model.VoteResultDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.VotingService;
+import ch.uzh.ifi.hase.soprafs25.session.VotingSessionManager;
+
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -37,9 +41,12 @@ public class VotingController {
         }
         String roomCode = (String) session.get("code");
 
-        if (!votingService.isVoteSessionActive(roomCode)) {
-            votingService.startVote(roomCode, startDTO.getInitiator(), startDTO.getTarget());
-            messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode, startDTO);
+        if (!VotingSessionManager.isActive(roomCode)) {
+            VotingSession votingSession = votingService.createVotingSession(roomCode, startDTO.getInitiator(), startDTO.getTarget());
+            VotingSessionManager.addVotingSession(votingSession);
+
+            messagingTemplate.convertAndSend("/topic/vote/begin/" + roomCode, startDTO);
+            messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode, votingSession.getVoteState().getVotes());
         }
     }
 
@@ -51,24 +58,25 @@ public class VotingController {
         }
         String roomCode = (String) session.get("code");
 
-        if (!votingService.hasVoted(roomCode, castDTO.getVoter())) {
-            votingService.castVote(roomCode, castDTO.getVoter(), castDTO.isVoteYes());
+        VotingSession votingSession = VotingSessionManager.getVotingSession(roomCode);
+
+        if (!votingSession.hasVoted(castDTO.getVoter())) {
+            votingSession.castVote(castDTO.getVoter(), castDTO.isVoteYes());
         }
 
-        Map<String, Boolean> votes = votingService.getVotes(roomCode);
-        messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode, votes);
+        VoteState voteState = votingSession.getVoteState();
+        messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode, voteState.getVotes());
 
         Room room = roomRepository.findByCode(roomCode);
-
-        if (room != null && votes.size() == room.getPlayers().size()) {
+        if (room != null && voteState.getVotes().size() == room.getPlayers().size()) {
             VoteResultDTO result = new VoteResultDTO();
             
-            result.setInitiator(votingService.getInitiator(roomCode));
-            result.setTarget(votingService.getTarget(roomCode));
-            result.setVotes(votes);
+            result.setInitiator(votingSession.getInitiator());
+            result.setTarget(votingSession.getTarget());
+            result.setVotes(voteState.getVotes());
 
             messagingTemplate.convertAndSend("/topic/vote/result/" + roomCode, result);
-            votingService.endVote(roomCode);
+            VotingSessionManager.removeVotingSession(roomCode);
         }
     }
 }

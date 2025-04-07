@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.entity;
 
+import ch.uzh.ifi.hase.soprafs25.model.VoteState;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -10,7 +12,7 @@ import java.util.Map;
 public class VotingSession implements Serializable {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long voteSessionId;
 
     @Column(nullable = false)
@@ -25,11 +27,8 @@ public class VotingSession implements Serializable {
     @Column(nullable = false)
     private boolean isActive = true;
 
-    @ElementCollection
-    @CollectionTable(name = "VotingSessionVotes", joinColumns = @JoinColumn(name = "voteSessionId"))
-    @MapKeyColumn(name = "voter")
-    @Column(name = "voteChoice")
-    private Map<String, Boolean> votes = new HashMap<>();
+    @Transient // in memory only
+    private final VoteState voteState = new VoteState();
 
     public VotingSession() {}
 
@@ -40,11 +39,15 @@ public class VotingSession implements Serializable {
     }
 
     public void castVote(String voter, boolean voteYes) {
-        votes.putIfAbsent(voter, voteYes);
+        voteState.addVote(voter, voteYes);
     }
 
-    public Map<String, Boolean> getVotes() {
-        return votes;
+    public boolean hasVoted(String voter) {
+        return voteState.hasVoted(voter);
+    }
+
+    public VoteState getVoteState() {
+        return voteState;
     }
 
     public String getInitiator() {
