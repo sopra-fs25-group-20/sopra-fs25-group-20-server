@@ -24,19 +24,34 @@ public class JoinRoomService {
     }
 
 
-    public Player joinRoom(String roomCode, Player player) {
-        Room room = validateJoin(roomCode, player.getNickname());
+    public Player joinRoom(String roomCode, Player playerInput) {
+        Room room = getRoom(roomCode);
+        Player existingPlayer = playerRepository.findByNicknameAndRoom(playerInput.getNickname(), room);
 
-        room.addPlayer(player);
-        player.setColor(RandomColorUtil.assignColor(roomCode));
-        return playerRepository.save(player);
+        if (existingPlayer != null) {
+            if (existingPlayer.isConnected()) {
+                throw new NicknameAlreadyInRoomException(roomCode, playerInput.getNickname());
+            }
+            return reconnect(existingPlayer);
+        }
+
+        return createNewPlayer(room, playerInput);
     }
 
-    public Room validateJoin(String roomCode, String nickname) {
+    public void validateJoin(String roomCode, String nickname) {
         Room room = getRoom(roomCode);
-        validateNicknameNotInRoom(room, nickname);
+        validateNicknameNotActive(room, nickname);
+    }
 
-        return room;
+    private Player createNewPlayer(Room room, Player playerInput) {
+        room.addPlayer(playerInput);
+        playerInput.setColor(RandomColorUtil.assignColor(room.getCode()));
+        playerInput.setConnected(false);
+        return playerRepository.save(playerInput);
+    }
+
+    private Player reconnect(Player player) {
+        return playerRepository.save(player);
     }
 
     private Room getRoom(String roomCode) {
@@ -47,9 +62,10 @@ public class JoinRoomService {
         return room;
     }
 
-    private void validateNicknameNotInRoom(Room room, String nickname) {
-        Player playerInRoom = playerRepository.findByNicknameAndRoom(nickname, room);
-        if (playerInRoom != null) {
+    private void validateNicknameNotActive(Room room, String nickname) {
+        Player player = playerRepository.findByNicknameAndRoom(nickname, room);
+
+        if (player != null && player.isConnected()) {
             throw new NicknameAlreadyInRoomException(room.getCode(), nickname);
         }
     }
