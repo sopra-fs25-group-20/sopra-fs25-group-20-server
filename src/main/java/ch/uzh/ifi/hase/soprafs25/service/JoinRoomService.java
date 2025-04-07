@@ -44,7 +44,7 @@ public class JoinRoomService {
     }
 
     private Player createNewPlayer(Room room, Player playerInput) {
-        playerInput.setRoom(room);
+        room.addPlayer(playerInput);
         playerInput.setColor(RandomColorUtil.assignColor(room.getCode()));
         playerInput.setConnected(false);
         return playerRepository.save(playerInput);
