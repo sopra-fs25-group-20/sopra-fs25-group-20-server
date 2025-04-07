@@ -18,6 +18,8 @@ import org.springframework.stereotype.Controller;
 
 import java.util.Map;
 
+import ch.uzh.ifi.hase.soprafs25.exceptions.VoteAlreadyInProgressException;
+
 @Controller
 public class VotingController {
 
@@ -41,13 +43,15 @@ public class VotingController {
         }
         String roomCode = (String) session.get("code");
 
-        if (!VotingSessionManager.isActive(roomCode)) {
-            VotingSession votingSession = votingService.createVotingSession(roomCode, startDTO.getInitiator(), startDTO.getTarget());
-            VotingSessionManager.addVotingSession(votingSession);
-
-            messagingTemplate.convertAndSend("/topic/vote/begin/" + roomCode, startDTO);
-            messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode, votingSession.getVoteState().getVotes());
+        if (VotingSessionManager.isActive(roomCode)) {
+            throw new VoteAlreadyInProgressException(roomCode);
         }
+        
+        VotingSession votingSession = votingService.createVotingSession(roomCode, startDTO.getInitiator(), startDTO.getTarget());
+        VotingSessionManager.addVotingSession(votingSession);
+        messagingTemplate.convertAndSend("/topic/vote/begin/" + roomCode, startDTO);
+        messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode, votingSession.getVoteState().getVotes());
+        
     }
 
     @MessageMapping("/vote/cast")
