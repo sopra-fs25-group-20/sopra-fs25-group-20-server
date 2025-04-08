@@ -34,4 +34,12 @@ public class GlobalExceptionAdvice {
         log.error("ImageLoadingException -> caught:", ex.getCause());
         return new ErrorResponseDTO(ex.getErrorMessage());
     }
+
+    @ExceptionHandler(VoteAlreadyInProgressException.class)
+    @ResponseStatus(HttpStatus.CONFLICT) // 409
+    @ResponseBody
+    public ErrorResponseDTO handleVoteAlreadyInProgressException(VoteAlreadyInProgressException ex) {
+        log.error("VoteAlreadyInProgressException -> caught:", ex);
+        return new ErrorResponseDTO(ex.getMessage());
+    }
 }
