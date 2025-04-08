@@ -3,11 +3,11 @@ package ch.uzh.ifi.hase.soprafs25.controller;
 import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.entity.VotingSession;
 import ch.uzh.ifi.hase.soprafs25.model.VoteStartDTO;
-import ch.uzh.ifi.hase.soprafs25.model.VoteState;
 import ch.uzh.ifi.hase.soprafs25.model.VoteCastDTO;
 import ch.uzh.ifi.hase.soprafs25.model.VoteResultDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.VotingService;
+import ch.uzh.ifi.hase.soprafs25.session.VoteState;
 import ch.uzh.ifi.hase.soprafs25.session.VotingSessionManager;
 
 import org.springframework.messaging.Message;

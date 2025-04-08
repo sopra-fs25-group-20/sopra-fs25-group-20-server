@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs25.model;
+package ch.uzh.ifi.hase.soprafs25.session;
 
 import java.util.Collections;
 import java.util.Map;

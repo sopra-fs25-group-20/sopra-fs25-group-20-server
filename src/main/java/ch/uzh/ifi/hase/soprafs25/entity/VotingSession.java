@@ -1,8 +1,9 @@
 package ch.uzh.ifi.hase.soprafs25.entity;
 
-import ch.uzh.ifi.hase.soprafs25.model.VoteState;
-
 import javax.persistence.*;
+
+import ch.uzh.ifi.hase.soprafs25.session.VoteState;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
