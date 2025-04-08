@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs25.entity.VotingSession;
 import ch.uzh.ifi.hase.soprafs25.model.VoteStartDTO;
 import ch.uzh.ifi.hase.soprafs25.model.VoteCastDTO;
 import ch.uzh.ifi.hase.soprafs25.model.VoteResultDTO;
+import ch.uzh.ifi.hase.soprafs25.model.VoteStateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.VotingService;
 import ch.uzh.ifi.hase.soprafs25.session.VoteState;
@@ -17,8 +18,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
-
-import ch.uzh.ifi.hase.soprafs25.exceptions.VoteAlreadyInProgressException;
 
 @Controller
 public class VotingController {
@@ -35,23 +34,19 @@ public class VotingController {
         this.roomRepository = roomRepository;
     }
 
-    @MessageMapping("/vote/start")
+    @MessageMapping("/vote/init")
     public void startVote(@Payload VoteStartDTO startDTO, Message<?> socketMessage) {
         Map<String, Object> session = (Map<String, Object>) socketMessage.getHeaders().get("simpSessionAttributes");
         if (session == null || !session.containsKey("code")) {
             throw new IllegalStateException("Missing session attributes in WebSocket message headers");
         }
         String roomCode = (String) session.get("code");
+        
+        VotingSession votingSession = votingService.createVotingSessionIfNotActive(roomCode, startDTO.getInitiator(), startDTO.getTarget());
 
-        if (VotingSessionManager.isActive(roomCode)) {
-            throw new VoteAlreadyInProgressException(roomCode);
-        }
-        
-        VotingSession votingSession = votingService.createVotingSession(roomCode, startDTO.getInitiator(), startDTO.getTarget());
-        VotingSessionManager.addVotingSession(votingSession);
         messagingTemplate.convertAndSend("/topic/vote/begin/" + roomCode, startDTO);
-        messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode, votingSession.getVoteState().getVotes());
-        
+        messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode,
+                new VoteStateDTO(votingSession.getVoteState().getVotes()));
     }
 
     @MessageMapping("/vote/cast")
@@ -62,7 +57,7 @@ public class VotingController {
         }
         String roomCode = (String) session.get("code");
 
-        VotingSession votingSession = VotingSessionManager.getVotingSession(roomCode);
+        VotingSession votingSession = votingService.getActiveVotingSession(roomCode);
 
         if (!votingSession.hasVoted(castDTO.getVoter())) {
             votingSession.castVote(castDTO.getVoter(), castDTO.isVoteYes());
@@ -80,7 +75,7 @@ public class VotingController {
             result.setVotes(voteState.getVotes());
 
             messagingTemplate.convertAndSend("/topic/vote/result/" + roomCode, result);
-            VotingSessionManager.removeVotingSession(roomCode);
+            votingService.endVotingSession(roomCode);
         }
     }
 }
