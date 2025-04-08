@@ -5,8 +5,6 @@ import javax.persistence.*;
 import ch.uzh.ifi.hase.soprafs25.session.VoteState;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 @Entity
 @Table(name = "VotingSession")
@@ -29,7 +27,7 @@ public class VotingSession implements Serializable {
     private boolean isActive = true;
 
     @Transient // in memory only
-    private final VoteState voteState = new VoteState();
+    private final transient VoteState voteState = new VoteState();
 
     public VotingSession() {}
 

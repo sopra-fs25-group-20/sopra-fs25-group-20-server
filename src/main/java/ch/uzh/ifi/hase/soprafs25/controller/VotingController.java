@@ -8,7 +8,6 @@ import ch.uzh.ifi.hase.soprafs25.model.VoteResultDTO;
 import ch.uzh.ifi.hase.soprafs25.model.VoteStateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.VotingService;
-import ch.uzh.ifi.hase.soprafs25.session.VoteState;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -60,7 +59,7 @@ public class VotingController {
 
         if (voteAccepted) {
             VotingSession votingSession = votingService.getActiveVotingSession(roomCode);
-            messagingTemplate.convertAndSend("/topic/vote/update" + roomCode,
+            messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode,
                     new VoteStateDTO(votingSession.getVoteState().getVotes()));
         }
 
