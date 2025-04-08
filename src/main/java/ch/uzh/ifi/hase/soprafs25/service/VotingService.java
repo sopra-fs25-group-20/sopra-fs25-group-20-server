@@ -25,4 +25,18 @@ public class VotingService {
     public void endVotingSession(String roomCode) {
         VotingSessionManager.removeVotingSession(roomCode);
     }
+
+    public boolean castVote(String roomCode, String voter, boolean voteYes) {
+        VotingSession session = getActiveVotingSession(roomCode);
+        if (session.getVoteState().hasVoted(voter)) {
+            return false;
+        }
+        session.getVoteState().addVote(voter, voteYes);
+        return true;
+    }
+
+    public boolean isVoteComplete(String roomCode, int expectedVotes) {
+        VotingSession session = getActiveVotingSession(roomCode);
+        return session.getVoteState().getVotes().size() == expectedVotes;
+    }
 }

@@ -56,23 +56,22 @@ public class VotingController {
         }
         String roomCode = (String) session.get("code");
 
-        VotingSession votingSession = votingService.getActiveVotingSession(roomCode);
+        boolean voteAccepted = votingService.castVote(roomCode, castDTO.getVoter(), castDTO.isVoteYes());
 
-        if (!votingSession.hasVoted(castDTO.getVoter())) {
-            votingSession.castVote(castDTO.getVoter(), castDTO.isVoteYes());
+        if (voteAccepted) {
+            VotingSession votingSession = votingService.getActiveVotingSession(roomCode);
+            messagingTemplate.convertAndSend("/topic/vote/update" + roomCode,
+                    new VoteStateDTO(votingSession.getVoteState().getVotes()));
         }
 
-        VoteState voteState = votingSession.getVoteState();
-        messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode,
-                new VoteStateDTO(voteState.getVotes()));
-
         Room room = roomRepository.findByCode(roomCode);
-        if (room != null && voteState.getVotes().size() == room.getPlayers().size()) {
+        if (room != null && votingService.isVoteComplete(roomCode, room.getPlayers().size())) {
+            VotingSession sessionInstance = votingService.getActiveVotingSession(roomCode);
             VoteResultDTO result = new VoteResultDTO();
             
-            result.setInitiator(votingSession.getInitiator());
-            result.setTarget(votingSession.getTarget());
-            result.setVotes(voteState.getVotes());
+            result.setInitiator(sessionInstance.getInitiator());
+            result.setTarget(sessionInstance.getTarget());
+            result.setVotes(sessionInstance.getVoteState().getVotes());
 
             messagingTemplate.convertAndSend("/topic/vote/result/" + roomCode, result);
             votingService.endVotingSession(roomCode);
