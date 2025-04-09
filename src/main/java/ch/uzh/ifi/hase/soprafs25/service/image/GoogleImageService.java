@@ -59,5 +59,10 @@ public class GoogleImageService implements ImageService {
 
         return restTemplate.getForObject(uri, byte[].class);
     }
+
+    @Override
+    public byte[] fetchImage(String location) {
+        return fetchImage();
+    }
 }
 
