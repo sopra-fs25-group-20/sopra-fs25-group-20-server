@@ -1,9 +1,9 @@
 package ch.uzh.ifi.hase.soprafs25.service.image;
 
 import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.junit.jupiter.api.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,18 +22,23 @@ public class GoogleImageServiceTest {
 
     private GoogleImageService googleImageService;
 
+    private AutoCloseable closeable;
+
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.openMocks(this);
+        closeable = MockitoAnnotations.openMocks(this);
         googleImageService = new GoogleImageService(metadataService, restTemplate);
-        // Test için dummy API key ayarla.
         ReflectionTestUtils.setField(googleImageService, "apiKey", "dummy-api-key");
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        closeable.close();
     }
 
     @Test
     public void testFetchImageByLocationWithValidLocation() {
-        String testLocation = "istanbul";
-        // Geçerli durum: metadata "OK" dönsün
+        String testLocation = "asia";
         when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("OK");
         byte[] expectedImage = new byte[]{7, 8, 9};
         when(restTemplate.getForObject(any(URI.class), eq(byte[].class))).thenReturn(expectedImage);
@@ -47,12 +52,13 @@ public class GoogleImageServiceTest {
 
     @Test
     public void testFetchImageByLocationNoSuccessfulAttempt() {
-        String testLocation = "tokyo";
+        String testLocation = "asia";
         when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("ZERO_RESULTS");
 
-        ImageLoadingException exception = assertThrows(ImageLoadingException.class, () -> {
-            googleImageService.fetchImageByLocation(testLocation);
-        });
+        ImageLoadingException exception = assertThrows(ImageLoadingException.class, () ->
+                googleImageService.fetchImageByLocation(testLocation)
+        );
+
         assertTrue(exception.getErrorMessage().contains("Failed to load image"));
     }
 }
