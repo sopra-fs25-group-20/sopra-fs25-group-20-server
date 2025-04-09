@@ -8,13 +8,14 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.security.SecureRandom;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service("googleImageService")
 public class GoogleImageService implements ImageService {
 
     private static final int MAX_ATTEMPTS = 100;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final StreetViewMetadataService metadataService;
     private final RestTemplate restTemplate;
@@ -57,8 +58,8 @@ public class GoogleImageService implements ImageService {
                 lat = coords.get("lat");
                 lng = coords.get("lng");
             } else {
-                lat = ThreadLocalRandom.current().nextDouble(-90.0, 90.0);
-                lng = ThreadLocalRandom.current().nextDouble(-180.0, 180.0);
+                lat = -90.0 + 180.0 * SECURE_RANDOM.nextDouble();
+                lng = -180.0 + 360.0 * SECURE_RANDOM.nextDouble();
             }
 
             String status = metadataService.getStatus(lat, lng);

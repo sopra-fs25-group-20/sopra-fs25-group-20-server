@@ -4,15 +4,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.util.Map;
-import java.util.Random;
 
 public class CoordinatesUtil {
 
     private static final String COORDINATES_FILE = "/coordinates.json";
 
     private static final Map<String, Map<String, Map<String, Double>>> coordinates;
-    private static final Random random = new Random();
+    private static final SecureRandom secureRandom = new SecureRandom();
 
     static {
         try (InputStream is = CoordinatesUtil.class.getResourceAsStream(COORDINATES_FILE)) {
@@ -39,7 +39,7 @@ public class CoordinatesUtil {
     }
 
     private static double randomInRange(double min, double max) {
-        double randomVal = min + (max - min) * random.nextDouble();
+        double randomVal = min + (max - min) * secureRandom.nextDouble();
         return Math.round(randomVal * 1_000_000d) / 1_000_000d;
     }
 }
