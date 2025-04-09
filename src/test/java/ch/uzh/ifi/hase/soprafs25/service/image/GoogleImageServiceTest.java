@@ -58,6 +58,9 @@ class GoogleImageServiceTest {
                 googleImageService.fetchImageByLocation(testLocation)
         );
 
-        assertTrue(exception.getErrorMessage().contains("Failed to load image"));
+        String actualMessage = exception.getErrorMessage();
+        assertNotNull(actualMessage);
+        assertTrue(actualMessage.contains("No StreetView image available"),
+                "Expected cause message to contain 'No StreetView image available'");
     }
 }
