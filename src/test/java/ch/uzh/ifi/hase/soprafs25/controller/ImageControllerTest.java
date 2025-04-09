@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,7 +16,8 @@ public class ImageControllerTest {
         when(mockService.fetchImage()).thenReturn(fakeImage);
 
         ImageController controller = new ImageController(mockService);
-        byte[] response = controller.getImage();
+        ResponseEntity<?> responseEntity = controller.getImage(null);
+        byte[] response = (byte[]) responseEntity.getBody();
 
         assertArrayEquals(fakeImage, response);
         verify(mockService).fetchImage();

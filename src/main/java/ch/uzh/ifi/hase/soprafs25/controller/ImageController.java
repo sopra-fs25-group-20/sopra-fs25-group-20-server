@@ -4,7 +4,9 @@ import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,8 +22,11 @@ public class ImageController {
 
     @GetMapping(value = "/image", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public byte[] getImage() {
-        return imageService.fetchImage();
+    public ResponseEntity<?> getImage(@RequestParam(required = false) String location) {
+        byte[] image = (location == null)
+                ? imageService.fetchImage()
+                : imageService.fetchImage(location);
+        return ResponseEntity.ok(image);
     }
 
 }
