@@ -21,7 +21,7 @@ public class MockImageService implements ImageService {
     }
 
     @Override
-    public byte[] fetchImage(String location) {
+    public byte[] fetchImageByLocation(String location) {
         return fetchImage();
     }
 }

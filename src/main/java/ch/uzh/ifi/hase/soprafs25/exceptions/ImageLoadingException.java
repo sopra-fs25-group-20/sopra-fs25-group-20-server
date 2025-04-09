@@ -6,6 +6,9 @@ public class ImageLoadingException extends RuntimeException {
     }
 
     public String getErrorMessage() {
+        if (getCause() != null && getCause().getMessage() != null) {
+            return getCause().getMessage();
+        }
         return ErrorMessages.IMAGE_LOADING_FAILED.getMessage();
     }
 }
