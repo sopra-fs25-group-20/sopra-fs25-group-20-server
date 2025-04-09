@@ -40,7 +40,7 @@ public class StreetViewMetadataService {
             log.info("Metadata check for location ({}, {}): status={} | URL: {}", lat, lng, status, url);
             return status;
         } catch (Exception e) {
-            log.error("Error fetching metadata from Google API for location ({}, {}): ", lat, lng, e);
+            log.error(ErrorMessages.IMAGE_LOADING_FAILED.format(), e);
             throw new ImageLoadingException(e);
         }
     }

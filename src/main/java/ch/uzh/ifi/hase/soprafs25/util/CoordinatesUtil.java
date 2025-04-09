@@ -10,14 +10,16 @@ import java.util.Random;
 public class CoordinatesUtil {
 
     private static final String COORDINATES_FILE = "/coordinates.json";
-    private static Map<String, Map<String, Map<String, Double>>> coordinates;
+
+    private static final Map<String, Map<String, Map<String, Double>>> coordinates;
     private static final Random random = new Random();
 
     static {
         try (InputStream is = CoordinatesUtil.class.getResourceAsStream(COORDINATES_FILE)) {
             ObjectMapper mapper = new ObjectMapper();
             coordinates = mapper.readValue(is, new TypeReference<>() {});
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("Could not load coordinates.", e);
         }
     }
@@ -31,10 +33,8 @@ public class CoordinatesUtil {
         if (box == null) {
             return null;
         }
-
         double lat = randomInRange(box.get("minLat"), box.get("maxLat"));
         double lng = randomInRange(box.get("minLng"), box.get("maxLng"));
-
         return Map.of("lat", lat, "lng", lng);
     }
 

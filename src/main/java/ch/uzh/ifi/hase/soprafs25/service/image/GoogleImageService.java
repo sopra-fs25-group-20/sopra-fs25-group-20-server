@@ -39,7 +39,7 @@ public class GoogleImageService implements ImageService {
      * Uses bounding box from coordinates.json if location is provided.
      */
     @Override
-    public byte[] fetchImage(String location) {
+    public byte[] fetchImageByLocation(String location) {
         return fetchImageWithAttempts(location);
     }
 
