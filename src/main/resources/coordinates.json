@@ -1,0 +1,34 @@
+{
+  "locations": {
+    "europe": {
+      "minLat": 35.0,
+      "maxLat": 71.0,
+      "minLng": -25.0,
+      "maxLng": 40.0
+    },
+    "asia": {
+      "minLat": -10.0,
+      "maxLat": 81.0,
+      "minLng": 25.0,
+      "maxLng": 180.0
+    },
+    "north_america": {
+      "minLat": 5.0,
+      "maxLat": 83.0,
+      "minLng": -168.0,
+      "maxLng": -52.0
+    },
+    "south_america": {
+      "minLat": -56.0,
+      "maxLat": 13.0,
+      "minLng": -81.0,
+      "maxLng": -34.0
+    },
+    "africa": {
+      "minLat": -35.0,
+      "maxLat": 37.0,
+      "minLng": -18.0,
+      "maxLng": 51.0
+    }
+  }
+}
