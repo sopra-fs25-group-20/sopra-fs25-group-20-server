@@ -48,11 +48,12 @@ public class GoogleImageService implements ImageService {
         int attempt = 0;
 
         while (attempt < MAX_ATTEMPTS) {
-            double lat, lng;
+            double lat;
+            double lng;
 
             if (location != null) {
                 Map<String, Double> coords = CoordinatesUtil.getRandomCoordinate(location);
-                if (coords == null) {
+                if (coords.isEmpty()) {
                     throw new ImageLoadingException(new Throwable("Invalid location: " + location));
                 }
                 lat = coords.get("lat");

@@ -12,7 +12,7 @@ import java.net.URI;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GoogleImageServiceTest {
+class GoogleImageServiceTest {
 
     @Mock
     private StreetViewMetadataService metadataService;
@@ -21,23 +21,22 @@ public class GoogleImageServiceTest {
     private RestTemplate restTemplate;
 
     private GoogleImageService googleImageService;
-
     private AutoCloseable closeable;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         closeable = MockitoAnnotations.openMocks(this);
         googleImageService = new GoogleImageService(metadataService, restTemplate);
         ReflectionTestUtils.setField(googleImageService, "apiKey", "dummy-api-key");
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         closeable.close();
     }
 
     @Test
-    public void testFetchImageByLocationWithValidLocation() {
+    void testFetchImageByLocationWithValidLocation() {
         String testLocation = "asia";
         when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("OK");
         byte[] expectedImage = new byte[]{7, 8, 9};
@@ -51,7 +50,7 @@ public class GoogleImageServiceTest {
     }
 
     @Test
-    public void testFetchImageByLocationNoSuccessfulAttempt() {
+    void testFetchImageByLocationNoSuccessfulAttempt() {
         String testLocation = "asia";
         when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("ZERO_RESULTS");
 

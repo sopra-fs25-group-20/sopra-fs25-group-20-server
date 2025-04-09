@@ -1,18 +1,25 @@
 package ch.uzh.ifi.hase.soprafs25.util;
 
+import ch.uzh.ifi.hase.soprafs25.exceptions.CoordinatesLoadingException;
+import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
 import java.security.SecureRandom;
+import java.util.Collections;
 import java.util.Map;
 
 public class CoordinatesUtil {
 
     private static final String COORDINATES_FILE = "/coordinates.json";
-
     private static final Map<String, Map<String, Map<String, Double>>> coordinates;
     private static final SecureRandom secureRandom = new SecureRandom();
+
+    private CoordinatesUtil() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
 
     static {
         try (InputStream is = CoordinatesUtil.class.getResourceAsStream(COORDINATES_FILE)) {
@@ -20,18 +27,24 @@ public class CoordinatesUtil {
             coordinates = mapper.readValue(is, new TypeReference<>() {});
         }
         catch (Exception e) {
-            throw new RuntimeException("Could not load coordinates.", e);
+            throw new CoordinatesLoadingException(e);
         }
     }
 
     public static Map<String, Double> getBoundingBox(String location) {
-        return coordinates.get("locations").get(location.toLowerCase());
+        Map<String, Map<String, Double>> locationsMap = coordinates.get("locations");
+        if (locationsMap == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Double> box = locationsMap.get(location.toLowerCase());
+        return (box != null) ? box : Collections.emptyMap();
     }
+
 
     public static Map<String, Double> getRandomCoordinate(String location) {
         Map<String, Double> box = getBoundingBox(location);
-        if (box == null) {
-            return null;
+        if (box.isEmpty()) {
+            return Collections.emptyMap();
         }
         double lat = randomInRange(box.get("minLat"), box.get("maxLat"));
         double lng = randomInRange(box.get("minLng"), box.get("maxLng"));
