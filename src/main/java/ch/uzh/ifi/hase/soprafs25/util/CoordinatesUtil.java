@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.util;
 
 import ch.uzh.ifi.hase.soprafs25.exceptions.CoordinatesLoadingException;
-import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

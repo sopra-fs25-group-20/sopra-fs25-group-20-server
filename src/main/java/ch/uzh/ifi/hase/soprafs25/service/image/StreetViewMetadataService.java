@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs25.service.image;
 
-import ch.uzh.ifi.hase.soprafs25.exceptions.ErrorMessages;
 import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
