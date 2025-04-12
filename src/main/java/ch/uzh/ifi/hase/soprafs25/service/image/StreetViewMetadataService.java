@@ -27,7 +27,8 @@ public class StreetViewMetadataService {
                 .host("maps.googleapis.com")
                 .path("/maps/api/streetview/metadata")
                 .queryParam("location", lat + "," + lng)
-                .queryParam("radius", 50000)
+                .queryParam("radius", 5000)
+                .queryParam("source", "outdoor")
                 .queryParam("key", apiKey)
                 .toUriString();
 
@@ -35,12 +36,9 @@ public class StreetViewMetadataService {
             String response = restTemplate.getForObject(url, String.class);
             JsonNode rootNode = objectMapper.readTree(response);
             String status = rootNode.path("status").asText();
-
-            log.info("STATUS: {} | Requested metadata URL: https://maps.googleapis.com/maps/api/streetview/metadata?location={},{}&radius=50000", status, lat, lng);
-
+            log.info("Metadata check for location ({}, {}): status={} | URL: {}", lat, lng, status, url);
             return status;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ImageLoadingException(e);
         }
     }

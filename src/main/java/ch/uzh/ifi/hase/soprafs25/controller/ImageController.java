@@ -22,12 +22,11 @@ public class ImageController {
 
     @GetMapping(value = "/image", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> getImage(@RequestParam(required = false) String location) {
+    public ResponseEntity<byte[]> getImage(@RequestParam(required = false) String location) {
         byte[] image = (location == null)
                 ? imageService.fetchImage()
-                : imageService.fetchImage(location);
+                : imageService.fetchImageByLocation(location);
         return ResponseEntity.ok(image);
     }
-
 }
 

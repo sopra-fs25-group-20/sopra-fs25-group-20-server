@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ImageControllerLocationTest {
+class ImageControllerLocationTest {
 
     @Test
-    public void testGetImageWithoutLocation() {
+    void testGetImageWithoutLocation() {
         ImageService mockService = mock(ImageService.class);
         byte[] fakeImage = new byte[]{10, 20, 30};
         when(mockService.fetchImage()).thenReturn(fakeImage);
@@ -24,16 +24,16 @@ public class ImageControllerLocationTest {
     }
 
     @Test
-    public void testGetImageWithLocation() {
+    void testGetImageWithLocation() {
         ImageService mockService = mock(ImageService.class);
         byte[] fakeImage = new byte[]{40, 50, 60};
-        when(mockService.fetchImage("asia")).thenReturn(fakeImage);
+        when(mockService.fetchImageByLocation("asia")).thenReturn(fakeImage);
 
         ImageController controller = new ImageController(mockService);
         ResponseEntity<?> response = controller.getImage("asia");
 
         assertNotNull(response);
         assertArrayEquals(fakeImage, (byte[]) response.getBody());
-        verify(mockService).fetchImage("asia");
+        verify(mockService).fetchImageByLocation("asia");
     }
 }
