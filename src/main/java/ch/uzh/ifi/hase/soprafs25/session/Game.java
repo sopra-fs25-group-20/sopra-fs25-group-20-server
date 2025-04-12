@@ -39,7 +39,7 @@ public class Game {
         return roles;
     }
 
-    public void assignRoles(String nickname, String role) {
+    public void assignRole(String nickname, String role) {
         roles.put(nickname, role);
     }
 
