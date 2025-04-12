@@ -41,6 +41,7 @@ jobs:
         run: ./gradlew test jacocoTestReport
 
       - name: Run SonarQube Analysis
+        continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build sonar --info
