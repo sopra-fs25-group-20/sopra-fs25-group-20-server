@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs25.session;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.Map;
+import java.util.List;
 
 public class GameTest {
     
@@ -33,13 +34,28 @@ public class GameTest {
     @Test
     public void testAssignAndGetRoles() {
         Game game = new Game("ROOM012");
-        game.assignRole("testUser", "SPY");
-        game.assignRole("testUser2", "INNOCENT");
+        List<String> nicknames = List.of("A", "B", "C");
+        game.assignRoles(nicknames);
 
         Map<String, String> roles = game.getRoles();
 
-        assertEquals(2, roles.size());
-        assertEquals("SPY", game.getRole("testUser"));
-        assertEquals("INNOCENT", game.getRole("testUser2"));
+        assertEquals(3, roles.size());
+        long spyCount = roles.values().stream().filter(role -> role.equals("spy")).count();
+        long innocentCount = roles.values().stream().filter(role -> role.equals("innocent")).count();
+
+        assertEquals(1, spyCount);
+        assertEquals(2, innocentCount);
+        assertTrue(roles.containsKey("A"));
+        assertTrue(roles.containsKey("B"));
+        assertTrue(roles.containsKey("C"));
+    }
+
+    @Test
+    public void testGetRoleByNickname() {
+        Game game = new Game("ROOM012");
+        game.assignRoles(List.of("X", "Y", "Z"));
+        String role = game.getRole("Y");
+        assertNotNull(role);
+        assertTrue(role.equals("spy") || role.equals("innocent"));
     }
 }
