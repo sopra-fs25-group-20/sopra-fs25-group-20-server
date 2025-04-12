@@ -42,4 +42,12 @@ public class GlobalExceptionAdvice {
         log.error("VoteAlreadyInProgressException -> caught:", ex);
         return new ErrorResponseDTO(ex.getMessage());
     }
+
+    @ExceptionHandler(CoordinatesLoadingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // 500
+    @ResponseBody
+    public ErrorResponseDTO handleCoordinatesLoadingException(CoordinatesLoadingException ex) {
+        log.error("CoordinatesLoadingException-> caught:", ex.getCause());
+        return new ErrorResponseDTO(ex.getErrorMessage());
+    }
 }

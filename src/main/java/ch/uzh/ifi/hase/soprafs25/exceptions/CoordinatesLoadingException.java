@@ -5,8 +5,10 @@ public class CoordinatesLoadingException extends RuntimeException {
         super(ErrorMessages.COORDINATES_LOADING_FAILED.getMessage(), cause);
     }
 
-    @SuppressWarnings("unused")
     public String getErrorMessage() {
+        if (getCause() != null && getCause().getMessage() != null) {
+            return getCause().getMessage();
+        }
         return ErrorMessages.COORDINATES_LOADING_FAILED.getMessage();
     }
 }
