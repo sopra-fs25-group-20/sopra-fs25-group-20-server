@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs25.session;
 
+import ch.uzh.ifi.hase.soprafs25.util.RoleUtil;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 public class Game {
     
@@ -9,10 +11,12 @@ public class Game {
     private GamePhase phase;
     private int highlightedImage;
     private final Map<String, String> roles = new HashMap<>();
+    private final int spyCount;
 
     public Game(String roomCode) {
         this.roomCode = roomCode;
         this.phase = GamePhase.WAITING;
+        this.spyCount = 1; // default for now
     }
 
     public String getRoomCode() {
@@ -39,8 +43,9 @@ public class Game {
         return roles;
     }
 
-    public void assignRole(String nickname, String role) {
-        roles.put(nickname, role);
+    public void assignRoles(List<String> nicknames) {
+        roles.clear();
+        roles.putAll(RoleUtil.assignRoles(nicknames, spyCount));
     }
 
     public String getRole(String nickname) {
