@@ -48,7 +48,7 @@ public class PlayerConnectionService {
                 .map(p -> new PlayerListUpdateDTO(p.getNickname(), p.getColor()))
                 .toList();
 
-        messagingTemplate.convertAndSend("/topic/players", playerList);
+        messagingTemplate.convertAndSend("/topic/players/" + roomCode, playerList);
     }
 
     private Player getPlayer(String nickname, String roomCode) {
