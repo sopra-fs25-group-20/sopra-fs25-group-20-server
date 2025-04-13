@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.session;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
