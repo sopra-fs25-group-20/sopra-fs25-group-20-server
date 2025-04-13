@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.entity.Room;
+import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.model.ResultDTO;
 import ch.uzh.ifi.hase.soprafs25.model.RoundStartDTO;
@@ -190,7 +191,10 @@ public class GameService {
 
     private void broadcastGamePhase(String roomCode) {
         GamePhase gamePhase = getGame(roomCode).getPhase();
-        messagingTemplate.convertAndSend("/topic/phase/" + roomCode, gamePhase.name().toLowerCase());
+        messagingTemplate.convertAndSend(
+                "/topic/phase/" + roomCode,
+                new GamePhaseDTO(gamePhase.name().toLowerCase())
+        );
     }
 
     private void createGameResult(String roomCode, PlayerRole winnerRole) {
