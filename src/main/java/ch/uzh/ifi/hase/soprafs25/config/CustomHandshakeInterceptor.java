@@ -3,7 +3,9 @@ package ch.uzh.ifi.hase.soprafs25.config;
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.service.JoinRoomService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
+import ch.uzh.ifi.hase.soprafs25.session.PlayerSessionManager;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -20,8 +22,8 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
     private final JoinRoomService joinRoomService;
     private final PlayerConnectionService playerConnectionService;
 
-    public CustomHandshakeInterceptor(JoinRoomService joinRoomService,
-                                      PlayerConnectionService playerConnectionService) {
+    public CustomHandshakeInterceptor(@Lazy JoinRoomService joinRoomService,
+                                      @Lazy PlayerConnectionService playerConnectionService) {
         this.joinRoomService = joinRoomService;
         this.playerConnectionService = playerConnectionService;
     }
@@ -39,6 +41,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
         HttpServletRequest servletRequest = servletRequestWrapper.getServletRequest();
         String nickname = servletRequest.getParameter("nickname");
         String code = servletRequest.getParameter("code");
+        String sessionId = servletRequest.getSession().getId();
 
         if (!isValidHandshakeParams(nickname, code)) {
             response.setStatusCode(HttpStatus.BAD_REQUEST);
@@ -55,7 +58,9 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
         attributes.put("nickname", nickname);
         attributes.put("code", code);
         attributes.put("color", createdPlayer.getColor());
+        attributes.put("sessionId", sessionId);
 
+        PlayerSessionManager.addSession(nickname, code, sessionId);
         playerConnectionService.markConnected(createdPlayer.getNickname(), createdPlayer.getRoom().getCode());
         return true;
     }
