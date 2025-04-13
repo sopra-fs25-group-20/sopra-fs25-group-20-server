@@ -61,6 +61,6 @@ public class GameTest {
         PlayerRole role = game.getRole("Y");
 
         assertNotNull(role);
-        assertTrue(role == PlayerRole.SPY || role == PlayerRole.INNOCENT);
+        assertTrue(role == PlayerRole.INNOCENT || role == PlayerRole.SPY);
     }
 }
