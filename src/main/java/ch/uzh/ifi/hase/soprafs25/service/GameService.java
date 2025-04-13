@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.model.ResultDTO;
 import ch.uzh.ifi.hase.soprafs25.model.RoundStartDTO;
+import ch.uzh.ifi.hase.soprafs25.model.VoteStateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,7 @@ public class GameService {
         Game game = new Game(roomCode);
         GameSessionManager.addGameSession(game);
     }
+
     public void startRound(String roomCode, String nickname) {
         if (!isAdmin(roomCode, nickname)){
             throw new IllegalStateException("Only admin can start the round");
@@ -83,6 +86,7 @@ public class GameService {
         if (oldPhase == GamePhase.VOTE && newPhase == GamePhase.GAME) {
             gameTimerService.cancel(roomCode + "-vote");
         }
+        broadcastGamePhase(roomCode);
     }
 
     public void handleSpyGuess(String roomCode, String nickname, int guessIndex) {
@@ -186,6 +190,10 @@ public class GameService {
         }
     }
 
+    private void broadcastGamePhase(String roomCode) {
+        GamePhase gamePhase = getGame(roomCode).getPhase();
+        messagingTemplate.convertAndSend("/topic/phase/" + roomCode, gamePhase.name().toLowerCase());
+    }
 
     private void createGameResult(String roomCode, PlayerRole winnerRole) {
         getGame(roomCode).getGameResult().setWinnerRole(winnerRole);
