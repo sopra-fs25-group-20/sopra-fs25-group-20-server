@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.model.ChatMessageDTO;
+import ch.uzh.ifi.hase.soprafs25.util.SessionUtil;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -22,17 +23,9 @@ public class ChatController {
     public void createMessage(@Payload ChatMessageDTO message,
                               Message<?> socketMessage) {
 
-        Map<String, Object> sessionAttributes =
-                (Map<String, Object>) socketMessage.getHeaders().get("simpSessionAttributes");
-
-        if (sessionAttributes == null) {
-            // This is an extra check to our check in CustomInterceptor
-            throw new IllegalStateException("Missing session attributes in WebSocket message headers");
-        }
-
-        String nickname = (String) sessionAttributes.get("nickname");
-        String code = (String) sessionAttributes.get("code");
-        String color = (String) sessionAttributes.get("color");
+        String nickname = SessionUtil.getNickname(socketMessage);
+        String code = SessionUtil.getCode(socketMessage);
+        String color = SessionUtil.getColor(socketMessage);
 
         message.setNickname(nickname);
         message.setColor(color);
