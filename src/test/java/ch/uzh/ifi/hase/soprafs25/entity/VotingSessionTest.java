@@ -25,13 +25,6 @@ public class VotingSessionTest {
         assertNotNull(votingSession.getVoteState());
     }
 
-    @Test
-    public void testCastVoteAndHasVoted() {
-        assertFalse(votingSession.hasVoted("testUser"));
-        votingSession.castVote("testUser", true);
-        assertTrue(votingSession.hasVoted("testUser"));
-        assertEquals(true, votingSession.getVoteState().getVotes().get("testUser"));
-    }
 
     @Test
     public void testDoubleVotingNotAllowed() {

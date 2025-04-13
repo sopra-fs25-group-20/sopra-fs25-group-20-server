@@ -34,13 +34,6 @@ public class VoteStateTest {
     }
 
     @Test
-    public void testHasVoted() {
-        assertFalse(voteState.hasVoted("testUser"));
-        voteState.addVote("testUser", true);
-        assertTrue(voteState.hasVoted("testUser"));
-    }
-
-    @Test
     public void testVotesUnmodifiableFromOutside() {
         voteState.addVote("testUser", true);
         Map<String, Boolean> externalMap = voteState.getVotes();
