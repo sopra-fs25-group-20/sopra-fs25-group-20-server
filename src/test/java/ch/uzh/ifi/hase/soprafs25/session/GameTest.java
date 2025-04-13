@@ -15,7 +15,7 @@ public class GameTest {
         Game game = new Game("ROOM123");
 
         assertEquals("ROOM123", game.getRoomCode());
-        assertEquals(GamePhase.WAITING, game.getPhase());
+        assertEquals(GamePhase.LOBBY, game.getPhase());
         assertEquals(0, game.getHighlightedImage());
         assertTrue(game.getRoles().isEmpty());
     }
@@ -23,8 +23,8 @@ public class GameTest {
     @Test
     public void testSetPhase() {
         Game game = new Game("ROOM456");
-        game.setPhase(GamePhase.VOTING);
-        assertEquals(GamePhase.VOTING, game.getPhase());
+        game.setPhase(GamePhase.VOTE);
+        assertEquals(GamePhase.VOTE, game.getPhase());
     }
 
     @Test

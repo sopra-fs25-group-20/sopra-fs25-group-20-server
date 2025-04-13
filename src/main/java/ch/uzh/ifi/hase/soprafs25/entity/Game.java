@@ -17,7 +17,7 @@ public class Game {
 
     public Game(String roomCode) {
         this.roomCode = roomCode;
-        this.phase = GamePhase.WAITING;
+        this.phase = GamePhase.LOBBY;
         this.spyCount = 1; // default for now
     }
 
