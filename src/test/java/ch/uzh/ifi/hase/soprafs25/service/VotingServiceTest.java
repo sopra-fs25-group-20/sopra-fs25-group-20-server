@@ -16,12 +16,14 @@ public class VotingServiceTest {
     private VotingService votingService;
     private GameService gameService;
     private SimpMessagingTemplate messagingTemplate;
+    private GameTimerService gameTimerService;
 
     @BeforeEach
     public void setup() {
         messagingTemplate = mock(SimpMessagingTemplate.class);
         gameService = mock(GameService.class);
-        votingService = new VotingService(messagingTemplate, gameService);
+        gameTimerService = mock(GameTimerService.class);
+        votingService = new VotingService(messagingTemplate, gameService, gameTimerService);
 
         if (VotingSessionManager.isActive("ROOM123")) {
             VotingSessionManager.removeVotingSession("ROOM123");
