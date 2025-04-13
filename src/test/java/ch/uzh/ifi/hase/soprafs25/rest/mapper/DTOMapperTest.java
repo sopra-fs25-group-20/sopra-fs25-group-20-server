@@ -21,7 +21,7 @@ public class DTOMapperTest {
 
     @Test
     public void testChatMessage() {
-        ChatMessage message = new ChatMessage();
+        ChatMessageDTO message = new ChatMessageDTO();
         message.setNickname("testUser");
         message.setMessage("hello");
         message.setColor("blue");

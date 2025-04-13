@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
-import ch.uzh.ifi.hase.soprafs25.model.ChatMessage;
+import ch.uzh.ifi.hase.soprafs25.model.ChatMessageDTO;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -19,7 +19,7 @@ public class ChatController {
     }
 
     @MessageMapping("/chat")
-    public void createMessage(@Payload ChatMessage message,
+    public void createMessage(@Payload ChatMessageDTO message,
                               Message<?> socketMessage) {
 
         Map<String, Object> sessionAttributes =
