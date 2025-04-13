@@ -9,11 +9,7 @@ public class VoteState {
     private final Map<String, Boolean> votes = new HashMap<>();
 
     public void addVote(String voter, boolean voteYes){
-        votes.putIfAbsent(voter, voteYes);
-    }
-
-    public boolean hasVoted(String voter) {
-        return votes.containsKey(voter);
+        votes.put(voter, voteYes);
     }
 
     public int countYesVotes() {

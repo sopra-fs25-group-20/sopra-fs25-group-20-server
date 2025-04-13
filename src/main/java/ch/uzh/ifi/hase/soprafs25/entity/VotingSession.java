@@ -41,10 +41,6 @@ public class VotingSession implements Serializable {
         voteState.addVote(voter, voteYes);
     }
 
-    public boolean hasVoted(String voter) {
-        return voteState.hasVoted(voter);
-    }
-
     public VoteState getVoteState() {
         return voteState;
     }
