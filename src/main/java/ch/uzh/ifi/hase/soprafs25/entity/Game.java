@@ -1,5 +1,6 @@
-package ch.uzh.ifi.hase.soprafs25.session;
+package ch.uzh.ifi.hase.soprafs25.entity;
 
+import ch.uzh.ifi.hase.soprafs25.session.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.util.RoleUtil;
 import java.util.Map;
 import java.util.HashMap;

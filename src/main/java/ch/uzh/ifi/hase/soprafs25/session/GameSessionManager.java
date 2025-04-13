@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.session;
 
+import ch.uzh.ifi.hase.soprafs25.entity.Game;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

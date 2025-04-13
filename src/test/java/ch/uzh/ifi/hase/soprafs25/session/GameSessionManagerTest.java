@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs25.session;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
