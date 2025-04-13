@@ -2,14 +2,12 @@ package ch.uzh.ifi.hase.soprafs25.model;
 
 public class VoteStartDTO {
 
-    private String initiator;
     private String target;
 
-    public String getInitiator () {
-        return initiator;
-    }
-    public void setInitiator(String initiator) {
-        this.initiator = initiator;
+    public VoteStartDTO() {}
+
+    public VoteStartDTO(String initiator, String target) {
+        this.target = target;
     }
 
     public String getTarget() {
