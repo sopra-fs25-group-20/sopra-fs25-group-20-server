@@ -25,9 +25,9 @@ public class GamePhaseTest {
 
     @Test
     public void testEnumNameConsistency() {
-        assertEquals("WAITING", GamePhase.LOBBY.name());
-        assertEquals("ROUND", GamePhase.GAME.name());
-        assertEquals("VOTING", GamePhase.VOTE.name());
-        assertEquals("RESULT", GamePhase.SUMMARY.name());
+        assertEquals("LOBBY", GamePhase.LOBBY.name());
+        assertEquals("GAME", GamePhase.GAME.name());
+        assertEquals("VOTE", GamePhase.VOTE.name());
+        assertEquals("SUMMARY", GamePhase.SUMMARY.name());
     }
 }
