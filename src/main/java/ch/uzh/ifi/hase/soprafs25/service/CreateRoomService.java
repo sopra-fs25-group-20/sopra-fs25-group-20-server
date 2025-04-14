@@ -10,15 +10,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class RoomService {
+public class CreateRoomService {
 
     private final RoomRepository roomRepository;
     private final JoinRoomService joinRoomService;
     private final GameService gameService;
 
-    public RoomService(RoomRepository roomRepository,
-                       JoinRoomService joinRoomService,
-                       GameService gameService) {
+    public CreateRoomService(RoomRepository roomRepository,
+                             JoinRoomService joinRoomService,
+                             GameService gameService) {
         this.roomRepository = roomRepository;
         this.joinRoomService = joinRoomService;
         this.gameService = gameService;

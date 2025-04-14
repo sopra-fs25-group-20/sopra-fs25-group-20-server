@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
-public class JoinRoomServiceTest {
+public class JoinCreateRoomServiceTest {
 
     @Mock
     private PlayerRepository playerRepository;
