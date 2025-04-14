@@ -58,7 +58,7 @@ public class PlayerConnectionService {
     }
 
     public void kickPlayer(String kickerNickname, String kickedNickname, String roomCode) {
-        if (authorizationService.isAdmin(roomCode, kickerNickname)){
+        if (!authorizationService.isAdmin(roomCode, kickerNickname)){
             throw new IllegalStateException("Only admin can kick a player");
         }
 
