@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
+import ch.uzh.ifi.hase.soprafs25.model.SpyGuessDTO;
 import ch.uzh.ifi.hase.soprafs25.service.GameService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
 import ch.uzh.ifi.hase.soprafs25.util.SessionUtil;
@@ -31,11 +32,11 @@ public class GameController {
     }
 
     @MessageMapping("/game/guess")
-    public void spyGuess(@Payload int guessIndex, Message<?> socketMessage) {
+    public void spyGuess(@Payload SpyGuessDTO spyGuessDTO, Message<?> socketMessage) {
         String code = SessionUtil.getCode(socketMessage);
         String nickname = SessionUtil.getNickname(socketMessage);
 
-        gameService.handleSpyGuess(code, nickname, guessIndex);
+        gameService.handleSpyGuess(code, nickname, spyGuessDTO.getIndex());
     }
 
     @MessageMapping("/role")
