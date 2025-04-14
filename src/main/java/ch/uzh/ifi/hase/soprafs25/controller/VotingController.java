@@ -9,13 +9,12 @@ import ch.uzh.ifi.hase.soprafs25.model.VoteStateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.VotingService;
 
+import ch.uzh.ifi.hase.soprafs25.util.SessionUtil;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-
-import java.util.Map;
 
 @Controller
 public class VotingController {
@@ -34,13 +33,10 @@ public class VotingController {
 
     @MessageMapping("/vote/init")
     public void startVote(@Payload VoteStartDTO startDTO, Message<?> socketMessage) {
-        Map<String, Object> session = (Map<String, Object>) socketMessage.getHeaders().get("simpSessionAttributes");
-        if (session == null || !session.containsKey("code")) {
-            throw new IllegalStateException("Missing session attributes in WebSocket message headers");
-        }
-        String roomCode = (String) session.get("code");
+        String roomCode = SessionUtil.getCode(socketMessage);
+        String nickname = SessionUtil.getNickname(socketMessage);
         
-        VotingSession votingSession = votingService.createVotingSessionIfNotActive(roomCode, startDTO.getInitiator(), startDTO.getTarget());
+        VotingSession votingSession = votingService.createVotingSession(roomCode, nickname, startDTO.getTarget());
 
         messagingTemplate.convertAndSend("/topic/vote/begin/" + roomCode, startDTO);
         messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode,
@@ -49,13 +45,10 @@ public class VotingController {
 
     @MessageMapping("/vote/cast")
     public void castVote(@Payload VoteCastDTO castDTO, Message<?> socketMessage) {
-        Map<String, Object> session = (Map<String, Object>) socketMessage.getHeaders().get("simpSessionAttributes");
-        if (session == null || !session.containsKey("code")) {
-            throw new IllegalStateException("Missing session attributes in WebSocket message headers");
-        }
-        String roomCode = (String) session.get("code");
+        String roomCode = SessionUtil.getCode(socketMessage);
+        String nickname = SessionUtil.getNickname(socketMessage);
 
-        boolean voteAccepted = votingService.castVote(roomCode, castDTO.getVoter(), castDTO.isVoteYes());
+        boolean voteAccepted = votingService.castVote(roomCode, nickname, castDTO.isVoteYes());
 
         if (voteAccepted) {
             VotingSession votingSession = votingService.getActiveVotingSession(roomCode);

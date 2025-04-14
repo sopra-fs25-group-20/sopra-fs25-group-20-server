@@ -21,7 +21,7 @@ class VotingServiceTest {
 
     @Test
     void testCreateVotingSession_success() {
-        VotingSession session = votingService.createVotingSessionIfNotActive("ROOM123", "testUser", "testUser2");
+        VotingSession session = votingService.createVotingSession("ROOM123", "testUser", "testUser2");
 
         assertNotNull(session);
         assertEquals("testUser", session.getInitiator());
@@ -30,15 +30,15 @@ class VotingServiceTest {
 
     @Test
     void testCreateVotingSession_alreadyActive() {
-        votingService.createVotingSessionIfNotActive("ROOM123", "testUser", "testUser2");
+        votingService.createVotingSession("ROOM123", "testUser", "testUser2");
         assertThrows(VoteAlreadyInProgressException.class, () -> {
-            votingService.createVotingSessionIfNotActive("ROOM123", "testUser", "testUser2");
+            votingService.createVotingSession("ROOM123", "testUser", "testUser2");
         });
     }
 
     @Test
     void testCastVote_andCompletion() {
-        votingService.createVotingSessionIfNotActive("ROOM123", "testUser", "testUser2");
+        votingService.createVotingSession("ROOM123", "testUser", "testUser2");
         boolean cast1 = votingService.castVote("ROOM123", "testUser3", true);
         boolean cast2 = votingService.castVote("ROOM123", "testUser3", false);
         assertTrue(cast1);
