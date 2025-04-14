@@ -4,6 +4,10 @@ import java.util.*;
 
 public class RandomColorUtil {
 
+    private RandomColorUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final List<String> COLOR_PALETTE = List.of(
         "#FF6B6B", // Red
         "#6BCB77", // Green
