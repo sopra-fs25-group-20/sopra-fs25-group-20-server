@@ -2,14 +2,12 @@ package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
-import ch.uzh.ifi.hase.soprafs25.entity.Game;
-import ch.uzh.ifi.hase.soprafs25.entity.GameSettings;
-import ch.uzh.ifi.hase.soprafs25.entity.Player;
-import ch.uzh.ifi.hase.soprafs25.entity.Room;
+import ch.uzh.ifi.hase.soprafs25.entity.*;
 import ch.uzh.ifi.hase.soprafs25.model.*;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
+import ch.uzh.ifi.hase.soprafs25.session.VotingSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -150,6 +148,11 @@ public class GameService {
                 gameSettings.getImageCount(),
                 gameSettings.getImageRegion()
         );
+    }
+
+    public VoteStartDTO getVoteTarget(String roomCode) {
+        VotingSession votingSession = VotingSessionManager.getVotingSession(roomCode);
+        return new VoteStartDTO(votingSession.getTarget());
     }
 
     public Game getGame(String roomCode) {
