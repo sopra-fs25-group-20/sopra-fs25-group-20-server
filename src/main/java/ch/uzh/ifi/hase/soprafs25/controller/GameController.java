@@ -1,8 +1,12 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
+import ch.uzh.ifi.hase.soprafs25.entity.Player;
+import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
+import ch.uzh.ifi.hase.soprafs25.model.PlayerListUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.model.ResultDTO;
 import ch.uzh.ifi.hase.soprafs25.service.GameService;
+import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
 import ch.uzh.ifi.hase.soprafs25.util.SessionUtil;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -11,14 +15,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 
 @Controller
 public class GameController {
 
     private final GameService gameService;
+    private final PlayerConnectionService playerConnectionService;
 
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService,
+                          PlayerConnectionService playerConnectionService) {
         this.gameService = gameService;
+        this.playerConnectionService = playerConnectionService;
     }
 
     @MessageMapping("/game/start")
@@ -50,11 +59,16 @@ public class GameController {
         String code = SessionUtil.getCode(socketMessage);
         String kickerNickname = SessionUtil.getNickname(socketMessage);
 
-        gameService.kickPlayer(kickerNickname, kickedNickname, code);
+        playerConnectionService.kickPlayer(kickerNickname, kickedNickname, code);
     }
 
-    @GetMapping("/game/result/{roomCode}")
-    public ResultDTO getResults(@PathVariable String roomCode) {
-        return gameService.getGameResult(roomCode);
+    @GetMapping("/players/{code}")
+    public List<PlayerListUpdateDTO> updatePlayerList(@PathVariable String code) {
+        return playerConnectionService.broadcastPlayerList(code);
+    }
+
+    @GetMapping("/game/result/{code}")
+    public ResultDTO getResults(@PathVariable String code) {
+        return gameService.getGameResult(code);
     }
 }

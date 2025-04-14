@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
-public class CreateRoomServiceTest {
+public class RoomServiceTest {
 
     @Mock
     private RoomRepository roomRepository;
@@ -22,7 +22,7 @@ public class CreateRoomServiceTest {
     private JoinRoomService joinRoomService;
 
     @InjectMocks
-    private CreateRoomService createRoomService;
+    private RoomService roomService;
 
     @Test
     public void testCreateRoom() {
@@ -40,7 +40,7 @@ public class CreateRoomServiceTest {
         when(roomRepository.save(any(Room.class))).thenReturn(room);
         when(joinRoomService.joinRoom(eq("ROOM1"), any(Player.class))).thenReturn(joinedPlayer);
 
-        Player result = createRoomService.createRoom(player);
+        Player result = roomService.createRoom(player);
 
         assertEquals("TestUser", result.getNickname());
         verify(roomRepository, times(2)).save(any(Room.class));

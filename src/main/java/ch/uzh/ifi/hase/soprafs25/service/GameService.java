@@ -59,7 +59,7 @@ public class GameService {
         Game game = getGame(roomCode);
 
         advancePhase(roomCode, GamePhase.GAME);
-        game.assignRoles(getNicknamesInRoom(roomCode));
+        game.assignRoles(roomService.getNicknamesInRoom(roomCode));
         game.setHighlightedImageIndex(new Random().nextInt(game.getGameSettings().getImageCount()));
         game.setImages(getImages(game));
 
@@ -147,7 +147,7 @@ public class GameService {
 
     private void sendRoundStartMessages(String roomCode) {
         Game game = getGame(roomCode);
-        List<String> nicknames = getNicknamesInRoom(roomCode);
+        List<String> nicknames = roomService.getNicknamesInRoom(roomCode);
         int highlightedIndex = game.getHighlightedImageIndex();
 
         for (String nickname : nicknames) {
