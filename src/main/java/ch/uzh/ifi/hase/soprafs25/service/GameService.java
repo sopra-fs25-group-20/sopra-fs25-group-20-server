@@ -3,14 +3,10 @@ package ch.uzh.ifi.hase.soprafs25.service;
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
-import ch.uzh.ifi.hase.soprafs25.entity.Player;
-import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.model.ResultDTO;
 import ch.uzh.ifi.hase.soprafs25.model.RoundStartDTO;
-import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
-import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import ch.uzh.ifi.hase.soprafs25.session.PlayerSessionManager;
@@ -23,29 +19,28 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 
 @Service
 public class GameService {
 
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
-    private final RoomRepository roomRepository;
-    private final PlayerRepository playerRepository;
     private final ImageService imageService;
     private final GameTimerService gameTimerService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final AuthorizationService authorizationService;
+    private final RoomService roomService;
 
-    public GameService(RoomRepository roomRepository,
-                       PlayerRepository playerRepository,
-                       @Qualifier("mockImageService") ImageService imageService,
+    public GameService(@Qualifier("mockImageService") ImageService imageService,
                        GameTimerService gameTimerService,
-                       SimpMessagingTemplate messagingTemplate) {
-        this.roomRepository = roomRepository;
-        this.playerRepository = playerRepository;
+                       SimpMessagingTemplate messagingTemplate,
+                       AuthorizationService authorizationService,
+                       RoomService roomService) {
         this.imageService = imageService;
         this.gameTimerService = gameTimerService;
         this.messagingTemplate = messagingTemplate;
+        this.authorizationService = authorizationService;
+        this.roomService = roomService;
     }
 
     public void createGame(String roomCode) {
@@ -58,7 +53,7 @@ public class GameService {
     }
 
     public void startRound(String roomCode, String nickname) {
-        if (!isAdmin(roomCode, nickname)){
+        if (!authorizationService.isAdmin(roomCode, nickname)){
             throw new IllegalStateException("Only admin can start the round");
         }
         Game game = getGame(roomCode);
@@ -101,7 +96,7 @@ public class GameService {
     }
 
     public GameSettingsDTO changeGameSettings(String roomCode, String nickname, GameSettingsDTO gameSettings) {
-        if (!isAdmin(roomCode, nickname)){
+        if (!authorizationService.isAdmin(roomCode, nickname)){
             throw new IllegalStateException("Only admin can change the settings");
         }
         Game game = getGame(roomCode);
@@ -208,34 +203,5 @@ public class GameService {
             imageList.add(img);
         }
         return imageList;
-    }
-
-    private boolean isAdmin(String roomCode, String nickname) {
-        Room room = roomRepository.findByCode(roomCode);
-        if (room == null) {
-            throw new IllegalStateException("Room not found: " + roomCode);
-        }
-
-        Player player = playerRepository.findByNicknameAndRoom(nickname, room);
-        if (player == null) {
-            throw new IllegalStateException("Player not found in room");
-        }
-
-        if (!room.getAdminPlayerId().equals(player.getId())) {
-            log.warn("Only admin can do this action");
-            return false;
-        }
-        return true;
-    }
-
-    private List<String> getNicknamesInRoom(String roomCode) {
-        Room room = roomRepository.findByCode(roomCode);
-        if (room == null) {
-            throw new IllegalStateException("Room not found: " + roomCode);
-        }
-
-        return room.getPlayers().stream()
-                .map(Player::getNickname)
-                .collect(Collectors.toList());
     }
 }
