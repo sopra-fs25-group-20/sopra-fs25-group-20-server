@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.session;
 
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,11 +40,12 @@ public class GameTest {
         List<String> nicknames = List.of("A", "B", "C");
         game.assignRoles(nicknames);
 
-        Map<String, String> roles = game.getRoles();
+        Map<String, PlayerRole> roles = game.getRoles();
 
         assertEquals(3, roles.size());
-        long spyCount = roles.values().stream().filter(role -> role.equals("spy")).count();
-        long innocentCount = roles.values().stream().filter(role -> role.equals("innocent")).count();
+
+        long spyCount = roles.values().stream().filter(role -> role == PlayerRole.SPY).count();
+        long innocentCount = roles.values().stream().filter(role -> role == PlayerRole.INNOCENT).count();
 
         assertEquals(1, spyCount);
         assertEquals(2, innocentCount);
@@ -56,8 +58,9 @@ public class GameTest {
     public void testGetRoleByNickname() {
         Game game = new Game("ROOM012");
         game.assignRoles(List.of("X", "Y", "Z"));
-        String role = game.getRole("Y");
+        PlayerRole role = game.getRole("Y");
+
         assertNotNull(role);
-        assertTrue(role.equals("spy") || role.equals("innocent"));
+        assertTrue(role == PlayerRole.INNOCENT || role == PlayerRole.SPY);
     }
 }

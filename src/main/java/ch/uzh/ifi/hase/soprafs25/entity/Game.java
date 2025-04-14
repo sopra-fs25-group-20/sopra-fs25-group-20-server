@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.entity;
 
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.util.RoleUtil;
 import java.util.Map;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ public class Game {
     private final String roomCode;
     private GamePhase phase;
     private int highlightedImage;
-    private final Map<String, String> roles = new HashMap<>();
+    private final Map<String, PlayerRole> roles = new HashMap<>();
     private final int spyCount;
 
     public Game(String roomCode) {
@@ -40,7 +41,7 @@ public class Game {
         this.highlightedImage = highlightedImage;
     }
 
-    public Map<String, String> getRoles() {
+    public Map<String, PlayerRole> getRoles() {
         return roles;
     }
 
@@ -49,7 +50,7 @@ public class Game {
         roles.putAll(RoleUtil.assignRoles(nicknames, spyCount));
     }
 
-    public String getRole(String nickname) {
+    public PlayerRole getRole(String nickname) {
         return roles.get(nickname);
     }
 }
