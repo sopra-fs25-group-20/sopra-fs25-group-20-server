@@ -104,6 +104,7 @@ public class GameService {
                 gameSettings.getImageCount(),
                 gameSettings.getImageRegion()
         );
+        broadcastGameSettings(roomCode);
         return gameSettings;
     }
 
@@ -196,12 +197,25 @@ public class GameService {
 
         RoundStartDTO dto = new RoundStartDTO(index, role);
 
-        messagingTemplate.convertAndSendToUser(sessionId, "/queue/round/start", dto);
+        messagingTemplate.convertAndSendToUser(sessionId, "/queue/game/start/" + roomCode, dto);
     }
 
     private void broadcastGamePhase(String roomCode) {
         GamePhaseDTO gamePhaseDTO = getGamePhase(roomCode);
         messagingTemplate.convertAndSend("/topic/phase/" + roomCode, gamePhaseDTO);
+    }
+
+    private void broadcastGameSettings(String roomCode) {
+        Game game = getGame(roomCode);
+        GameSettings gameSettings = game.getGameSettings();
+
+        GameSettingsDTO dto = new GameSettingsDTO(
+                gameSettings.getVotingTimer(),
+                gameSettings.getGameTimer(),
+                gameSettings.getImageCount(),
+                gameSettings.getImageRegion()
+        );
+        messagingTemplate.convertAndSendToUser(roomCode, "/topic/settings" + roomCode, dto);
     }
 
     private void sendRoundStartMessages(String roomCode) {
