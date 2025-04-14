@@ -62,7 +62,7 @@ public class GameService {
         advancePhase(roomCode, GamePhase.GAME);
         game.assignRoles(getNicknamesInRoom(roomCode));
         game.setHighlightedImageIndex(new Random().nextInt(game.getGameSettings().getImageCount()));
-        game.setImages(getImages(game));
+        game.setImages(loadOrFetchImages(game));
 
         scheduleRoundTimeout(roomCode);
     }
@@ -75,6 +75,7 @@ public class GameService {
         if (newPhase == GamePhase.SUMMARY) {
             gameTimerService.cancel(roomCode + "-vote");
             gameTimerService.cancel(roomCode + "-round");
+            clearImages(game);
         }
         if (oldPhase == GamePhase.VOTE && newPhase == GamePhase.GAME) {
             gameTimerService.cancel(roomCode + "-vote");
@@ -229,7 +230,7 @@ public class GameService {
                 .collect(Collectors.toList());
     }
 
-    private List<byte[]> getImages(Game game) {
+    private List<byte[]> loadOrFetchImages(Game game) {
         if (!game.getImages().isEmpty()) {
             return game.getImages();
         }
@@ -240,5 +241,9 @@ public class GameService {
             imageList.add(img);
         }
         return imageList;
+    }
+
+    private void clearImages(Game game) {
+        game.getImages().clear();
     }
 }

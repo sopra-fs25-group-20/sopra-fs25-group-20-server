@@ -19,7 +19,8 @@ public class JoinRoomService {
     private final PlayerConnectionService playerConnectionService;
 
     public JoinRoomService(PlayerRepository playerRepository,
-                           RoomRepository roomRepository, PlayerConnectionService playerConnectionService) {
+                           RoomRepository roomRepository,
+                           PlayerConnectionService playerConnectionService) {
         this.playerRepository = playerRepository;
         this.roomRepository = roomRepository;
         this.playerConnectionService = playerConnectionService;
@@ -29,6 +30,8 @@ public class JoinRoomService {
     public Player joinRoom(String roomCode, Player playerInput) {
         Room room = getRoom(roomCode);
         Player existingPlayer = playerRepository.findByNicknameAndRoom(playerInput.getNickname(), room);
+
+        // ToDo allow only joining in lobby phase
 
         Player savedPlayer;
         if (existingPlayer != null) {
