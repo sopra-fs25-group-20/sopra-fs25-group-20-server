@@ -6,6 +6,10 @@ import java.util.Map;
 
 public class SessionUtil {
 
+    private SessionUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static String getNickname(Message<?> message) {
         return getAttribute(message, "nickname");
     }
