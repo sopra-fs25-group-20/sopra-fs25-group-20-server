@@ -5,6 +5,8 @@ public class VoteCastDTO {
 
     private boolean voteYes;
 
+    public VoteCastDTO() {}
+
     public boolean isVoteYes() {
         return voteYes;
     }
