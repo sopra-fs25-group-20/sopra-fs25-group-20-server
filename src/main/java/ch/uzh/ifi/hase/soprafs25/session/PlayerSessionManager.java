@@ -12,8 +12,13 @@ public final class PlayerSessionManager {
     private static final Logger log = LoggerFactory.getLogger(PlayerSessionManager.class);
 
     public static void addSession(String nickname, String roomCode, String sessionId) {
-        log.info("Adding session {} to {}", sessionId, nickname);
-        sessionMap.put(new PlayerSessionKey(nickname, roomCode), sessionId);
+        PlayerSessionKey key = new PlayerSessionKey(nickname, roomCode);
+
+        // If key is absent, it puts the returned value to the map
+        sessionMap.computeIfAbsent(key, k -> {
+            log.info("Adding session {} to {}", sessionId, nickname);
+            return sessionId;
+        });
     }
 
     public static String getSessionId(String nickname, String roomCode) {
@@ -21,6 +26,13 @@ public final class PlayerSessionManager {
     }
 
     public static void removeSession(String nickname, String roomCode) {
-        sessionMap.remove(new PlayerSessionKey(nickname, roomCode));
+        //sessionMap.remove(new PlayerSessionKey(nickname, roomCode));
+
+        PlayerSessionKey key = new PlayerSessionKey(nickname, roomCode);
+        if (sessionMap.remove(key) != null) {
+            log.info("Removed session for {} in {}", nickname, roomCode);
+        } else {
+            log.warn("Tried to remove nonexistent session for {} in {}", nickname, roomCode);
+        }
     }
 }

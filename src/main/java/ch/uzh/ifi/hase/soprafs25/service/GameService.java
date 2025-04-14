@@ -14,6 +14,7 @@ import ch.uzh.ifi.hase.soprafs25.session.PlayerSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -111,34 +112,25 @@ public class GameService {
     }
 
     public void broadcastPersonalizedRole(String roomCode, String nickname) {
-        String sessionId = PlayerSessionManager.getSessionId(roomCode, nickname);
-        if (sessionId == null) {
-            log.warn("No sessionId found for {} in {}", nickname, roomCode);
-            return;
-        }
-
         PlayerRole playerRole = getPlayerRole(roomCode, nickname);
         PlayerRoleDTO dto = new PlayerRoleDTO(playerRole.name().toLowerCase());
 
-        messagingTemplate.convertAndSendToUser(sessionId, "/queue/role/" + roomCode, dto);
+        messagingTemplate.convertAndSendToUser(nickname + ":" + roomCode, "/queue/role/" + roomCode, dto);
     }
 
     public void broadcastPersonalizedImageIndex(String roomCode, String nickname) {
-        String sessionId = PlayerSessionManager.getSessionId(roomCode, nickname);
-        if (sessionId == null) {
-            log.warn("No sessionId found for {} in {}", nickname, roomCode);
-            return;
-        }
-
         int highlightedImageIndex = getHighlightedImageIndexForPlayer(roomCode, nickname);
         HighlightedImageIndexDTO dto = new HighlightedImageIndexDTO(highlightedImageIndex);
 
-        messagingTemplate.convertAndSendToUser(sessionId, "/queue/highlighted/" + roomCode, dto);
+        messagingTemplate.convertAndSendToUser(nickname + ":" + roomCode, "/queue/highlighted/" + roomCode, dto);
     }
 
     public ResultDTO getGameResult(String roomCode) {
         Game game = getGame(roomCode);
 
+        if (game.getPhase() != GamePhase.SUMMARY) {
+            throw new IllegalStateException("Can only get the results in summary phase");
+        }
         return new ResultDTO(
                 game.getRoles(),
                 game.getGameResult().getWinnerRole(),

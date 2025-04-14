@@ -41,7 +41,6 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
         HttpServletRequest servletRequest = servletRequestWrapper.getServletRequest();
         String nickname = servletRequest.getParameter("nickname");
         String code = servletRequest.getParameter("code");
-        String sessionId = servletRequest.getSession().getId();
 
         if (!isValidHandshakeParams(nickname, code)) {
             response.setStatusCode(HttpStatus.BAD_REQUEST);
@@ -58,9 +57,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
         attributes.put("nickname", nickname);
         attributes.put("code", code);
         attributes.put("color", createdPlayer.getColor());
-        attributes.put("sessionId", sessionId);
 
-        PlayerSessionManager.addSession(nickname, code, sessionId);
         playerConnectionService.markConnected(createdPlayer.getNickname(), createdPlayer.getRoom().getCode());
         return true;
     }
