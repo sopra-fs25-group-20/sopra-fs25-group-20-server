@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
-import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.model.PlayerListUpdateDTO;
@@ -44,6 +43,22 @@ public class GameController {
         String nickname = SessionUtil.getNickname(socketMessage);
 
         gameService.handleSpyGuess(code, nickname, guessIndex);
+    }
+
+    @MessageMapping("/role")
+    public void getPlayerRole(Message<?> socketMessage) {
+        String code = SessionUtil.getCode(socketMessage);
+        String nickname = SessionUtil.getNickname(socketMessage);
+
+        gameService.broadcastPersonalizedRole(code, nickname);
+    }
+
+    @MessageMapping("/highlighted")
+    public void getImageIndex(Message<?> socketMessage) {
+        String code = SessionUtil.getCode(socketMessage);
+        String nickname = SessionUtil.getNickname(socketMessage);
+
+        gameService.broadcastPersonalizedImageIndex(code, nickname);
     }
 
     @MessageMapping("/settings")

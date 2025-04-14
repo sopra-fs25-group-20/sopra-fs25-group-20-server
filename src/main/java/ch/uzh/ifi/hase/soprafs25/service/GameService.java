@@ -4,10 +4,7 @@ import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.entity.GameSettings;
-import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
-import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
-import ch.uzh.ifi.hase.soprafs25.model.ResultDTO;
-import ch.uzh.ifi.hase.soprafs25.model.RoundStartDTO;
+import ch.uzh.ifi.hase.soprafs25.model.*;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import ch.uzh.ifi.hase.soprafs25.session.PlayerSessionManager;
@@ -110,6 +107,32 @@ public class GameService {
         return gameSettings;
     }
 
+    public void broadcastPersonalizedRole(String roomCode, String nickname) {
+        String sessionId = PlayerSessionManager.getSessionId(roomCode, nickname);
+        if (sessionId == null) {
+            log.warn("No sessionId found for {} in {}", nickname, roomCode);
+            return;
+        }
+
+        PlayerRole playerRole = getPlayerRole(roomCode, nickname);
+        PlayerRoleDTO dto = new PlayerRoleDTO(playerRole.name().toLowerCase());
+
+        messagingTemplate.convertAndSendToUser(sessionId, "/queue/role/" + roomCode, dto);
+    }
+
+    public void broadcastPersonalizedImageIndex(String roomCode, String nickname) {
+        String sessionId = PlayerSessionManager.getSessionId(roomCode, nickname);
+        if (sessionId == null) {
+            log.warn("No sessionId found for {} in {}", nickname, roomCode);
+            return;
+        }
+
+        int highlightedImageIndex = getHighlightedImageIndexForPlayer(roomCode, nickname);
+        HighlightedImageIndexDTO dto = new HighlightedImageIndexDTO(highlightedImageIndex);
+
+        messagingTemplate.convertAndSendToUser(sessionId, "/queue/highlighted/" + roomCode, dto);
+    }
+
     public ResultDTO getGameResult(String roomCode) {
         Game game = getGame(roomCode);
 
@@ -161,35 +184,42 @@ public class GameService {
         );
     }
 
-    private void sendRoundStartMessages(String roomCode) {
-        Game game = getGame(roomCode);
-        List<String> nicknames = roomService.getNicknamesInRoom(roomCode);
-        int highlightedIndex = game.getHighlightedImageIndex();
-
-        for (String nickname : nicknames) {
-            PlayerRole role = game.getRole(nickname);
-            String sessionId = PlayerSessionManager.getSessionId(nickname, roomCode);
-
-            if (sessionId == null) {
-                log.warn("No sessionId found for {} in {}", nickname, roomCode);
-                continue;
-            }
-
-            RoundStartDTO dto = new RoundStartDTO();
-            dto.setRole(role);
-            dto.setHighlightedImageIndex(role == PlayerRole.SPY ? -1 : highlightedIndex);
-
-            messagingTemplate.convertAndSendToUser(
-                    sessionId,
-                    "/queue/round/start",
-                    dto
-            );
+    private void broadcastPersonalizedRoundStart(String roomCode, String nickname) {
+        String sessionId = PlayerSessionManager.getSessionId(nickname, roomCode);
+        if (sessionId == null) {
+            log.warn("No sessionId found for {} in {}", nickname, roomCode);
+            return;
         }
+
+        PlayerRole role = getPlayerRole(roomCode, nickname);
+        int index = getHighlightedImageIndexForPlayer(roomCode, nickname);
+
+        RoundStartDTO dto = new RoundStartDTO(index, role);
+
+        messagingTemplate.convertAndSendToUser(sessionId, "/queue/round/start", dto);
     }
 
     private void broadcastGamePhase(String roomCode) {
         GamePhaseDTO gamePhaseDTO = getGamePhase(roomCode);
         messagingTemplate.convertAndSend("/topic/phase/" + roomCode, gamePhaseDTO);
+    }
+
+    private void sendRoundStartMessages(String roomCode) {
+        List<String> nicknames = roomService.getNicknamesInRoom(roomCode);
+
+        for (String nickname : nicknames) {
+            broadcastPersonalizedRoundStart(roomCode, nickname);
+        }
+    }
+
+    private PlayerRole getPlayerRole(String roomCode, String nickname) {
+        Game game = getGame(roomCode);
+        return game.getRole(nickname);
+    }
+
+    private int getHighlightedImageIndexForPlayer(String roomCode, String nickname) {
+        PlayerRole role = getPlayerRole(roomCode, nickname);
+        return (role == PlayerRole.INNOCENT) ? getGame(roomCode).getHighlightedImageIndex() : -1;
     }
 
     private void createGameResult(String roomCode, PlayerRole winnerRole) {

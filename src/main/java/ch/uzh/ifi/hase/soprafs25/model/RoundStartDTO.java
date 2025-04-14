@@ -6,6 +6,11 @@ public class RoundStartDTO {
     private Integer highlightedImageIndex;
     private PlayerRole role;
 
+    public RoundStartDTO(Integer highlightedImageIndex, PlayerRole role) {
+        this.highlightedImageIndex = highlightedImageIndex;
+        this.role = role;
+    }
+
     public Integer getHighlightedImageIndex() {
         return highlightedImageIndex;
     }
