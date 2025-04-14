@@ -56,6 +56,9 @@ public class VotingService {
     }
 
     public VoteStartDTO getVoteTarget(String roomCode) {
+        if (!VotingSessionManager.isActive(roomCode)) {
+            return new VoteStartDTO(null);
+        }
         VotingSession votingSession = getActiveVotingSession(roomCode);
         return new VoteStartDTO(votingSession.getTarget());
     }
