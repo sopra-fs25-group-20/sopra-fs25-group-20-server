@@ -1,17 +1,17 @@
 package ch.uzh.ifi.hase.soprafs25.model;
 
 public class HighlightedImageIndexDTO {
-    private int highlightedImageIndex;
+    private int index;
 
-    public HighlightedImageIndexDTO(int highlightedImageIndex) {
-        this.highlightedImageIndex = highlightedImageIndex;
+    public HighlightedImageIndexDTO(int index) {
+        this.index = index;
     }
 
-    public int getHighlightedImageIndex() {
-        return highlightedImageIndex;
+    public int getIndex() {
+        return index;
     }
 
-    public void setHighlightedImageIndex(int highlightedImageIndex) {
-        this.highlightedImageIndex = highlightedImageIndex;
+    public void setIndex(int index) {
+        this.index = index;
     }
 }
