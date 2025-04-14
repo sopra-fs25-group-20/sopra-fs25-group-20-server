@@ -62,8 +62,6 @@ public class GameService {
         game.setImages(getImages(game));
 
         scheduleRoundTimeout(roomCode);
-
-        sendRoundStartMessages(roomCode);
     }
 
     public void advancePhase(String roomCode, GamePhase newPhase) {
@@ -185,21 +183,6 @@ public class GameService {
         );
     }
 
-    private void broadcastPersonalizedRoundStart(String roomCode, String nickname) {
-        String sessionId = PlayerSessionManager.getSessionId(nickname, roomCode);
-        if (sessionId == null) {
-            log.warn("No sessionId found for {} in {}", nickname, roomCode);
-            return;
-        }
-
-        PlayerRole role = getPlayerRole(roomCode, nickname);
-        int index = getHighlightedImageIndexForPlayer(roomCode, nickname);
-
-        RoundStartDTO dto = new RoundStartDTO(index, role);
-
-        messagingTemplate.convertAndSendToUser(sessionId, "/queue/game/start/" + roomCode, dto);
-    }
-
     private void broadcastGamePhase(String roomCode) {
         GamePhaseDTO gamePhaseDTO = getGamePhase(roomCode);
         messagingTemplate.convertAndSend("/topic/phase/" + roomCode, gamePhaseDTO);
@@ -216,14 +199,6 @@ public class GameService {
                 gameSettings.getImageRegion()
         );
         messagingTemplate.convertAndSendToUser(roomCode, "/topic/settings" + roomCode, dto);
-    }
-
-    private void sendRoundStartMessages(String roomCode) {
-        List<String> nicknames = roomService.getNicknamesInRoom(roomCode);
-
-        for (String nickname : nicknames) {
-            broadcastPersonalizedRoundStart(roomCode, nickname);
-        }
     }
 
     private PlayerRole getPlayerRole(String roomCode, String nickname) {
