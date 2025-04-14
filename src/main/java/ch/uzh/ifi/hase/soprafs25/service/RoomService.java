@@ -7,8 +7,6 @@ import ch.uzh.ifi.hase.soprafs25.util.RoomCodeUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -39,16 +37,5 @@ public class RoomService {
 
         gameService.createGame(createdRoom.getCode());
         return savedPlayer;
-    }
-
-    public List<String> getNicknamesInRoom(String roomCode) {
-        Room room = roomRepository.findByCode(roomCode);
-        if (room == null) {
-            throw new IllegalStateException("Room not found: " + roomCode);
-        }
-
-        return room.getPlayers().stream()
-                .map(Player::getNickname)
-                .collect(Collectors.toList());
     }
 }

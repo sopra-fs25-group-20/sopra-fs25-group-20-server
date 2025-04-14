@@ -4,7 +4,10 @@ import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.entity.GameSettings;
+import ch.uzh.ifi.hase.soprafs25.entity.Player;
+import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.model.*;
+import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import ch.uzh.ifi.hase.soprafs25.session.PlayerSessionManager;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -27,18 +31,18 @@ public class GameService {
     private final GameTimerService gameTimerService;
     private final SimpMessagingTemplate messagingTemplate;
     private final AuthorizationService authorizationService;
-    private final RoomService roomService;
+    private final RoomRepository roomRepository;
 
     public GameService(@Qualifier("mockImageService") ImageService imageService,
                        GameTimerService gameTimerService,
                        SimpMessagingTemplate messagingTemplate,
                        AuthorizationService authorizationService,
-                       RoomService roomService) {
+                       RoomRepository roomRepository) {
         this.imageService = imageService;
         this.gameTimerService = gameTimerService;
         this.messagingTemplate = messagingTemplate;
         this.authorizationService = authorizationService;
-        this.roomService = roomService;
+        this.roomRepository = roomRepository;
     }
 
     public void createGame(String roomCode) {
@@ -57,7 +61,7 @@ public class GameService {
         Game game = getGame(roomCode);
 
         advancePhase(roomCode, GamePhase.GAME);
-        game.assignRoles(roomService.getNicknamesInRoom(roomCode));
+        game.assignRoles(getNicknamesInRoom(roomCode));
         game.setHighlightedImageIndex(new Random().nextInt(game.getGameSettings().getImageCount()));
         game.setImages(getImages(game));
 
@@ -222,6 +226,17 @@ public class GameService {
         }
 
         return game.getHighlightedImageIndex() == guessIndex;
+    }
+
+    private List<String> getNicknamesInRoom(String roomCode) {
+        Room room = roomRepository.findByCode(roomCode);
+        if (room == null) {
+            throw new IllegalStateException("Room not found: " + roomCode);
+        }
+
+        return room.getPlayers().stream()
+                .map(Player::getNickname)
+                .collect(Collectors.toList());
     }
 
     private List<byte[]> getImages(Game game) {
