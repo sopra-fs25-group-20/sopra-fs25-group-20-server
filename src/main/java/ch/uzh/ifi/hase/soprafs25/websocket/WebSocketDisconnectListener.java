@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.websocket;
 
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
-import ch.uzh.ifi.hase.soprafs25.session.PlayerSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -36,7 +35,6 @@ public class WebSocketDisconnectListener {
             log.info("User disconnected: nickname={}, code={}, color={}", nickname, code, color);
             playerConnectionService.markDisconnected(nickname, code);
             playerConnectionService.broadcastPlayerList(code);
-            PlayerSessionManager.removeSession(nickname, code);
         } else {
             log.warn("Disconnect with no session attributes found");
         }

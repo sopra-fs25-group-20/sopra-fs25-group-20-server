@@ -10,11 +10,9 @@ import ch.uzh.ifi.hase.soprafs25.model.*;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
-import ch.uzh.ifi.hase.soprafs25.session.PlayerSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 

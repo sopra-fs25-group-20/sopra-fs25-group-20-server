@@ -3,7 +3,6 @@ package ch.uzh.ifi.hase.soprafs25.config;
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.service.JoinRoomService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
-import ch.uzh.ifi.hase.soprafs25.session.PlayerSessionManager;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
