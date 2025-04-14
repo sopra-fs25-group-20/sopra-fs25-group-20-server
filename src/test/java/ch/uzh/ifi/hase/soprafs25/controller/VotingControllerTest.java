@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class VotingControllerTest {
+class VotingControllerTest {
 
     @InjectMocks
     private VotingController votingController;
@@ -35,11 +35,12 @@ public class VotingControllerTest {
     @Mock
     private RoomRepository roomRepository;
 
-    private Message<?> mockSocketMessage(String roomCode) {
+    private Message<?> mockSocketMessage(String roomCode, String nickname) {
         Message<?> message = mock(Message.class);
 
         Map<String, Object> sessionAttributes = new HashMap<>();
         sessionAttributes.put("code", roomCode);
+        sessionAttributes.put("nickname", nickname);
 
         Map<String, Object> headerMap = new HashMap<>();
         headerMap.put("simpSessionAttributes", sessionAttributes);
@@ -51,30 +52,30 @@ public class VotingControllerTest {
     }
 
     @Test
-    public void testStartVote_sendsBeginAndUpdate() {
+    void testStartVote_sendsBeginAndUpdate() {
         String roomCode = "ROOM123";
+        String nickname = "testUser";
         VoteStartDTO startDTO = new VoteStartDTO();
-        startDTO.setInitiator("testUser");
         startDTO.setTarget("testUser2");
 
-        VotingSession mockSession = new VotingSession(roomCode, "testUser", "testUser2");
+        VotingSession mockSession = new VotingSession(roomCode, nickname, "testUser2");
 
-        when(votingService.createVotingSessionIfNotActive(roomCode, "testUser", "testUser2")).thenReturn(mockSession);
+        when(votingService.createVotingSession(roomCode, "testUser", "testUser2")).thenReturn(mockSession);
 
-        votingController.startVote(startDTO, mockSocketMessage(roomCode));
+        votingController.startVote(startDTO, mockSocketMessage(roomCode, nickname));
 
         verify(messagingTemplate).convertAndSend(startsWith("/topic/vote/begin/"), eq(startDTO));
         verify(messagingTemplate).convertAndSend(startsWith("/topic/vote/update/"), any(Object.class));
     }
 
     @Test
-    public void testCastVote_triggersVoteResultIfComplete() {
+    void testCastVote_triggersVoteResultIfComplete() {
         String roomCode = "ROOM123";
+        String nickname = "testUser";
         VoteCastDTO castDTO = new VoteCastDTO();
-        castDTO.setVoter("testUser");
         castDTO.setVoteYes(true);
 
-        VotingSession mockSession = new VotingSession(roomCode, "testUser2", "testUser3");
+        VotingSession mockSession = new VotingSession(roomCode, nickname, "testUser3");
         Room mockRoom = new Room();
         mockRoom.setCode(roomCode);
         mockRoom.addPlayer(new ch.uzh.ifi.hase.soprafs25.entity.Player());
@@ -84,7 +85,7 @@ public class VotingControllerTest {
         when(roomRepository.findByCode(roomCode)).thenReturn(mockRoom);
         when(votingService.isVoteComplete(roomCode, 1)).thenReturn(true);
 
-        votingController.castVote(castDTO, mockSocketMessage(roomCode));
+        votingController.castVote(castDTO, mockSocketMessage(roomCode, nickname));
 
         verify(messagingTemplate).convertAndSend(startsWith("/topic/vote/update/"), any(Object.class));
         verify(messagingTemplate).convertAndSend(startsWith("/topic/vote/result/"), any(Object.class));

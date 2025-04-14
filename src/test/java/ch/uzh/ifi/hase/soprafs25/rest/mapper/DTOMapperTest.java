@@ -1,5 +1,9 @@
-package ch.uzh.ifi.hase.soprafs25.model;
+package ch.uzh.ifi.hase.soprafs25.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs25.model.ChatMessageDTO;
+import ch.uzh.ifi.hase.soprafs25.model.CreateRoomDTO;
+import ch.uzh.ifi.hase.soprafs25.model.ErrorResponseDTO;
+import ch.uzh.ifi.hase.soprafs25.model.RoomPostDTO;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +25,7 @@ public class DTOMapperTest {
 
     @Test
     public void testChatMessage() {
-        ChatMessage message = new ChatMessage();
+        ChatMessageDTO message = new ChatMessageDTO();
         message.setNickname("testUser");
         message.setMessage("hello");
         message.setColor("blue");

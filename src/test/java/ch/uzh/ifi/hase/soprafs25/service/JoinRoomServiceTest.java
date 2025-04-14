@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
-public class JoinRoomServiceTest {
+class JoinRoomServiceTest {
 
     @Mock
     private PlayerRepository playerRepository;
@@ -28,7 +28,7 @@ public class JoinRoomServiceTest {
     private JoinRoomService joinRoomService;
 
     @Test
-    public void joinRoomSuccessful() {
+    void joinRoomSuccessful() {
         Room room = new Room();
         room.setCode("ABC123");
         Player player = new Player();
@@ -43,7 +43,7 @@ public class JoinRoomServiceTest {
     }
 
     @Test
-    public void joinRoomRoomNotFound() {
+    void joinRoomRoomNotFound() {
         when(roomRepository.findByCode("BAD123")).thenReturn(null);
 
         Player player = new Player();
@@ -54,7 +54,7 @@ public class JoinRoomServiceTest {
     }
 
     @Test
-    public void joinRoomNicknameExistsAndConnected() {
+    void joinRoomNicknameExistsAndConnected() {
         Room room = new Room();
         room.setCode("ROOM99");
         Player existing = new Player();

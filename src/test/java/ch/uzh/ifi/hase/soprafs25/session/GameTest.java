@@ -1,48 +1,51 @@
 package ch.uzh.ifi.hase.soprafs25.session;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.Map;
 import java.util.List;
 
-public class GameTest {
-    
+class GameTest {
+
     @Test
-    public void testGameInitialization() {
+    void testGameInitialization() {
         Game game = new Game("ROOM123");
 
         assertEquals("ROOM123", game.getRoomCode());
-        assertEquals(GamePhase.WAITING, game.getPhase());
+        assertEquals(GamePhase.LOBBY, game.getPhase());
         assertEquals(0, game.getHighlightedImage());
         assertTrue(game.getRoles().isEmpty());
     }
 
     @Test
-    public void testSetPhase() {
+    void testSetPhase() {
         Game game = new Game("ROOM456");
-        game.setPhase(GamePhase.VOTING);
-        assertEquals(GamePhase.VOTING, game.getPhase());
+        game.setPhase(GamePhase.VOTE);
+        assertEquals(GamePhase.VOTE, game.getPhase());
     }
 
     @Test
-    public void testHighlightedImageSetterGetter() {
+    void testHighlightedImageSetterGetter() {
         Game game = new Game("ROOM789");
         game.setHighlightedImage(5);
         assertEquals(5, game.getHighlightedImage());
     }
 
     @Test
-    public void testAssignAndGetRoles() {
+    void testAssignAndGetRoles() {
         Game game = new Game("ROOM012");
         List<String> nicknames = List.of("A", "B", "C");
         game.assignRoles(nicknames);
 
-        Map<String, String> roles = game.getRoles();
+        Map<String, PlayerRole> roles = game.getRoles();
 
         assertEquals(3, roles.size());
-        long spyCount = roles.values().stream().filter(role -> role.equals("spy")).count();
-        long innocentCount = roles.values().stream().filter(role -> role.equals("innocent")).count();
+
+        long spyCount = roles.values().stream().filter(role -> role == PlayerRole.SPY).count();
+        long innocentCount = roles.values().stream().filter(role -> role == PlayerRole.INNOCENT).count();
 
         assertEquals(1, spyCount);
         assertEquals(2, innocentCount);
@@ -52,11 +55,12 @@ public class GameTest {
     }
 
     @Test
-    public void testGetRoleByNickname() {
+    void testGetRoleByNickname() {
         Game game = new Game("ROOM012");
         game.assignRoles(List.of("X", "Y", "Z"));
-        String role = game.getRole("Y");
+        PlayerRole role = game.getRole("Y");
+
         assertNotNull(role);
-        assertTrue(role.equals("spy") || role.equals("innocent"));
+        assertTrue(role == PlayerRole.INNOCENT || role == PlayerRole.SPY);
     }
 }

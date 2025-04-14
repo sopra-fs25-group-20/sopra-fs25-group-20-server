@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(MockitoExtension.class)
-public class RoomControllerTest {
+class RoomControllerTest {
 
     @Mock
     private CreateRoomService createRoomService;
@@ -28,7 +28,7 @@ public class RoomControllerTest {
     private RoomController roomController;
 
     @Test
-    public void testCreateRoom() {
+    void testCreateRoom() {
         RoomPostDTO dto = new RoomPostDTO("testUser", null);
         Player player = new Player();
         player.setNickname("testUser");
@@ -44,7 +44,7 @@ public class RoomControllerTest {
     }
 
     @Test
-    public void testValidateRoomAndNickname() {
+    void testValidateRoomAndNickname() {
         RoomPostDTO dto = new RoomPostDTO("testUser", "ROOM1");
         assertDoesNotThrow(() -> roomController.validateRoomAndNickname(dto));
         verify(joinRoomService).validateJoin("ROOM1", "testUser");

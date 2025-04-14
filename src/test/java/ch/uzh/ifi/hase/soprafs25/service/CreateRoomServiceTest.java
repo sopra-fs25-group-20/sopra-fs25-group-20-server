@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
-public class CreateRoomServiceTest {
+class CreateRoomServiceTest {
 
     @Mock
     private RoomRepository roomRepository;
@@ -25,7 +25,7 @@ public class CreateRoomServiceTest {
     private CreateRoomService createRoomService;
 
     @Test
-    public void testCreateRoom() {
+    void testCreateRoom() {
         Player player = new Player();
         Room room = new Room();
         room.setCode("ROOM1");

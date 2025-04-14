@@ -8,7 +8,7 @@ import ch.uzh.ifi.hase.soprafs25.session.VotingSessionManager;
 @Service
 public class VotingService {
     
-    public VotingSession createVotingSessionIfNotActive(String roomCode, String initiator, String target) {
+    public VotingSession createVotingSession(String roomCode, String initiator, String target) {
         if (VotingSessionManager.isActive(roomCode)) {
             throw new VoteAlreadyInProgressException(roomCode);
         }
