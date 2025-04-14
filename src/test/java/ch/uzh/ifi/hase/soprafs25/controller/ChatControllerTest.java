@@ -13,10 +13,10 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class ChatControllerTest {
+class ChatControllerTest {
 
     @Test
-    public void createMessageSendsToCorrectTopic() {
+    void createMessageSendsToCorrectTopic() {
         SimpMessagingTemplate messagingTemplate = mock(SimpMessagingTemplate.class);
         ChatController controller = new ChatController(messagingTemplate);
 

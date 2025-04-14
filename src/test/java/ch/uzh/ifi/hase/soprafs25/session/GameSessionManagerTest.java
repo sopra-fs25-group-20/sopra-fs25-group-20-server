@@ -6,12 +6,12 @@ import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class GameSessionManagerTest {
+class GameSessionManagerTest {
 
     private Game testGame;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         if (GameSessionManager.isActive("ROOM123")) {
             GameSessionManager.removeGameSession("ROOM123");
         }
@@ -19,7 +19,7 @@ public class GameSessionManagerTest {
     }
 
     @Test
-    public void addAndGetGameSessionSuccessfully() {
+    void addAndGetGameSessionSuccessfully() {
         GameSessionManager.addGameSession(testGame);
 
         Game retrieved = GameSessionManager.getGameSession("ROOM123");
@@ -28,12 +28,12 @@ public class GameSessionManagerTest {
     }
 
     @Test
-    public void getGameSessionThrowsIfNotFound() {
+    void getGameSessionThrowsIfNotFound() {
         assertThrows(IllegalStateException.class, () -> GameSessionManager.getGameSession("NON_EXISTENT"));
     }
 
     @Test
-    public void removeGameSessionSuccessfully() {
+    void removeGameSessionSuccessfully() {
         GameSessionManager.addGameSession(testGame);
         assertTrue(GameSessionManager.isActive("ROOM123"));
 
@@ -43,23 +43,23 @@ public class GameSessionManagerTest {
     }
 
     @Test
-    public void removeGameSessionThrowsIfNotFound() {
+    void removeGameSessionThrowsIfNotFound() {
         assertThrows(IllegalStateException.class, () -> GameSessionManager.removeGameSession("UNKNOWN"));
     }
 
     @Test
-    public void addGameSessionThrowsIfGameIsNull() {
+    void addGameSessionThrowsIfGameIsNull() {
         assertThrows(IllegalStateException.class, () -> GameSessionManager.addGameSession(null));
     }
 
     @Test
-    public void addGameSessionThrowsIfRoomCodeIsNull() {
+    void addGameSessionThrowsIfRoomCodeIsNull() {
         Game badGame = new Game(null);
         assertThrows(IllegalStateException.class, () -> GameSessionManager.addGameSession(badGame));
     }
 
     @Test
-    public void isActiveReturnsTrueOnlyWhenAdded() {
+    void isActiveReturnsTrueOnlyWhenAdded() {
         assertFalse(GameSessionManager.isActive("ROOM123"));
         GameSessionManager.addGameSession(testGame);
         assertTrue(GameSessionManager.isActive("ROOM123"));

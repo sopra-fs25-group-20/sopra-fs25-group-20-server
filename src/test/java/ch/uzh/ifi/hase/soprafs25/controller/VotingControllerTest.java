@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class VotingControllerTest {
+class VotingControllerTest {
 
     @InjectMocks
     private VotingController votingController;
@@ -51,7 +51,7 @@ public class VotingControllerTest {
     }
 
     @Test
-    public void testStartVote_sendsBeginAndUpdate() {
+    void testStartVote_sendsBeginAndUpdate() {
         String roomCode = "ROOM123";
         VoteStartDTO startDTO = new VoteStartDTO();
         startDTO.setInitiator("testUser");
@@ -68,7 +68,7 @@ public class VotingControllerTest {
     }
 
     @Test
-    public void testCastVote_triggersVoteResultIfComplete() {
+    void testCastVote_triggersVoteResultIfComplete() {
         String roomCode = "ROOM123";
         VoteCastDTO castDTO = new VoteCastDTO();
         castDTO.setVoter("testUser");

@@ -9,10 +9,10 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class WebSocketConfigTest {
+class WebSocketConfigTest {
     
     @Test
-    public void testConfigureMessageBroker() {
+    void testConfigureMessageBroker() {
         CustomHandshakeInterceptor interceptor = mock(CustomHandshakeInterceptor.class);
 
         WebSocketConfig config = new WebSocketConfig(interceptor);

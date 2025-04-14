@@ -6,10 +6,10 @@ import java.util.*;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import org.junit.jupiter.api.Test;
 
-public class RoleUtilTest {
+class RoleUtilTest {
 
     @Test
-    public void assignRolesCorrectSpyCount() {
+    void assignRolesCorrectSpyCount() {
         List<String> players = List.of("A", "B", "C", "D");
         int spyCount = 1;
 
@@ -25,7 +25,7 @@ public class RoleUtilTest {
     }
 
     @Test
-    public void assignRolesIsRandomized() {
+    void assignRolesIsRandomized() {
         List<String> players = List.of("A", "B", "C", "D");
         int spyCount = 1;
 
@@ -43,7 +43,7 @@ public class RoleUtilTest {
     }
 
     @Test
-    public void assignRolesThrowsOnInvalidInput() {
+    void assignRolesThrowsOnInvalidInput() {
         assertThrows(IllegalArgumentException.class, () -> RoleUtil.assignRoles(null, 1));
 
         List<String> tooFewPlayers = List.of("A");
@@ -51,7 +51,7 @@ public class RoleUtilTest {
     }
 
     @Test
-    public void assignRolesCoversAllPlayers() {
+    void assignRolesCoversAllPlayers() {
         List<String> players = List.of("X", "Y", "Z");
         Map<String, PlayerRole> roles = RoleUtil.assignRoles(players, 1);
 

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RandomColorUtilTest {
+class RandomColorUtilTest {
 
     private final String testRoomId = "testRoom";
 
@@ -19,7 +19,7 @@ public class RandomColorUtilTest {
     }
 
     @Test
-    public void assignColorReturnsUniqueColorUntilExhausted() {
+    void assignColorReturnsUniqueColorUntilExhausted() {
         Set<String> assignedColors = new HashSet<>();
 
         for (int i = 0; i < RandomColorUtil.getColorPalette().size(); i++) {
@@ -32,7 +32,7 @@ public class RandomColorUtilTest {
     }
 
     @Test
-    public void releaseColorMakesColorReusable() {
+    void releaseColorMakesColorReusable() {
         String color1 = RandomColorUtil.assignColor(testRoomId);
         RandomColorUtil.releaseColor(testRoomId, color1);
 
@@ -41,7 +41,7 @@ public class RandomColorUtilTest {
     }
 
     @Test
-    public void clearRoomReleasesAllColors() {
+    void clearRoomReleasesAllColors() {
         RandomColorUtil.assignColor(testRoomId);
         RandomColorUtil.assignColor(testRoomId);
         RandomColorUtil.clearRoom(testRoomId);
@@ -52,7 +52,7 @@ public class RandomColorUtilTest {
     }
 
     @Test
-    public void getColorPaletteSize() {
+    void getColorPaletteSize() {
         List<String> palette = RandomColorUtil.getColorPalette();
         assertEquals(10, palette.size());
     }

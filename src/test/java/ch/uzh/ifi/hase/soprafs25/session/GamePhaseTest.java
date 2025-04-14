@@ -4,10 +4,10 @@ import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GamePhaseTest {
+class GamePhaseTest {
 
     @Test
-    public void testEnumValues() {
+    void testEnumValues() {
         GamePhase[] values = GamePhase.values();
         assertEquals(4, values.length);
         assertTrue(contains(values, GamePhase.LOBBY));
@@ -24,7 +24,7 @@ public class GamePhaseTest {
     }
 
     @Test
-    public void testEnumNameConsistency() {
+    void testEnumNameConsistency() {
         assertEquals("LOBBY", GamePhase.LOBBY.name());
         assertEquals("GAME", GamePhase.GAME.name());
         assertEquals("VOTE", GamePhase.VOTE.name());

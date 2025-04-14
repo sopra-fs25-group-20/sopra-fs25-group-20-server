@@ -7,17 +7,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.*;
 
-public class VotingSessionTest {
+class VotingSessionTest {
     
     private VotingSession votingSession;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         votingSession = new VotingSession("ROOM123", "testUser", "testUser2");
     }
 
     @Test
-    public void testVotingSessionInitialization() {
+    void testVotingSessionInitialization() {
         assertEquals("ROOM123", votingSession.getRoomCode());
         assertEquals("testUser", votingSession.getInitiator());
         assertEquals("testUser2", votingSession.getTarget());
@@ -26,7 +26,7 @@ public class VotingSessionTest {
     }
 
     @Test
-    public void testCastVoteAndHasVoted() {
+    void testCastVoteAndHasVoted() {
         assertFalse(votingSession.hasVoted("testUser"));
         votingSession.castVote("testUser", true);
         assertTrue(votingSession.hasVoted("testUser"));
@@ -34,7 +34,7 @@ public class VotingSessionTest {
     }
 
     @Test
-    public void testDoubleVotingNotAllowed() {
+    void testDoubleVotingNotAllowed() {
         votingSession.castVote("testUser2", true);
         votingSession.castVote("testUser2", false);
         assertEquals(1, votingSession.getVoteState().getVotes().size());

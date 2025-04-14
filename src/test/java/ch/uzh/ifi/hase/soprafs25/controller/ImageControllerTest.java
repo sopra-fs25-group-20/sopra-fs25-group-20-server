@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ImageControllerTest {
+class ImageControllerTest {
 
     @Test
-    public void testGetImageReturnsBytes() {
+    void testGetImageReturnsBytes() {
         ImageService mockService = mock(ImageService.class);
         byte[] fakeImage = new byte[]{1, 2, 3};
         when(mockService.fetchImage()).thenReturn(fakeImage);

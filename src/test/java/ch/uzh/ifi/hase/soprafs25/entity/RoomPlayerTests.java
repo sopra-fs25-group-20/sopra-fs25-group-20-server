@@ -3,10 +3,10 @@ package ch.uzh.ifi.hase.soprafs25.entity;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RoomPlayerTests {
+class RoomPlayerTests {
 
     @Test
-    public void testPlayerEntity() {
+    void testPlayerEntity() {
         Player player = new Player();
         player.setId(1L);
         player.setNickname("testUser");
@@ -23,7 +23,7 @@ public class RoomPlayerTests {
     }
 
     @Test
-    public void testRoomEntity() {
+    void testRoomEntity() {
         Room room = new Room();
         room.setRoomId(1L);
         room.setCode("TESTCODE");

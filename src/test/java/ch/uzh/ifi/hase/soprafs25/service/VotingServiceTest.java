@@ -7,12 +7,12 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class VotingServiceTest {
+class VotingServiceTest {
     
     private VotingService votingService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         votingService = new VotingService();
         if (VotingSessionManager.isActive("ROOM123")) {
             VotingSessionManager.removeVotingSession("ROOM123");
@@ -20,7 +20,7 @@ public class VotingServiceTest {
     }
 
     @Test
-    public void testCreateVotingSession_success() {
+    void testCreateVotingSession_success() {
         VotingSession session = votingService.createVotingSessionIfNotActive("ROOM123", "testUser", "testUser2");
 
         assertNotNull(session);
@@ -29,7 +29,7 @@ public class VotingServiceTest {
     }
 
     @Test
-    public void testCreateVotingSession_alreadyActive() {
+    void testCreateVotingSession_alreadyActive() {
         votingService.createVotingSessionIfNotActive("ROOM123", "testUser", "testUser2");
         assertThrows(VoteAlreadyInProgressException.class, () -> {
             votingService.createVotingSessionIfNotActive("ROOM123", "testUser", "testUser2");
@@ -37,7 +37,7 @@ public class VotingServiceTest {
     }
 
     @Test
-    public void testCastVote_andCompletion() {
+    void testCastVote_andCompletion() {
         votingService.createVotingSessionIfNotActive("ROOM123", "testUser", "testUser2");
         boolean cast1 = votingService.castVote("ROOM123", "testUser3", true);
         boolean cast2 = votingService.castVote("ROOM123", "testUser3", false);

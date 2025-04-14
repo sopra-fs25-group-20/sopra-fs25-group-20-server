@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Map;
 import java.util.List;
 
-public class GameTest {
+class GameTest {
 
     @Test
-    public void testGameInitialization() {
+    void testGameInitialization() {
         Game game = new Game("ROOM123");
 
         assertEquals("ROOM123", game.getRoomCode());
@@ -21,21 +21,21 @@ public class GameTest {
     }
 
     @Test
-    public void testSetPhase() {
+    void testSetPhase() {
         Game game = new Game("ROOM456");
         game.setPhase(GamePhase.VOTE);
         assertEquals(GamePhase.VOTE, game.getPhase());
     }
 
     @Test
-    public void testHighlightedImageSetterGetter() {
+    void testHighlightedImageSetterGetter() {
         Game game = new Game("ROOM789");
         game.setHighlightedImage(5);
         assertEquals(5, game.getHighlightedImage());
     }
 
     @Test
-    public void testAssignAndGetRoles() {
+    void testAssignAndGetRoles() {
         Game game = new Game("ROOM012");
         List<String> nicknames = List.of("A", "B", "C");
         game.assignRoles(nicknames);
@@ -55,7 +55,7 @@ public class GameTest {
     }
 
     @Test
-    public void testGetRoleByNickname() {
+    void testGetRoleByNickname() {
         Game game = new Game("ROOM012");
         game.assignRoles(List.of("X", "Y", "Z"));
         PlayerRole role = game.getRole("Y");

@@ -7,10 +7,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class CorsConfigTest {
+class CorsConfigTest {
 
     @Test
-    public void addCorsMappings() {
+    void addCorsMappings() {
         CorsConfig config = new CorsConfig();
         CorsRegistry registry = mock(CorsRegistry.class);
         CorsRegistration registration = mock(CorsRegistration.class);
