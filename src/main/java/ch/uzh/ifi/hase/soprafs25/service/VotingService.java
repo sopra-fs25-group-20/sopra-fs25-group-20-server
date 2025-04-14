@@ -39,6 +39,7 @@ public class VotingService {
 
         VotingSession session = new VotingSession(roomCode, initiator, target);
         VotingSessionManager.addVotingSession(session);
+        gameService.advancePhase(roomCode, GamePhase.VOTE);
 
         messagingTemplate.convertAndSend("/topic/vote/init/" + roomCode, new VoteStartDTO(initiator, target));
         broadcastVoteState(roomCode);
