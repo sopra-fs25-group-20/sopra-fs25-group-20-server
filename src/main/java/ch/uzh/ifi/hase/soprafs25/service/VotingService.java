@@ -55,6 +55,11 @@ public class VotingService {
         broadcastVoteState(roomCode);
     }
 
+    public VoteStartDTO getVoteTarget(String roomCode) {
+        VotingSession votingSession = getActiveVotingSession(roomCode);
+        return new VoteStartDTO(votingSession.getTarget());
+    }
+
     private void scheduleRoundTimeout(String roomCode) {
         int gameTimerSeconds = gameService.getGame(roomCode)
                 .getGameSettings()
@@ -104,8 +109,12 @@ public class VotingService {
     }
 
     private void broadcastVoteState(String roomCode) {
-        Map<String, Boolean> votes = getActiveVotingSession(roomCode).getVoteState().getVotes();
-        messagingTemplate.convertAndSend("/topic/vote/cast/" + roomCode, new VoteStateDTO(votes));
+        VotingSession votingSession = VotingSessionManager.getVotingSession(roomCode);
+        VoteState voteState = votingSession.getVoteState();
+        int yesVotes = voteState.countYesVotes();
+        int noVotes = voteState.countNoVotes();
+
+        messagingTemplate.convertAndSend("/topic/vote/cast/" + roomCode, new VoteStateDTO(yesVotes, noVotes));
     }
 
     private VoteResultDTO createVoteResult(VotingSession session) {

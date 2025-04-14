@@ -4,17 +4,27 @@ import java.util.Map;
 
 public class VoteStateDTO {
     
-    private Map<String, Boolean> votes;
+    private int numberVotesTrue;
+    private int numberVotesFalse;
 
-    public VoteStateDTO(Map<String, Boolean> votes) {
-        this.votes = votes;
+    public VoteStateDTO(int numberVotesTrue, int numberVotesFalse) {
+        this.numberVotesTrue = numberVotesTrue;
+        this.numberVotesFalse = numberVotesFalse;
     }
 
-    public Map<String, Boolean> getVotes() {
-        return votes;
+    public int getNumberVotesTrue() {
+        return numberVotesTrue;
     }
 
-    public void setVotes(Map<String, Boolean> votes) {
-        this.votes = votes;
+    public void setNumberVotesTrue(int numberVotesTrue) {
+        this.numberVotesTrue = numberVotesTrue;
+    }
+
+    public int getNumberVotesFalse() {
+        return numberVotesFalse;
+    }
+
+    public void setNumberVotesFalse(int numberVotesFalse) {
+        this.numberVotesFalse = numberVotesFalse;
     }
 }

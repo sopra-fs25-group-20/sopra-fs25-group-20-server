@@ -150,11 +150,6 @@ public class GameService {
         );
     }
 
-    public VoteStartDTO getVoteTarget(String roomCode) {
-        VotingSession votingSession = VotingSessionManager.getVotingSession(roomCode);
-        return new VoteStartDTO(votingSession.getTarget());
-    }
-
     public Game getGame(String roomCode) {
         return GameSessionManager.getGameSession(roomCode);
     }
