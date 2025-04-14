@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs25.service;
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
+import ch.uzh.ifi.hase.soprafs25.entity.GameSettings;
 import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.model.ResultDTO;
@@ -103,8 +104,8 @@ public class GameService {
         game.setGameSettings(
                 gameSettings.getVotingTimer(),
                 gameSettings.getGameTimer(),
-                gameSettings.getImageRegion(),
-                gameSettings.getImageCount()
+                gameSettings.getImageCount(),
+                gameSettings.getImageRegion()
         );
         return gameSettings;
     }
@@ -116,6 +117,21 @@ public class GameService {
                 game.getRoles(),
                 game.getGameResult().getWinnerRole(),
                 game.getHighlightedImageIndex()
+        );
+    }
+
+    public GamePhaseDTO getGamePhase(String roomCode) {
+        GamePhase gamePhase = getGame(roomCode).getPhase();
+        return new GamePhaseDTO(gamePhase.name().toLowerCase());
+    }
+
+    public GameSettingsDTO getGameSettings(String roomCode) {
+        GameSettings gameSettings = getGame(roomCode).getGameSettings();
+        return new GameSettingsDTO(
+                gameSettings.getVotingTimer(),
+                gameSettings.getGameTimer(),
+                gameSettings.getImageCount(),
+                gameSettings.getImageRegion()
         );
     }
 
@@ -172,11 +188,8 @@ public class GameService {
     }
 
     private void broadcastGamePhase(String roomCode) {
-        GamePhase gamePhase = getGame(roomCode).getPhase();
-        messagingTemplate.convertAndSend(
-                "/topic/phase/" + roomCode,
-                new GamePhaseDTO(gamePhase.name().toLowerCase())
-        );
+        GamePhaseDTO gamePhaseDTO = getGamePhase(roomCode);
+        messagingTemplate.convertAndSend("/topic/phase/" + roomCode, gamePhaseDTO);
     }
 
     private void createGameResult(String roomCode, PlayerRole winnerRole) {

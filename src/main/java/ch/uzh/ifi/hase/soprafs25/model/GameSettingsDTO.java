@@ -1,10 +1,17 @@
 package ch.uzh.ifi.hase.soprafs25.model;
 
 public class GameSettingsDTO {
-    private int votingTimer;
-    private int gameTimer;
-    private int imageCount;
-    private String imageRegion;
+    private final int votingTimer;
+    private final int gameTimer;
+    private final int imageCount;
+    private final String imageRegion;
+
+    public GameSettingsDTO(int votingTimer, int gameTimer, int imageCount, String imageRegion) {
+        this.votingTimer = votingTimer;
+        this.gameTimer = gameTimer;
+        this.imageCount = imageCount;
+        this.imageRegion = imageRegion;
+    }
 
     public int getVotingTimer() {
         return votingTimer;

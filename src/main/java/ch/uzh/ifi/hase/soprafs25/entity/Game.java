@@ -41,11 +41,11 @@ public class Game {
         return gameSettings;
     }
 
-    public void setGameSettings(int votingTimer, int gameTimer, String imageRegion, int imageCount) {
+    public void setGameSettings(int votingTimer, int gameTimer, int imageCount, String imageRegion) {
         this.gameSettings.setVotingTimer(votingTimer);
         this.gameSettings.setGameTimer(gameTimer);
-        this.gameSettings.setImageRegion(imageRegion);
         this.gameSettings.setImageCount(imageCount);
+        this.gameSettings.setImageRegion(imageRegion);
     }
 
     public Map<String, PlayerRole> getRoles() {

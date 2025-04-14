@@ -63,8 +63,18 @@ public class GameController {
     }
 
     @GetMapping("/players/{code}")
-    public List<PlayerListUpdateDTO> updatePlayerList(@PathVariable String code) {
-        return playerConnectionService.broadcastPlayerList(code);
+    public List<PlayerListUpdateDTO> getPlayerList(@PathVariable String code) {
+        return playerConnectionService.getPlayerListDTO(code);
+    }
+
+    @GetMapping("/phase/{code}")
+    public GamePhaseDTO getGamePhase(@PathVariable String code) {
+        return gameService.getGamePhase(code);
+    }
+
+    @GetMapping("/settings/{code}")
+    public GameSettingsDTO getGameSettings(@PathVariable String code) {
+        return gameService.getGameSettings(code);
     }
 
     @GetMapping("/game/result/{code}")

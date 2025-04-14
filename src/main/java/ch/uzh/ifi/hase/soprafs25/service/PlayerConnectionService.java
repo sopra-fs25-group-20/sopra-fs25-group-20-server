@@ -47,15 +47,17 @@ public class PlayerConnectionService {
         return player.isConnected();
     }
 
-    public List<PlayerListUpdateDTO> broadcastPlayerList(String roomCode) {
-        List<Player> players  = getPlayers(roomCode);
-
-        List<PlayerListUpdateDTO> playerList = players.stream()
-                .map(p -> new PlayerListUpdateDTO(p.getNickname(), p.getColor()))
-                .toList();
+    public void broadcastPlayerList(String roomCode) {
+        List<PlayerListUpdateDTO> playerList = getPlayerListDTO(roomCode);
 
         messagingTemplate.convertAndSend("/topic/players/" + roomCode, playerList);
-        return playerList;
+    }
+
+    public List<PlayerListUpdateDTO> getPlayerListDTO(String roomCode) {
+        List<Player> players = getPlayers(roomCode);
+        return players.stream()
+                .map(p -> new PlayerListUpdateDTO(p.getNickname(), p.getColor()))
+                .toList();
     }
 
     public void kickPlayer(String kickerNickname, String kickedNickname, String roomCode) {
@@ -72,14 +74,14 @@ public class PlayerConnectionService {
         broadcastPlayerList(roomCode);
     }
 
+    public List<Player> getPlayers(String nickname) {
+        Room room = roomRepository.findByCode(nickname);
+        return room.getPlayers();
+    }
+
     private Player getPlayer(String nickname, String roomCode) {
         Room room = roomRepository.findByCode(roomCode);
         return playerRepository.findByNicknameAndRoom(nickname, room);
-    }
-
-    private List<Player> getPlayers(String nickname) {
-        Room room = roomRepository.findByCode(nickname);
-        return room.getPlayers();
     }
 
     private void updateConnection(String nickname, String roomCode, boolean isConnected) {
