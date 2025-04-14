@@ -6,7 +6,7 @@ public class VoteStartDTO {
 
     public VoteStartDTO() {}
 
-    public VoteStartDTO(String initiator, String target) {
+    public VoteStartDTO(String target) {
         this.target = target;
     }
 
