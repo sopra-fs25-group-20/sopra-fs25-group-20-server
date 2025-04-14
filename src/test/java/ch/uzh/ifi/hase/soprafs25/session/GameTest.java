@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.session;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -7,13 +8,13 @@ import java.util.Map;
 import java.util.List;
 
 public class GameTest {
-    
+
     @Test
     public void testGameInitialization() {
         Game game = new Game("ROOM123");
 
         assertEquals("ROOM123", game.getRoomCode());
-        assertEquals(GamePhase.WAITING, game.getPhase());
+        assertEquals(GamePhase.LOBBY, game.getPhase());
         assertEquals(0, game.getHighlightedImage());
         assertTrue(game.getRoles().isEmpty());
     }
@@ -21,8 +22,8 @@ public class GameTest {
     @Test
     public void testSetPhase() {
         Game game = new Game("ROOM456");
-        game.setPhase(GamePhase.VOTING);
-        assertEquals(GamePhase.VOTING, game.getPhase());
+        game.setPhase(GamePhase.VOTE);
+        assertEquals(GamePhase.VOTE, game.getPhase());
     }
 
     @Test
