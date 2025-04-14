@@ -5,8 +5,6 @@ import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.model.PlayerListUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +13,6 @@ import java.util.List;
 @Service
 public class PlayerConnectionService {
 
-    private static final Logger log = LoggerFactory.getLogger(PlayerConnectionService.class);
     private final PlayerRepository playerRepository;
     private final RoomRepository roomRepository;
     private final SimpMessagingTemplate messagingTemplate;
@@ -66,7 +63,7 @@ public class PlayerConnectionService {
         }
 
         Room room = roomRepository.findByCode(roomCode);
-        Player kickedPlayer = playerRepository.findByNicknameAndRoom("asdasd", room);
+        Player kickedPlayer = playerRepository.findByNicknameAndRoom(kickedNickname, room);
         if (kickedPlayer == null) {
             throw new IllegalStateException("Player with nickname " + kickedNickname + " not found");
         }
@@ -74,8 +71,11 @@ public class PlayerConnectionService {
         broadcastPlayerList(roomCode);
     }
 
-    public List<Player> getPlayers(String nickname) {
-        Room room = roomRepository.findByCode(nickname);
+    public List<Player> getPlayers(String roomCode) {
+        Room room = roomRepository.findByCode(roomCode);
+        if (room == null) {
+            throw new IllegalStateException("Room not found: " + roomCode);
+        }
         return room.getPlayers();
     }
 
