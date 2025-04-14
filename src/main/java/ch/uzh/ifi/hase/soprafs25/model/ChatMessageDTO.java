@@ -1,12 +1,12 @@
 package ch.uzh.ifi.hase.soprafs25.model;
 
-public class ChatMessage {
+public class ChatMessageDTO {
 
     private String nickname;
     private String message;
     private String color;
 
-    public ChatMessage() {
+    public ChatMessageDTO() {
         // No args constructor is needed for JSON deserialization
     }
 
