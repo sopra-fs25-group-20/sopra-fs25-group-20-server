@@ -114,19 +114,6 @@ public class GameService {
         return gameSettings;
     }
 
-    public void kickPlayer(String kickerNickname, String kickedNickname, String roomCode) {
-        if (!isAdmin(roomCode, kickerNickname)){
-            throw new IllegalStateException("Only admin can kick a player");
-        }
-
-        Room room = roomRepository.findByCode(roomCode);
-        Player kickedPlayer = playerRepository.findByNicknameAndRoom(kickedNickname, room);
-        if (kickedPlayer == null) {
-            throw new IllegalStateException("Player with nickname " + kickerNickname + " not found");
-        }
-        room.removePlayer(kickedPlayer);
-    }
-
     public ResultDTO getGameResult(String roomCode) {
         Game game = getGame(roomCode);
 

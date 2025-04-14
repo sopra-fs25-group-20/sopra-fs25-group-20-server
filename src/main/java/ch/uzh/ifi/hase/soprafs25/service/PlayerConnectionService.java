@@ -5,6 +5,8 @@ import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.model.PlayerListUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -13,16 +15,20 @@ import java.util.List;
 @Service
 public class PlayerConnectionService {
 
+    private static final Logger log = LoggerFactory.getLogger(PlayerConnectionService.class);
     private final PlayerRepository playerRepository;
     private final RoomRepository roomRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final AuthorizationService authorizationService;
 
     public PlayerConnectionService(PlayerRepository playerRepository,
                                    RoomRepository roomRepository,
-                                   SimpMessagingTemplate messagingTemplate) {
+                                   SimpMessagingTemplate messagingTemplate,
+                                   AuthorizationService authorizationService) {
         this.playerRepository = playerRepository;
         this.roomRepository = roomRepository;
         this.messagingTemplate = messagingTemplate;
+        this.authorizationService = authorizationService;
     }
 
     public void markConnected(String nickname, String roomCode) {
@@ -41,7 +47,7 @@ public class PlayerConnectionService {
         return player.isConnected();
     }
 
-    public void broadcastPlayerList(String roomCode) {
+    public List<PlayerListUpdateDTO> broadcastPlayerList(String roomCode) {
         List<Player> players  = getPlayers(roomCode);
 
         List<PlayerListUpdateDTO> playerList = players.stream()
@@ -49,6 +55,21 @@ public class PlayerConnectionService {
                 .toList();
 
         messagingTemplate.convertAndSend("/topic/players/" + roomCode, playerList);
+        return playerList;
+    }
+
+    public void kickPlayer(String kickerNickname, String kickedNickname, String roomCode) {
+        if (authorizationService.isAdmin(roomCode, kickerNickname)){
+            throw new IllegalStateException("Only admin can kick a player");
+        }
+
+        Room room = roomRepository.findByCode(roomCode);
+        Player kickedPlayer = playerRepository.findByNicknameAndRoom("asdasd", room);
+        if (kickedPlayer == null) {
+            throw new IllegalStateException("Player with nickname " + kickedNickname + " not found");
+        }
+        playerRepository.delete(kickedPlayer);
+        broadcastPlayerList(roomCode);
     }
 
     private Player getPlayer(String nickname, String roomCode) {
