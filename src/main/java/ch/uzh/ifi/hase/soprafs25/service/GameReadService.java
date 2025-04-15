@@ -9,7 +9,7 @@ import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GameService {
+public class GameReadService {
 
     public GamePhaseDTO getGamePhase(String roomCode) {
         GamePhase gamePhase = getGame(roomCode).getPhase();

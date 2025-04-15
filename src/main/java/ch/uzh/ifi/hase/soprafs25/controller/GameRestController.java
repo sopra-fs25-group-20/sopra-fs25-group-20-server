@@ -3,7 +3,7 @@ package ch.uzh.ifi.hase.soprafs25.controller;
 import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.model.PlayerListUpdateDTO;
-import ch.uzh.ifi.hase.soprafs25.service.GameService;
+import ch.uzh.ifi.hase.soprafs25.service.GameReadService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,11 +15,11 @@ import java.util.List;
 public class GameRestController {
 
     private final PlayerConnectionService playerConnectionService;
-    private final GameService gameService;
+    private final GameReadService gameReadService;
 
-    public GameRestController(PlayerConnectionService playerConnectionService, GameService gameService) {
+    public GameRestController(PlayerConnectionService playerConnectionService, GameReadService gameReadService) {
         this.playerConnectionService = playerConnectionService;
-        this.gameService = gameService;
+        this.gameReadService = gameReadService;
     }
 
     @GetMapping("/players/{code}")
@@ -29,11 +29,11 @@ public class GameRestController {
 
     @GetMapping("/phase/{code}")
     public GamePhaseDTO getGamePhase(@PathVariable String code) {
-        return gameService.getGamePhase(code);
+        return gameReadService.getGamePhase(code);
     }
 
     @GetMapping("/settings/{code}")
     public GameSettingsDTO getGameSettings(@PathVariable String code) {
-        return gameService.getGameSettings(code);
+        return gameReadService.getGameSettings(code);
     }
 }
