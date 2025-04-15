@@ -29,7 +29,7 @@ public class GameResultDTO {
         return highlightedImageIndex;
     }
 
-    public int getSpyGuessIndex() {
+    public Integer getSpyGuessIndex() {
         return spyGuessIndex;
     }
 
