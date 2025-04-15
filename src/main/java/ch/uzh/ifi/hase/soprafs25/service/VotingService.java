@@ -4,6 +4,8 @@ import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.entity.VotingSession;
+import ch.uzh.ifi.hase.soprafs25.model.VoteStartDTO;
+import ch.uzh.ifi.hase.soprafs25.model.VoteStateDTO;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import ch.uzh.ifi.hase.soprafs25.session.VoteState;
 import org.springframework.stereotype.Service;

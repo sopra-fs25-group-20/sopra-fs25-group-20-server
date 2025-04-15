@@ -29,7 +29,7 @@ public class GameBroadcastService {
     public void broadcastGameSettings(String roomCode) {
         GameSettingsDTO gameSettingsDTO = gameReadService.getGameSettings(roomCode);
 
-        messagingTemplate.convertAndSend("/topic/settings" + roomCode, gameSettingsDTO);
+        messagingTemplate.convertAndSend("/topic/game/settings/" + roomCode, gameSettingsDTO);
     }
 
     public void broadcastPlayerList(String roomCode) {
