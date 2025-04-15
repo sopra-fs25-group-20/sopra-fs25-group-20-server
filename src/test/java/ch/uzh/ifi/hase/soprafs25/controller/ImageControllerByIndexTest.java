@@ -35,15 +35,14 @@ class ImageControllerByIndexTest {
 
     @Test
     void testGetGameImage_invalidIndex_throwsException() {
-        assertThrows(IndexOutOfBoundsException.class, () -> {
-            imageController.getGameImage("ROOM1", 99);
-        });
+        assertThrows(IndexOutOfBoundsException.class,
+                () -> imageController.getGameImage("ROOM1", 99));
     }
 
     @Test
     void testGetGameImage_invalidRoom_throwsException() {
-        assertThrows(IllegalStateException.class, () -> {
-            imageController.getGameImage("NON_EXISTENT", 0);
-        });
+        assertThrows(IllegalStateException.class,
+                () -> imageController.getGameImage("NON_EXISTENT", 0));
     }
+
 }

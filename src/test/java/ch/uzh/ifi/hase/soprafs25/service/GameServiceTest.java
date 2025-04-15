@@ -32,9 +32,13 @@ class GameServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        gameService = new GameService(authorizationService, gameReadService, gameBroadcastService, imageService);
+        try (AutoCloseable mocks = MockitoAnnotations.openMocks(this)) {
+            gameService = new GameService(authorizationService, gameReadService, gameBroadcastService, imageService);
+        } catch (Exception e) {
+            fail("Failed to initialize mocks: " + e.getMessage());
+        }
     }
+
 
     @Test
     void testPrepareImagesForRound_addsImagesCorrectly() {
