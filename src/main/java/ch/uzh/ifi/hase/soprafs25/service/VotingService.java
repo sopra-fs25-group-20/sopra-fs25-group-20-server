@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.entity.VotingSession;
 import org.springframework.stereotype.Service;
 import ch.uzh.ifi.hase.soprafs25.exceptions.VoteAlreadyInProgressException;
@@ -7,15 +8,26 @@ import ch.uzh.ifi.hase.soprafs25.session.VotingSessionManager;
 
 @Service
 public class VotingService {
-    
-    public VotingSession createVotingSession(String roomCode, String initiator, String target) {
+
+    private final GameService gameService;
+    private final GameBroadcastService gameBroadcastService;
+
+    public VotingService(GameService gameService, GameBroadcastService gameBroadcastService) {
+        this.gameService = gameService;
+        this.gameBroadcastService = gameBroadcastService;
+    }
+
+    public void createVotingSession(String roomCode, String initiator, String target) {
         if (VotingSessionManager.isActive(roomCode)) {
             throw new VoteAlreadyInProgressException(roomCode);
         }
 
         VotingSession session = new VotingSession(roomCode, initiator, target);
         VotingSessionManager.addVotingSession(session);
-        return session;
+        gameService.advancePhase(roomCode, GamePhase.VOTE);
+
+        gameBroadcastService.broadcastVoteStart(roomCode, target);
+        gameBroadcastService.broadcastVoteState(roomCode);
     }
 
     public VotingSession getActiveVotingSession(String roomCode) {

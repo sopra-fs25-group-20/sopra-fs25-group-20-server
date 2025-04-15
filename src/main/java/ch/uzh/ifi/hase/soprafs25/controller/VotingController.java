@@ -35,12 +35,8 @@ public class VotingController {
     public void startVote(@Payload VoteStartDTO startDTO, Message<?> socketMessage) {
         String roomCode = SessionUtil.getCode(socketMessage);
         String nickname = SessionUtil.getNickname(socketMessage);
-        
-        VotingSession votingSession = votingService.createVotingSession(roomCode, nickname, startDTO.getTarget());
 
-        messagingTemplate.convertAndSend("/topic/vote/begin/" + roomCode, startDTO);
-        messagingTemplate.convertAndSend("/topic/vote/update/" + roomCode,
-                new VoteStateDTO(votingSession.getVoteState().getVotes()));
+        votingService.createVotingSession(roomCode, nickname, startDTO.getTarget());
     }
 
     @MessageMapping("/vote/cast")
