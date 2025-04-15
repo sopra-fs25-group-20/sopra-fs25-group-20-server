@@ -78,6 +78,14 @@ public class GameReadService {
                 .toList();
     }
 
+    public int getPlayerCount(String roomCode) {
+        Room room = roomRepository.findByCode(roomCode);
+        if (room == null) {
+            throw new IllegalStateException("Room not found: " + roomCode);
+        }
+        return room.getPlayers().size();
+    }
+
     public PlayerRole getPlayerRole(String roomCode, String nickname) {
         Game game = getGame(roomCode);
         return game.getRole(nickname);
