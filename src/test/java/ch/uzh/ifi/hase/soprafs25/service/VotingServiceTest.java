@@ -5,44 +5,65 @@ import ch.uzh.ifi.hase.soprafs25.exceptions.VoteAlreadyInProgressException;
 import ch.uzh.ifi.hase.soprafs25.session.VotingSessionManager;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
 class VotingServiceTest {
-    
+
     private VotingService votingService;
+    private GameService gameService;
+    private GameBroadcastService gameBroadcastService;
+    private GameReadService gameReadService;
 
     @BeforeEach
     void setup() {
-        votingService = new VotingService();
+        gameService = mock(GameService.class);
+        gameBroadcastService = mock(GameBroadcastService.class);
+        gameReadService = mock(GameReadService.class);
+
+        votingService = new VotingService(gameService, gameBroadcastService, gameReadService);
+
         if (VotingSessionManager.isActive("ROOM123")) {
             VotingSessionManager.removeVotingSession("ROOM123");
         }
     }
 
     @Test
-    void testCreateVotingSession_success() {
-        VotingSession session = votingService.createVotingSession("ROOM123", "testUser", "testUser2");
+    void testInitializeVotingSession_success() {
+        votingService.initializeVotingSession("ROOM123", "testUser", "targetUser");
+
+        VotingSession session = VotingSessionManager.getVotingSession("ROOM123");
 
         assertNotNull(session);
         assertEquals("testUser", session.getInitiator());
-        assertEquals("testUser2", session.getTarget());
+        assertEquals("targetUser", session.getTarget());
+
+        verify(gameService).advancePhase(eq("ROOM123"), any());
+        verify(gameBroadcastService).broadcastVoteStart("ROOM123", "targetUser");
+        verify(gameBroadcastService).broadcastVoteState("ROOM123");
     }
 
     @Test
-    void testCreateVotingSession_alreadyActive() {
-        votingService.createVotingSession("ROOM123", "testUser", "testUser2");
+    void testInitializeVotingSession_alreadyActive_throwsException() {
+        votingService.initializeVotingSession("ROOM123", "A", "B");
+
         assertThrows(VoteAlreadyInProgressException.class, () -> {
-            votingService.createVotingSession("ROOM123", "testUser", "testUser2");
+            votingService.initializeVotingSession("ROOM123", "C", "D");
         });
     }
 
     @Test
-    void testCastVote_andCompletion() {
-        votingService.createVotingSession("ROOM123", "testUser", "testUser2");
-        boolean cast1 = votingService.castVote("ROOM123", "testUser3", true);
-        boolean cast2 = votingService.castVote("ROOM123", "testUser3", false);
-        assertTrue(cast1);
-        assertFalse(cast2);
-        assertTrue(votingService.isVoteComplete("ROOM123", 1));
+    void testVotingCompletesAndSessionEnds() {
+        when(gameReadService.getPlayerCount("ROOM123")).thenReturn(2);
+
+        votingService.initializeVotingSession("ROOM123", "initiator", "target");
+
+        votingService.castVote("ROOM123", "voter1", true);
+        votingService.castVote("ROOM123", "voter2", false);
+
+        assertFalse(VotingSessionManager.isActive("ROOM123"));
+
+        verify(gameService, atLeastOnce()).advancePhase(eq("ROOM123"), any());
     }
 }
