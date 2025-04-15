@@ -32,12 +32,17 @@ class GameServiceTest {
 
     @BeforeEach
     void setUp() {
-        try (AutoCloseable mocks = MockitoAnnotations.openMocks(this)) {
-            gameService = new GameService(authorizationService, gameReadService, gameBroadcastService, imageService);
+        AutoCloseable mocks = MockitoAnnotations.openMocks(this);
+        gameService = new GameService(authorizationService, gameReadService, gameBroadcastService, imageService);
+
+        try {
+            mocks.close();
         } catch (Exception e) {
-            fail("Failed to initialize mocks: " + e.getMessage());
+            fail("Failed to close mocks: " + e.getMessage());
         }
     }
+
+
 
 
     @Test
