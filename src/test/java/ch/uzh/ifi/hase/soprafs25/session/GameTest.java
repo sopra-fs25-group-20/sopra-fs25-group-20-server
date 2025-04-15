@@ -16,7 +16,7 @@ class GameTest {
 
         assertEquals("ROOM123", game.getRoomCode());
         assertEquals(GamePhase.LOBBY, game.getPhase());
-        assertEquals(0, game.getHighlightedImage());
+        assertEquals(0, game.getHighlightedImageIndex());
         assertTrue(game.getRoles().isEmpty());
     }
 
@@ -30,8 +30,8 @@ class GameTest {
     @Test
     void testHighlightedImageSetterGetter() {
         Game game = new Game("ROOM789");
-        game.setHighlightedImage(5);
-        assertEquals(5, game.getHighlightedImage());
+        game.setHighlightedImageIndex(5);
+        assertEquals(5, game.getHighlightedImageIndex());
     }
 
     @Test
