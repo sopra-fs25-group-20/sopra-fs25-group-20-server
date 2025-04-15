@@ -4,21 +4,21 @@ import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 
 public class GameResult {
 
-    private int spyGuessIndex;
+    private Integer spyGuessIndex;
     private String votedNickname;
     private PlayerRole winnerRole;
 
-    public GameResult(int spyGuessIndex, String votedNickname, PlayerRole winnerRole) {
+    public GameResult(Integer spyGuessIndex, String votedNickname, PlayerRole winnerRole) {
         this.spyGuessIndex = spyGuessIndex;
         this.votedNickname = votedNickname;
         this.winnerRole = winnerRole;
     }
 
-    public int getSpyGuessIndex() {
+    public Integer getSpyGuessIndex() {
         return spyGuessIndex;
     }
 
-    public void setSpyGuessIndex(int spyGuessIndex) {
+    public void setSpyGuessIndex(Integer spyGuessIndex) {
         this.spyGuessIndex = spyGuessIndex;
     }
 

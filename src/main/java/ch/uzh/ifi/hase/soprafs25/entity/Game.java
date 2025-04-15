@@ -49,7 +49,7 @@ public class Game {
         return gameResult;
     }
 
-    public void setGameResult(int spyGuessIndex, String votedNickname, PlayerRole winnerRole) {
+    public void setGameResult(Integer spyGuessIndex, String votedNickname, PlayerRole winnerRole) {
         this.gameResult = new GameResult(spyGuessIndex, votedNickname, winnerRole);
     }
 
