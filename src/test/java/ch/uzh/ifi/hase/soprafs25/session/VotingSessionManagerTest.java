@@ -43,7 +43,7 @@ class VotingSessionManagerTest {
     }
 
     @Test
-    public void testRemoveVotingSession_NotFound() {
+    void testRemoveVotingSession_NotFound() {
         assertThrows(IllegalStateException.class, () -> {
             VotingSessionManager.removeVotingSession("NON_EXISTENT_ROOM");
         });
