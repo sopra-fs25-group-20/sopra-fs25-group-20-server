@@ -51,17 +51,25 @@ public class VotingService {
     }
 
     public VoteStartDTO getVoteTarget(String roomCode) {
-        VotingSession session = getActiveVotingSession(roomCode);
-        return new VoteStartDTO(session.getTarget());
+        try {
+            VotingSession session = getActiveVotingSession(roomCode);
+            return new VoteStartDTO(session.getTarget());
+        } catch (IllegalStateException e) {
+            return new VoteStartDTO(null);
+        }
     }
 
     public VoteStateDTO getVoteState(String roomCode) {
-        VotingSession session = getActiveVotingSession(roomCode);
-        VoteState voteState = session.getVoteState();
+        try {
+            VotingSession session = getActiveVotingSession(roomCode);
+            VoteState voteState = session.getVoteState();
 
-        int numberYesVotes = voteState.countYesVotes();
-        int numberNoVotes = voteState.countNoVotes();
-        return new VoteStateDTO(numberYesVotes, numberNoVotes);
+            int numberYesVotes = voteState.countYesVotes();
+            int numberNoVotes = voteState.countNoVotes();
+            return new VoteStateDTO(numberYesVotes, numberNoVotes);
+        } catch (IllegalStateException e) {
+            return new VoteStateDTO(0, 0);
+        }
     }
 
     private void createVotingSession(String roomCode, String initiator, String target) {
