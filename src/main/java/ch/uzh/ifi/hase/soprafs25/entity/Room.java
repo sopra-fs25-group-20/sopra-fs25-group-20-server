@@ -19,7 +19,7 @@ public class Room implements Serializable {
     @Column
     private Long adminPlayerId;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "room", fetch = FetchType.EAGER)
     private List<Player> players = new ArrayList<>();
 
     public void addPlayer(Player player) {
