@@ -4,9 +4,14 @@ import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
+import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
+import ch.uzh.ifi.hase.soprafs25.service.image.MockImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
+import org.mapstruct.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -17,13 +22,16 @@ public class GameService {
     private final AuthorizationService authorizationService;
     private final GameReadService gameReadService;
     private final GameBroadcastService gameBroadcastService;
+    private final ImageService imageService;
 
     public GameService(AuthorizationService authorizationService,
                        GameReadService gameReadService,
-                       GameBroadcastService gameBroadcastService) {
+                       GameBroadcastService gameBroadcastService,
+                       @Qualifier("mockImageService") ImageService mockImageService) {
         this.authorizationService = authorizationService;
         this.gameReadService = gameReadService;
         this.gameBroadcastService = gameBroadcastService;
+        this.imageService = mockImageService;
     }
 
     public void startRound(String roomCode, String nickname) {
@@ -94,8 +102,16 @@ public class GameService {
         return game.getHighlightedImageIndex() == spyGuessIndex;
     }
 
-    private void prepareImagesForRound() {
-        // ToDo: Assign images to the game object if missing, return the existing otherwise
+    private void prepareImagesForRound(Game game) {
+        if(!game.getImages().isEmpty()) {
+            return;
+        }
+
+        List<byte[]> imageList = new ArrayList<>();
+        for(int i = 0; i < game.getGameSettings().getImageCount(); i++) {
+            byte[] img = imageService.fetchImageByLocation(game.getGameSettings().getImageRegion());
+            imageList.add(img);
+        }
     }
 
     private Game getGame(String roomCode) {
