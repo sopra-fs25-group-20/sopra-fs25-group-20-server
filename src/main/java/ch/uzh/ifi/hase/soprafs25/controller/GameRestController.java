@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
+import ch.uzh.ifi.hase.soprafs25.model.GameResultDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.model.PlayerListUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.service.GameReadService;
@@ -35,5 +36,10 @@ public class GameRestController {
     @GetMapping("/settings/{code}")
     public GameSettingsDTO getGameSettings(@PathVariable String code) {
         return gameReadService.getGameSettings(code);
+    }
+
+    @GetMapping("/game/result/{code}")
+    public GameResultDTO getResults(@PathVariable String code) {
+        return gameReadService.getGameResult(code);
     }
 }
