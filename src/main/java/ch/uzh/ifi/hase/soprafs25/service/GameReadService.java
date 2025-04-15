@@ -1,17 +1,25 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
-import ch.uzh.ifi.hase.soprafs25.entity.Game;
-import ch.uzh.ifi.hase.soprafs25.entity.GameResult;
-import ch.uzh.ifi.hase.soprafs25.entity.GameSettings;
+import ch.uzh.ifi.hase.soprafs25.entity.*;
 import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameResultDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
+import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class GameReadService {
+
+    private final RoomRepository roomRepository;
+
+    public GameReadService(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
+    }
 
     public GamePhaseDTO getGamePhase(String roomCode) {
         GamePhase gamePhase = getGame(roomCode).getPhase();
@@ -44,6 +52,17 @@ public class GameReadService {
                 game.getHighlightedImageIndex(),
                 result
         );
+    }
+
+    public List<String> getNicknamesInRoom(String roomCode) {
+        Room room = roomRepository.findByCode(roomCode);
+        if (room == null) {
+            throw new IllegalStateException("Room not found: " + roomCode);
+        }
+
+        return room.getPlayers().stream()
+                .map(Player::getNickname)
+                .collect(Collectors.toList());
     }
 
     private Game getGame(String roomCode) {
