@@ -20,7 +20,7 @@ class WebSocketConfigTest {
         MessageBrokerRegistry registry = mock(MessageBrokerRegistry.class);
 
         config.configureMessageBroker(registry);
-        verify(registry).enableSimpleBroker("/topic");
+        verify(registry).enableSimpleBroker("/topic", "/queue");
         verify(registry).setApplicationDestinationPrefixes("/app");
     }
 
@@ -34,6 +34,7 @@ class WebSocketConfigTest {
 
         when(registry.addEndpoint("/ws")).thenReturn(registration);
         when(registration.addInterceptors(interceptor)).thenReturn(registration);
+        when(registration.setHandshakeHandler(any())).thenReturn(registration);
         when(registration.setAllowedOrigins(any())).thenReturn(registration);
 
         config.registerStompEndpoints(registry);

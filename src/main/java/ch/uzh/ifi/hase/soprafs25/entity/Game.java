@@ -78,11 +78,15 @@ public class Game {
     }
 
     public void setImages(List<byte[]> newImages) {
-        images.clear();
+        clearImages();
         images.addAll(newImages);
     }
 
     public PlayerRole getRole(String nickname) {
         return roles.get(nickname);
+    }
+
+    public void clearImages() {
+        images.clear();
     }
 }

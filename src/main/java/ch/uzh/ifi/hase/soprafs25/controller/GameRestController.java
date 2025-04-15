@@ -3,7 +3,7 @@ package ch.uzh.ifi.hase.soprafs25.controller;
 import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameResultDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
-import ch.uzh.ifi.hase.soprafs25.model.PlayerListUpdateDTO;
+import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.service.GameReadService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +24,7 @@ public class GameRestController {
     }
 
     @GetMapping("/players/{code}")
-    public List<PlayerListUpdateDTO> getPlayerList(@PathVariable String code) {
+    public List<PlayerUpdateDTO> getPlayerList(@PathVariable String code) {
         return playerConnectionService.getPlayerListDTO(code);
     }
 
