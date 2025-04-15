@@ -56,6 +56,12 @@ public class GameBroadcastService {
         messagingTemplate.convertAndSend("/topic/vote/cast" + roomCode, voteStateDTO);
     }
 
+    public void broadcastChatMessage(String roomCode, String sender, String message, String color) {
+        ChatMessageDTO chatMessageDTO = new ChatMessageDTO(sender, message, color);
+
+        messagingTemplate.convertAndSend("/topic/chat/" + roomCode, chatMessageDTO);
+    }
+
     public void broadcastPersonalizedRole(String roomCode, String nickname) {
         PlayerRole playerRole = gameReadService.getPlayerRole(roomCode, nickname);
         PlayerRoleDTO playerRoleDTO = new PlayerRoleDTO(playerRole.name().toLowerCase());
