@@ -54,4 +54,20 @@ public class GameController {
 
         playerConnectionService.kickPlayer(kickerNickname, kickedNickname, code);
     }
+
+    @MessageMapping("/role")
+    public void getPlayerRole(Message<?> socketMessage) {
+        String code = SessionUtil.getCode(socketMessage);
+        String nickname = SessionUtil.getNickname(socketMessage);
+
+        gameService.broadcastPersonalizedRole(code, nickname);
+    }
+
+    @MessageMapping("/highlighted")
+    public void getImageIndex(Message<?> socketMessage) {
+        String code = SessionUtil.getCode(socketMessage);
+        String nickname = SessionUtil.getNickname(socketMessage);
+
+        gameService.broadcastPersonalizedImageIndex(code, nickname);
+    }
 }

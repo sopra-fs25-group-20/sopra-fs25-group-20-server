@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.*;
 import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameResultDTO;
@@ -76,6 +77,18 @@ public class GameReadService {
         return players.stream()
                 .map(p -> new PlayerUpdateDTO(p.getNickname(), p.getColor()))
                 .toList();
+    }
+
+    public PlayerRole getPlayerRole(String roomCode, String nickname) {
+        Game game = getGame(roomCode);
+        return game.getRole(nickname);
+    }
+
+    public int getPersonalizedImageIndex(String roomCode, String nickname) {
+        PlayerRole role = getGame(roomCode).getRole(nickname);
+        return (role == PlayerRole.INNOCENT)
+                ? getGame(roomCode).getHighlightedImageIndex()
+                : -1;
     }
 
     private Game getGame(String roomCode) {

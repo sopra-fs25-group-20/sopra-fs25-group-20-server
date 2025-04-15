@@ -75,6 +75,14 @@ public class GameService {
         gameBroadcastService.broadcastGameSettings(roomCode);
     }
 
+    public void broadcastPersonalizedRole(String roomCode, String nickname) {
+        gameBroadcastService.broadcastPersonalizedRole(roomCode, nickname);
+    }
+
+    public void broadcastPersonalizedImageIndex(String roomCode, String nickname) {
+        gameBroadcastService.broadcastPersonalizedImageIndex(roomCode, nickname);
+    }
+
     private boolean checkSpyGuess(String roomCode, String nickname, int spyGuessIndex) {
         Game game = getGame(roomCode);
         if (game.getRole(nickname) != PlayerRole.SPY) {

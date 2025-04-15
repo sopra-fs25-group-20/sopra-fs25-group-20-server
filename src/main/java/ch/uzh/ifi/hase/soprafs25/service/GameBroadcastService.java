@@ -1,8 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
-import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
-import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
-import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
+import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
+import ch.uzh.ifi.hase.soprafs25.model.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +35,27 @@ public class GameBroadcastService {
         List<PlayerUpdateDTO> listPlayerUpdateDTO = gameReadService.getPlayerUpdateList(roomCode);
 
         messagingTemplate.convertAndSend("/topic/players/" + roomCode, listPlayerUpdateDTO);
+    }
+
+    public void broadcastPersonalizedRole(String roomCode, String nickname) {
+        PlayerRole playerRole = gameReadService.getPlayerRole(roomCode, nickname);
+        PlayerRoleDTO playerRoleDTO = new PlayerRoleDTO(playerRole.name().toLowerCase());
+
+        messagingTemplate.convertAndSendToUser(
+                nickname + ":" + roomCode,
+                "/queue/role/" + roomCode,
+                playerRoleDTO
+        );
+    }
+
+    public void broadcastPersonalizedImageIndex(String roomCode, String nickname) {
+        int highlightedImageIndex = gameReadService.getPersonalizedImageIndex(roomCode, nickname);
+        ImageIndexDTO imageIndexDTO = new ImageIndexDTO(highlightedImageIndex);
+
+        messagingTemplate.convertAndSendToUser(
+                nickname + ":" + roomCode,
+                "/queue/highlighted/" + roomCode,
+                imageIndexDTO
+        );
     }
 }
