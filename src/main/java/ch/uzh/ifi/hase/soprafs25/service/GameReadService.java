@@ -12,7 +12,6 @@ import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class GameReadService {
@@ -64,7 +63,7 @@ public class GameReadService {
 
         return room.getPlayers().stream()
                 .map(Player::getNickname)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<PlayerUpdateDTO> getPlayerUpdateList(String roomCode) {

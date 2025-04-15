@@ -12,6 +12,8 @@ import java.util.Random;
 @Service
 public class GameService {
 
+    private static final Random RANDOM = new Random();
+
     private final AuthorizationService authorizationService;
     private final GameReadService gameReadService;
     private final GameBroadcastService gameBroadcastService;
@@ -32,7 +34,7 @@ public class GameService {
 
         advancePhase(roomCode, GamePhase.GAME);
         game.assignRoles(gameReadService.getNicknamesInRoom(roomCode));
-        game.setHighlightedImageIndex(new Random().nextInt(game.getGameSettings().getImageCount()));
+        game.setHighlightedImageIndex(RANDOM.nextInt(game.getGameSettings().getImageCount()));
         prepareImagesForRound();
     }
 
