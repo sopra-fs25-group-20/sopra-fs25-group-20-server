@@ -4,6 +4,8 @@ public class ImageIndexDTO {
 
     private Integer index;
 
+    ImageIndexDTO() {}
+
     public ImageIndexDTO(Integer index) {
         this.index = index;
     }
