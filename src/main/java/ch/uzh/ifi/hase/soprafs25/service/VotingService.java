@@ -4,6 +4,8 @@ import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.entity.VotingSession;
+import ch.uzh.ifi.hase.soprafs25.model.VoteStartDTO;
+import ch.uzh.ifi.hase.soprafs25.model.VoteStateDTO;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import ch.uzh.ifi.hase.soprafs25.session.VoteState;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,7 @@ public class VotingService {
         gameService.advancePhase(roomCode, GamePhase.VOTE);
 
         gameBroadcastService.broadcastVoteStart(roomCode, target);
-        gameBroadcastService.broadcastVoteState(roomCode);
+        gameBroadcastService.broadcastVoteState(roomCode, 0, 0);
     }
 
     public void castVote(String roomCode, String voter, boolean voteYes) {
@@ -42,7 +44,31 @@ public class VotingService {
             handleVotingResults(roomCode);
             endVotingSession(roomCode);
         } else {
-            gameBroadcastService.broadcastVoteState(roomCode);
+            int numberYesVotes = voteState.countYesVotes();
+            int numberNoVotes = voteState.countNoVotes();
+            gameBroadcastService.broadcastVoteState(roomCode, numberYesVotes, numberNoVotes);
+        }
+    }
+
+    public VoteStartDTO getVoteTarget(String roomCode) {
+        try {
+            VotingSession session = getActiveVotingSession(roomCode);
+            return new VoteStartDTO(session.getTarget());
+        } catch (IllegalStateException e) {
+            return new VoteStartDTO(null);
+        }
+    }
+
+    public VoteStateDTO getVoteState(String roomCode) {
+        try {
+            VotingSession session = getActiveVotingSession(roomCode);
+            VoteState voteState = session.getVoteState();
+
+            int numberYesVotes = voteState.countYesVotes();
+            int numberNoVotes = voteState.countNoVotes();
+            return new VoteStateDTO(numberYesVotes, numberNoVotes);
+        } catch (IllegalStateException e) {
+            return new VoteStateDTO(0, 0);
         }
     }
 

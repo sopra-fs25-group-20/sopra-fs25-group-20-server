@@ -24,6 +24,9 @@ class JoinRoomServiceTest {
     @Mock
     private RoomRepository roomRepository;
 
+    @Mock
+    private GameBroadcastService gameBroadcastService;
+
     @InjectMocks
     private JoinRoomService joinRoomService;
 
@@ -38,8 +41,11 @@ class JoinRoomServiceTest {
         when(playerRepository.findByNicknameAndRoom("testUser", room)).thenReturn(null);
         when(playerRepository.save(any(Player.class))).thenReturn(player);
 
+        doNothing().when(gameBroadcastService).broadcastPlayerList("ABC123");
+
         Player result = joinRoomService.joinRoom("ABC123", player);
         assertEquals("testUser", result.getNickname());
+        verify(gameBroadcastService).broadcastPlayerList("ABC123");
     }
 
     @Test

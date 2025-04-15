@@ -1,11 +1,9 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
-import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
-import ch.uzh.ifi.hase.soprafs25.model.GameResultDTO;
-import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
-import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
+import ch.uzh.ifi.hase.soprafs25.model.*;
 import ch.uzh.ifi.hase.soprafs25.service.GameReadService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
+import ch.uzh.ifi.hase.soprafs25.service.VotingService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,10 +15,14 @@ public class GameRestController {
 
     private final PlayerConnectionService playerConnectionService;
     private final GameReadService gameReadService;
+    private final VotingService votingService;
 
-    public GameRestController(PlayerConnectionService playerConnectionService, GameReadService gameReadService) {
+    public GameRestController(PlayerConnectionService playerConnectionService,
+                              GameReadService gameReadService,
+                              VotingService votingService) {
         this.playerConnectionService = playerConnectionService;
         this.gameReadService = gameReadService;
+        this.votingService = votingService;
     }
 
     @GetMapping("/players/{code}")
@@ -41,5 +43,15 @@ public class GameRestController {
     @GetMapping("/game/result/{code}")
     public GameResultDTO getResults(@PathVariable String code) {
         return gameReadService.getGameResult(code);
+    }
+
+    @GetMapping("/game/vote/target/{code}")
+    public VoteStartDTO getVoteTarget(@PathVariable String code) {
+        return votingService.getVoteTarget(code);
+    }
+
+    @GetMapping("/game/vote/state/{code}")
+    public VoteStateDTO getVoteState(@PathVariable String code) {
+        return votingService.getVoteState(code);
     }
 }

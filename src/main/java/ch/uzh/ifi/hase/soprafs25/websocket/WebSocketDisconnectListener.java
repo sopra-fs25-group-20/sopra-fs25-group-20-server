@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.websocket;
 
+import ch.uzh.ifi.hase.soprafs25.service.GameBroadcastService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +17,11 @@ public class WebSocketDisconnectListener {
     private static final Logger log = LoggerFactory.getLogger(WebSocketDisconnectListener.class);
 
     private final PlayerConnectionService playerConnectionService;
+    private final GameBroadcastService gameBroadcastService;
 
-    public WebSocketDisconnectListener(PlayerConnectionService playerConnectionService) {
+    public WebSocketDisconnectListener(PlayerConnectionService playerConnectionService, GameBroadcastService gameBroadcastService) {
         this.playerConnectionService = playerConnectionService;
+        this.gameBroadcastService = gameBroadcastService;
     }
 
     @EventListener
@@ -34,6 +37,7 @@ public class WebSocketDisconnectListener {
 
             log.info("User disconnected: nickname={}, code={}, color={}", nickname, code, color);
             playerConnectionService.markDisconnected(nickname, code);
+            gameBroadcastService.broadcastPlayerList(code);
         } else {
             log.warn("Disconnect with no session attributes found");
         }

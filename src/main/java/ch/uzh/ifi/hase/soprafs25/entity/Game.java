@@ -13,7 +13,7 @@ public class Game {
     
     private final String roomCode;
     private GamePhase phase;
-    private int highlightedImageIndex;
+    private Integer highlightedImageIndex;
     private GameResult gameResult;
     private final GameSettings gameSettings;
     private final Map<String, PlayerRole> roles = new HashMap<>();
@@ -37,11 +37,11 @@ public class Game {
         this.phase = phase;
     }
 
-    public int getHighlightedImageIndex() {
+    public Integer getHighlightedImageIndex() {
         return highlightedImageIndex;
     }
 
-    public void setHighlightedImageIndex(int highlightedImageIndex) {
+    public void setHighlightedImageIndex(Integer highlightedImageIndex) {
         this.highlightedImageIndex = highlightedImageIndex;
     }
 

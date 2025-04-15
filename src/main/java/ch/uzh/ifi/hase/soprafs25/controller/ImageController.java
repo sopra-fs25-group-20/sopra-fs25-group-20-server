@@ -38,7 +38,5 @@ public class ImageController {
         Game game = GameSessionManager.getGameSession(roomCode);
         return game.getImages().get(index);
     }
-
-
 }
 

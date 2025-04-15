@@ -1,15 +1,12 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
-import ch.uzh.ifi.hase.soprafs25.entity.VotingSession;
 import ch.uzh.ifi.hase.soprafs25.model.*;
-import ch.uzh.ifi.hase.soprafs25.session.VoteState;
-import ch.uzh.ifi.hase.soprafs25.session.VotingSessionManager;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 public class GameBroadcastService {
@@ -32,7 +29,7 @@ public class GameBroadcastService {
     public void broadcastGameSettings(String roomCode) {
         GameSettingsDTO gameSettingsDTO = gameReadService.getGameSettings(roomCode);
 
-        messagingTemplate.convertAndSend("/topic/settings" + roomCode, gameSettingsDTO);
+        messagingTemplate.convertAndSend("/topic/game/settings/" + roomCode, gameSettingsDTO);
     }
 
     public void broadcastPlayerList(String roomCode) {
@@ -47,13 +44,10 @@ public class GameBroadcastService {
         messagingTemplate.convertAndSend("/topic/vote/init/" + roomCode, voteStartDTO);
     }
 
-    public void broadcastVoteState(String roomCode) {
-        VotingSession votingSession = VotingSessionManager.getVotingSession(roomCode);
-        VoteState voteState = votingSession.getVoteState();
-        Map<String, Boolean> votes = voteState.getVotes();
-        VoteStateDTO voteStateDTO = new VoteStateDTO(votes);
+    public void broadcastVoteState(String roomCode, int numberYesVotes, int numberNoVotes) {
+        VoteStateDTO voteStateDTO = new VoteStateDTO(numberYesVotes, numberNoVotes);
 
-        messagingTemplate.convertAndSend("/topic/vote/cast" + roomCode, voteStateDTO);
+        messagingTemplate.convertAndSend("/topic/vote/cast/" + roomCode, voteStateDTO);
     }
 
     public void broadcastChatMessage(String roomCode, String sender, String message, String color) {
@@ -64,7 +58,11 @@ public class GameBroadcastService {
 
     public void broadcastPersonalizedRole(String roomCode, String nickname) {
         PlayerRole playerRole = gameReadService.getPlayerRole(roomCode, nickname);
-        PlayerRoleDTO playerRoleDTO = new PlayerRoleDTO(playerRole.name().toLowerCase());
+        PlayerRoleDTO playerRoleDTO = new PlayerRoleDTO(
+                playerRole == null
+                ? null
+                : playerRole.name().toLowerCase()
+        );
 
         messagingTemplate.convertAndSendToUser(
                 nickname + ":" + roomCode,
@@ -74,7 +72,7 @@ public class GameBroadcastService {
     }
 
     public void broadcastPersonalizedImageIndex(String roomCode, String nickname) {
-        int highlightedImageIndex = gameReadService.getPersonalizedImageIndex(roomCode, nickname);
+        Integer highlightedImageIndex = gameReadService.getPersonalizedImageIndex(roomCode, nickname);
         ImageIndexDTO imageIndexDTO = new ImageIndexDTO(highlightedImageIndex);
 
         messagingTemplate.convertAndSendToUser(

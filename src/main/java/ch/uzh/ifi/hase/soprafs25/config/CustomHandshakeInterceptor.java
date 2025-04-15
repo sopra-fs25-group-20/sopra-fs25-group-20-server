@@ -21,7 +21,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
     private final JoinRoomService joinRoomService;
     private final PlayerConnectionService playerConnectionService;
 
-    public CustomHandshakeInterceptor(JoinRoomService joinRoomService,
+    public CustomHandshakeInterceptor(@Lazy JoinRoomService joinRoomService,
                                       @Lazy PlayerConnectionService playerConnectionService) {
         this.joinRoomService = joinRoomService;
         this.playerConnectionService = playerConnectionService;

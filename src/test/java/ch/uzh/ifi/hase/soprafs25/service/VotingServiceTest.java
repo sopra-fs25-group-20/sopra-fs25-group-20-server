@@ -41,7 +41,7 @@ class VotingServiceTest {
 
         verify(gameService).advancePhase(eq("ROOM123"), any());
         verify(gameBroadcastService).broadcastVoteStart("ROOM123", "targetUser");
-        verify(gameBroadcastService).broadcastVoteState("ROOM123");
+        verify(gameBroadcastService).broadcastVoteState("ROOM123", 0, 0);
     }
 
     @Test

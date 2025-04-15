@@ -91,8 +91,11 @@ public class GameReadService {
         return game.getRole(nickname);
     }
 
-    public int getPersonalizedImageIndex(String roomCode, String nickname) {
+    public Integer getPersonalizedImageIndex(String roomCode, String nickname) {
         PlayerRole role = getGame(roomCode).getRole(nickname);
+        if (role == null) {
+            return null;
+        }
         return (role == PlayerRole.INNOCENT)
                 ? getGame(roomCode).getHighlightedImageIndex()
                 : -1;
