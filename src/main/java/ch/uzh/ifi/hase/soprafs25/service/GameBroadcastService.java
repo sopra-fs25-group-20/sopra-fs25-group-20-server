@@ -1,15 +1,12 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
-import ch.uzh.ifi.hase.soprafs25.entity.VotingSession;
 import ch.uzh.ifi.hase.soprafs25.model.*;
-import ch.uzh.ifi.hase.soprafs25.session.VoteState;
-import ch.uzh.ifi.hase.soprafs25.session.VotingSessionManager;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 public class GameBroadcastService {
@@ -61,7 +58,11 @@ public class GameBroadcastService {
 
     public void broadcastPersonalizedRole(String roomCode, String nickname) {
         PlayerRole playerRole = gameReadService.getPlayerRole(roomCode, nickname);
-        PlayerRoleDTO playerRoleDTO = new PlayerRoleDTO(playerRole.name().toLowerCase());
+        PlayerRoleDTO playerRoleDTO = new PlayerRoleDTO(
+                playerRole == null
+                ? null
+                : playerRole.name().toLowerCase()
+        );
 
         messagingTemplate.convertAndSendToUser(
                 nickname + ":" + roomCode,
@@ -71,7 +72,7 @@ public class GameBroadcastService {
     }
 
     public void broadcastPersonalizedImageIndex(String roomCode, String nickname) {
-        int highlightedImageIndex = gameReadService.getPersonalizedImageIndex(roomCode, nickname);
+        Integer highlightedImageIndex = gameReadService.getPersonalizedImageIndex(roomCode, nickname);
         ImageIndexDTO imageIndexDTO = new ImageIndexDTO(highlightedImageIndex);
 
         messagingTemplate.convertAndSendToUser(
