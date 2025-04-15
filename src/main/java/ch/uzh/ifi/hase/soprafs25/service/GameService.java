@@ -5,9 +5,8 @@ import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
-import ch.uzh.ifi.hase.soprafs25.service.image.MockImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
-import org.mapstruct.Qualifier;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class GameService {
         advancePhase(roomCode, GamePhase.GAME);
         game.assignRoles(gameReadService.getNicknamesInRoom(roomCode));
         game.setHighlightedImageIndex(RANDOM.nextInt(game.getGameSettings().getImageCount()));
-        prepareImagesForRound();
+        prepareImagesForRound(game);
     }
 
     public void advancePhase(String roomCode, GamePhase newPhase) {
@@ -112,9 +111,14 @@ public class GameService {
             byte[] img = imageService.fetchImageByLocation(game.getGameSettings().getImageRegion());
             imageList.add(img);
         }
+
+        game.setImages(imageList);
     }
 
     private Game getGame(String roomCode) {
         return GameSessionManager.getGameSession(roomCode);
+    }
+
+    public void createGame(String code) {
     }
 }
