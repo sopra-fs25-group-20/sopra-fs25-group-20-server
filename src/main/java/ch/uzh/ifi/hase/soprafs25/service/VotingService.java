@@ -30,7 +30,7 @@ public class VotingService {
         gameService.advancePhase(roomCode, GamePhase.VOTE);
 
         gameBroadcastService.broadcastVoteStart(roomCode, target);
-        gameBroadcastService.broadcastVoteState(roomCode);
+        gameBroadcastService.broadcastVoteState(roomCode, 0, 0);
     }
 
     public void castVote(String roomCode, String voter, boolean voteYes) {
@@ -42,8 +42,24 @@ public class VotingService {
             handleVotingResults(roomCode);
             endVotingSession(roomCode);
         } else {
-            gameBroadcastService.broadcastVoteState(roomCode);
+            int numberYesVotes = voteState.countYesVotes();
+            int numberNoVotes = voteState.countNoVotes();
+            gameBroadcastService.broadcastVoteState(roomCode, numberYesVotes, numberNoVotes);
         }
+    }
+
+    public VoteStartDTO getVoteTarget(String roomCode) {
+        VotingSession session = getActiveVotingSession(roomCode);
+        return new VoteStartDTO(session.getTarget());
+    }
+
+    public VoteStateDTO getVoteState(String roomCode) {
+        VotingSession session = getActiveVotingSession(roomCode);
+        VoteState voteState = session.getVoteState();
+
+        int numberYesVotes = voteState.countYesVotes();
+        int numberNoVotes = voteState.countNoVotes();
+        return new VoteStateDTO(numberYesVotes, numberNoVotes);
     }
 
     private void createVotingSession(String roomCode, String initiator, String target) {

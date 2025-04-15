@@ -47,13 +47,10 @@ public class GameBroadcastService {
         messagingTemplate.convertAndSend("/topic/vote/init/" + roomCode, voteStartDTO);
     }
 
-    public void broadcastVoteState(String roomCode) {
-        VotingSession votingSession = VotingSessionManager.getVotingSession(roomCode);
-        VoteState voteState = votingSession.getVoteState();
-        Map<String, Boolean> votes = voteState.getVotes();
-        VoteStateDTO voteStateDTO = new VoteStateDTO(votes);
+    public void broadcastVoteState(String roomCode, int numberYesVotes, int numberNoVotes) {
+        VoteStateDTO voteStateDTO = new VoteStateDTO(numberYesVotes, numberNoVotes);
 
-        messagingTemplate.convertAndSend("/topic/vote/cast" + roomCode, voteStateDTO);
+        messagingTemplate.convertAndSend("/topic/vote/cast/" + roomCode, voteStateDTO);
     }
 
     public void broadcastChatMessage(String roomCode, String sender, String message, String color) {
