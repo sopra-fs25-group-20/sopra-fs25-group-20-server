@@ -1,13 +1,13 @@
 package ch.uzh.ifi.hase.soprafs25.model;
 
-public class PlayerListUpdateDTO {
+public class PlayerUpdateDTO {
 
     private String nickname;
     private String color;
 
-    public PlayerListUpdateDTO() {}
+    public PlayerUpdateDTO() {}
 
-    public PlayerListUpdateDTO(String nickname, String color) {
+    public PlayerUpdateDTO(String nickname, String color) {
         this.nickname = nickname;
         this.color = color;
     }

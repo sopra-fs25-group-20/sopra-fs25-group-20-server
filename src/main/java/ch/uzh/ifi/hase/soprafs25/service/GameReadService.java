@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs25.entity.*;
 import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameResultDTO;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
+import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,18 @@ public class GameReadService {
         return room.getPlayers().stream()
                 .map(Player::getNickname)
                 .collect(Collectors.toList());
+    }
+
+    public List<PlayerUpdateDTO> getPlayerUpdateList(String roomCode) {
+        Room room = roomRepository.findByCode(roomCode);
+        if (room == null) {
+            throw new IllegalStateException("Room not found: " + roomCode);
+        }
+
+        List<Player> players = room.getPlayers();
+        return players.stream()
+                .map(p -> new PlayerUpdateDTO(p.getNickname(), p.getColor()))
+                .toList();
     }
 
     private Game getGame(String roomCode) {

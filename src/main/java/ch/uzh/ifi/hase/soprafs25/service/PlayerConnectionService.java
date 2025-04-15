@@ -2,10 +2,9 @@ package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.entity.Room;
-import ch.uzh.ifi.hase.soprafs25.model.PlayerListUpdateDTO;
+import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,17 +14,17 @@ public class PlayerConnectionService {
 
     private final PlayerRepository playerRepository;
     private final RoomRepository roomRepository;
-    private final SimpMessagingTemplate messagingTemplate;
     private final AuthorizationService authorizationService;
+    private final GameBroadcastService gameBroadcastService;
 
     public PlayerConnectionService(PlayerRepository playerRepository,
                                    RoomRepository roomRepository,
-                                   SimpMessagingTemplate messagingTemplate,
-                                   AuthorizationService authorizationService) {
+                                   AuthorizationService authorizationService,
+                                   GameBroadcastService gameBroadcastService) {
         this.playerRepository = playerRepository;
         this.roomRepository = roomRepository;
-        this.messagingTemplate = messagingTemplate;
         this.authorizationService = authorizationService;
+        this.gameBroadcastService = gameBroadcastService;
     }
 
     public void markConnected(String nickname, String roomCode) {
@@ -44,16 +43,10 @@ public class PlayerConnectionService {
         return player.isConnected();
     }
 
-    public void broadcastPlayerList(String roomCode) {
-        List<PlayerListUpdateDTO> playerList = getPlayerListDTO(roomCode);
-
-        messagingTemplate.convertAndSend("/topic/players/" + roomCode, playerList);
-    }
-
-    public List<PlayerListUpdateDTO> getPlayerListDTO(String roomCode) {
+    public List<PlayerUpdateDTO> getPlayerListDTO(String roomCode) {
         List<Player> players = getPlayers(roomCode);
         return players.stream()
-                .map(p -> new PlayerListUpdateDTO(p.getNickname(), p.getColor()))
+                .map(p -> new PlayerUpdateDTO(p.getNickname(), p.getColor()))
                 .toList();
     }
 
@@ -68,7 +61,7 @@ public class PlayerConnectionService {
             throw new IllegalStateException("Player with nickname " + kickedNickname + " not found");
         }
         playerRepository.delete(kickedPlayer);
-        broadcastPlayerList(roomCode);
+        gameBroadcastService.broadcastPlayerList(roomCode);
     }
 
     public List<Player> getPlayers(String roomCode) {
