@@ -45,6 +45,15 @@ public class GameService {
         prepareImagesForRound(game);
     }
 
+    public void createGame(String roomCode) {
+        if (GameSessionManager.isActive(roomCode)) {
+            throw new IllegalStateException("Game already active for room: " + roomCode);
+        }
+
+        Game game = new Game(roomCode);
+        GameSessionManager.addGameSession(game);
+    }
+
     public void advancePhase(String roomCode, GamePhase newPhase) {
         Game game = getGame(roomCode);
         GamePhase oldPhase = game.getPhase();
@@ -111,16 +120,10 @@ public class GameService {
             byte[] img = imageService.fetchImageByLocation(game.getGameSettings().getImageRegion());
             imageList.add(img);
         }
-
         game.setImages(imageList);
     }
 
     private Game getGame(String roomCode) {
         return GameSessionManager.getGameSession(roomCode);
-    }
-
-    @SuppressWarnings("unused")
-    public void createGame(String code) {
-        // TODO: implement this method when game creation logic is ready
     }
 }
