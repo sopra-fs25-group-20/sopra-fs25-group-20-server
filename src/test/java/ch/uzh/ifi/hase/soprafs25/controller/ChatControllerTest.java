@@ -1,40 +1,41 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.model.ChatMessageDTO;
+import ch.uzh.ifi.hase.soprafs25.service.GameBroadcastService;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 
 class ChatControllerTest {
 
     @Test
     void createMessageSendsToCorrectTopic() {
-        SimpMessagingTemplate messagingTemplate = mock(SimpMessagingTemplate.class);
-        ChatController controller = new ChatController(messagingTemplate);
+        GameBroadcastService mockBroadcastService = mock(GameBroadcastService.class);
+        ChatController controller = new ChatController(mockBroadcastService);
 
         ChatMessageDTO chatMessageDTO = new ChatMessageDTO();
+        chatMessageDTO.setMessage("hello");
+
         Map<String, Object> sessionAttributes = Map.of(
-            "nickname", "testUser",
-            "code", "ROOM1",
-            "color", "blue"
+                "nickname", "testUser",
+                "code", "ROOM1",
+                "color", "blue"
         );
+
         Map<String, Object> headersMap = new HashMap<>();
         headersMap.put("simpSessionAttributes", sessionAttributes);
-        Message<?> message = MessageBuilder.withPayload(new Object())
+
+        Message<?> socketMessage = MessageBuilder.withPayload(new Object())
                 .copyHeaders(headersMap)
                 .build();
-        controller.createMessage(chatMessageDTO, message);
 
-        verify(messagingTemplate).convertAndSend(eq("/topic/chat/ROOM1"), any(ChatMessageDTO.class));
-        assertEquals("testUser", chatMessageDTO.getNickname());
-        assertEquals("blue", chatMessageDTO.getColor());
+        controller.createMessage(chatMessageDTO, socketMessage);
+
+        verify(mockBroadcastService).broadcastChatMessage("ROOM1", "testUser", "hello", "blue");
     }
 }

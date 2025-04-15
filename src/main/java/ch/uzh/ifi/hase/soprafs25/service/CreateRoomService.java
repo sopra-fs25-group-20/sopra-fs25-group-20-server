@@ -13,11 +13,13 @@ public class CreateRoomService {
 
     private final RoomRepository roomRepository;
     private final JoinRoomService joinRoomService;
+    private final GameService gameService;
 
     public CreateRoomService(RoomRepository roomRepository,
-                             JoinRoomService joinRoomService) {
+                             JoinRoomService joinRoomService, GameService gameService) {
         this.roomRepository = roomRepository;
         this.joinRoomService = joinRoomService;
+        this.gameService = gameService;
     }
 
 
@@ -31,6 +33,7 @@ public class CreateRoomService {
         createdRoom.setAdminPlayerId(savedPlayer.getId());
         roomRepository.save(createdRoom);
 
+        gameService.createGame(createdRoom.getCode());
         return savedPlayer;
     }
 }

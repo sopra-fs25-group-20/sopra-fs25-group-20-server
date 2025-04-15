@@ -6,8 +6,12 @@ public class ChatMessageDTO {
     private String message;
     private String color;
 
-    public ChatMessageDTO() {
-        // No args constructor is needed for JSON deserialization
+    public ChatMessageDTO() {}
+
+    public ChatMessageDTO(String nickname, String message, String color) {
+        this.nickname = nickname;
+        this.message = message;
+        this.color = color;
     }
 
     public String getNickname() {

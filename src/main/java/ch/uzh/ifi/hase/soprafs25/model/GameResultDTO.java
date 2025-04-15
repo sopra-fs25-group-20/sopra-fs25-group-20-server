@@ -9,7 +9,7 @@ public class GameResultDTO {
 
     private final Map<String, PlayerRole> roles;
     private final int highlightedImageIndex;
-    private final int spyGuessIndex;
+    private final Integer spyGuessIndex;
     private final String votedNickname;
     private final PlayerRole winnerRole;
 
