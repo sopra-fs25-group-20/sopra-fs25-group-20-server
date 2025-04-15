@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+import ch.uzh.ifi.hase.soprafs25.entity.Game;
+import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 
 @RestController
 public class ImageController {
@@ -28,5 +31,14 @@ public class ImageController {
                 : imageService.fetchImageByLocation(location);
         return ResponseEntity.ok(image);
     }
+
+    @GetMapping(value = "/image/{roomCode}/{index}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public byte[] getGameImage(@PathVariable String roomCode, @PathVariable int index) {
+        Game game = GameSessionManager.getGameSession(roomCode);
+        return game.getImages().get(index);
+    }
+
+
 }
 

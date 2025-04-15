@@ -4,9 +4,13 @@ import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
+import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -17,13 +21,16 @@ public class GameService {
     private final AuthorizationService authorizationService;
     private final GameReadService gameReadService;
     private final GameBroadcastService gameBroadcastService;
+    private final ImageService imageService;
 
     public GameService(AuthorizationService authorizationService,
                        GameReadService gameReadService,
-                       GameBroadcastService gameBroadcastService) {
+                       GameBroadcastService gameBroadcastService,
+                       @Qualifier("mockImageService") ImageService mockImageService) {
         this.authorizationService = authorizationService;
         this.gameReadService = gameReadService;
         this.gameBroadcastService = gameBroadcastService;
+        this.imageService = mockImageService;
     }
 
     public void startRound(String roomCode, String nickname) {
@@ -35,7 +42,7 @@ public class GameService {
         advancePhase(roomCode, GamePhase.GAME);
         game.assignRoles(gameReadService.getNicknamesInRoom(roomCode));
         game.setHighlightedImageIndex(RANDOM.nextInt(game.getGameSettings().getImageCount()));
-        prepareImagesForRound();
+        prepareImagesForRound(game);
     }
 
     public void advancePhase(String roomCode, GamePhase newPhase) {
@@ -94,11 +101,26 @@ public class GameService {
         return game.getHighlightedImageIndex() == spyGuessIndex;
     }
 
-    private void prepareImagesForRound() {
-        // ToDo: Assign images to the game object if missing, return the existing otherwise
+    private void prepareImagesForRound(Game game) {
+        if(!game.getImages().isEmpty()) {
+            return;
+        }
+
+        List<byte[]> imageList = new ArrayList<>();
+        for(int i = 0; i < game.getGameSettings().getImageCount(); i++) {
+            byte[] img = imageService.fetchImageByLocation(game.getGameSettings().getImageRegion());
+            imageList.add(img);
+        }
+
+        game.setImages(imageList);
     }
 
     private Game getGame(String roomCode) {
         return GameSessionManager.getGameSession(roomCode);
+    }
+
+    @SuppressWarnings("unused")
+    public void createGame(String code) {
+        // TODO: implement this method when game creation logic is ready
     }
 }
