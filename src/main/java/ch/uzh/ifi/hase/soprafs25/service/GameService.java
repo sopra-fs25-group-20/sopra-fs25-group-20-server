@@ -12,7 +12,7 @@ import java.util.Random;
 @Service
 public class GameService {
 
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new Random(); // NOSONAR
 
     private final AuthorizationService authorizationService;
     private final GameReadService gameReadService;
