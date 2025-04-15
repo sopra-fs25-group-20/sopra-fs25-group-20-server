@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.service.JoinRoomService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -21,7 +22,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
     private final PlayerConnectionService playerConnectionService;
 
     public CustomHandshakeInterceptor(JoinRoomService joinRoomService,
-                                      PlayerConnectionService playerConnectionService) {
+                                      @Lazy PlayerConnectionService playerConnectionService) {
         this.joinRoomService = joinRoomService;
         this.playerConnectionService = playerConnectionService;
     }

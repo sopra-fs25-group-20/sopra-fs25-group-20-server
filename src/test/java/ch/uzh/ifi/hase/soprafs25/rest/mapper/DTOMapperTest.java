@@ -7,24 +7,24 @@ import ch.uzh.ifi.hase.soprafs25.model.RoomPostDTO;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DTOMapperTest {
+class DTOMapperTest {
 
     @Test
-    public void testCreateRoomDTO() {
+    void testCreateRoomDTO() {
         CreateRoomDTO dto = new CreateRoomDTO("testUser", "ABC123");
         assertEquals("testUser", dto.getNickname());
         assertEquals("ABC123", dto.getRoomCode());
     }
 
     @Test
-    public void testRoomPostDTO() {
+    void testRoomPostDTO() {
         RoomPostDTO dto = new RoomPostDTO("testUser", "ABC123");
         assertEquals("testUser", dto.getNickname());
         assertEquals("ABC123", dto.getCode());
     }
 
     @Test
-    public void testChatMessage() {
+    void testChatMessage() {
         ChatMessageDTO message = new ChatMessageDTO();
         message.setNickname("testUser");
         message.setMessage("hello");
@@ -35,7 +35,7 @@ public class DTOMapperTest {
     }
 
     @Test
-    public void testErrorResponseDTO() {
+    void testErrorResponseDTO() {
         ErrorResponseDTO dto = new ErrorResponseDTO("error");
         assertEquals("error", dto.getMessage());
     }
