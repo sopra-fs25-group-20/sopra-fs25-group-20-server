@@ -16,11 +16,14 @@ public class JoinRoomService {
 
     private final PlayerRepository playerRepository;
     private final RoomRepository roomRepository;
+    private final GameBroadcastService gameBroadcastService;
 
     public JoinRoomService(PlayerRepository playerRepository,
-                           RoomRepository roomRepository) {
+                           RoomRepository roomRepository,
+                           GameBroadcastService gameBroadcastService) {
         this.playerRepository = playerRepository;
         this.roomRepository = roomRepository;
+        this.gameBroadcastService = gameBroadcastService;
     }
 
 
@@ -28,14 +31,18 @@ public class JoinRoomService {
         Room room = getRoom(roomCode);
         Player existingPlayer = playerRepository.findByNicknameAndRoom(playerInput.getNickname(), room);
 
+        Player savedPlayer;
         if (existingPlayer != null) {
             if (existingPlayer.isConnected()) {
                 throw new NicknameAlreadyInRoomException(roomCode, playerInput.getNickname());
             }
-            return reconnect(existingPlayer);
+            savedPlayer = reconnect(existingPlayer);
+        } else {
+            savedPlayer = createNewPlayer(room, playerInput);
         }
+        gameBroadcastService.broadcastPlayerList(roomCode);
 
-        return createNewPlayer(room, playerInput);
+        return savedPlayer;
     }
 
     public void validateJoin(String roomCode, String nickname) {
