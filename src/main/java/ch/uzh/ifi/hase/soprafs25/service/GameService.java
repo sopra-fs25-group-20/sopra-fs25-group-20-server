@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,28 @@ public class GameService {
             game.clearImages();
         }
         gameBroadcastService.broadcastGamePhase(roomCode);
+    }
+
+    public void handleSpyGuess(String roomCode, String nickname, int spyGuessIndex) {
+        Game game = getGame(roomCode);
+        boolean spyGuessCorrect = checkSpyGuess(roomCode, nickname, spyGuessIndex);
+
+        if (spyGuessCorrect) {
+            game.setGameResult(spyGuessIndex, null, PlayerRole.SPY);
+        } else {
+            game.setGameResult(spyGuessIndex, null, PlayerRole.INNOCENT);
+        }
+
+        advancePhase(roomCode, GamePhase.SUMMARY);
+    }
+
+    private boolean checkSpyGuess(String roomCode, String nickname, int spyGuessIndex) {
+        Game game = getGame(roomCode);
+        if (game.getRole(nickname) != PlayerRole.SPY) {
+            throw new IllegalStateException("Innocents can't guess the image");
+        }
+
+        return game.getHighlightedImageIndex() == spyGuessIndex;
     }
 
     private void prepareImagesForRound() {
