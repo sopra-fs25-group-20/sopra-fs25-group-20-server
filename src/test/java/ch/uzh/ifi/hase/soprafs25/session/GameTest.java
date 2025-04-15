@@ -16,7 +16,7 @@ class GameTest {
 
         assertEquals("ROOM123", game.getRoomCode());
         assertEquals(GamePhase.LOBBY, game.getPhase());
-        assertEquals(0, game.getHighlightedImageIndex());
+        assertEquals(null, game.getHighlightedImageIndex());
         assertTrue(game.getRoles().isEmpty());
     }
 
