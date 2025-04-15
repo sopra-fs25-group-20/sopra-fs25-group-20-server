@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs25.service;
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
+import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +58,20 @@ public class GameService {
         }
 
         advancePhase(roomCode, GamePhase.SUMMARY);
+    }
+
+    public void changeGameSettings(String roomCode, String nickname, GameSettingsDTO gameSettings) {
+        if (!authorizationService.isAdmin(roomCode, nickname)){
+            throw new IllegalStateException("Only admin can change the settings");
+        }
+        Game game = getGame(roomCode);
+        game.setGameSettings(
+                gameSettings.getVotingTimer(),
+                gameSettings.getGameTimer(),
+                gameSettings.getImageCount(),
+                gameSettings.getImageRegion()
+        );
+        gameBroadcastService.broadcastGameSettings(roomCode);
     }
 
     private boolean checkSpyGuess(String roomCode, String nickname, int spyGuessIndex) {
