@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs25.model;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PlayerUpdateDTOTest {
 
     @Test
-    @DisplayName("constructor sets nickname and color")
     void constructor_shouldSetFields() {
         PlayerUpdateDTO dto = new PlayerUpdateDTO("alice", "#abcdef");
 
@@ -17,7 +15,6 @@ class PlayerUpdateDTOTest {
     }
 
     @Test
-    @DisplayName("setters override nickname and color")
     void setters_shouldUpdateFields() {
         PlayerUpdateDTO dto = new PlayerUpdateDTO();
         dto.setNickname("bob");

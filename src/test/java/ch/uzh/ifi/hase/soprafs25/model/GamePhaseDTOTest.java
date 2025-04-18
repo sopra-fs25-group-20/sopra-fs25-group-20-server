@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.model;
 
-import org.junit.jupiter.api.DisplayName;
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,20 +8,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GamePhaseDTOTest {
 
     @Test
-    @DisplayName("constructor sets phase correctly & getter returns it")
-    void constructor_shouldSetPhase() {
-        GamePhaseDTO dto = new GamePhaseDTO("lobby");
+    void constructor_setsPhaseCorrectly() {
+        String phase = GamePhase.LOBBY.name().toLowerCase();
 
-        assertThat(dto.getPhase()).isEqualTo("lobby");
+        GamePhaseDTO dto = new GamePhaseDTO(phase);
+
+        assertThat(dto.getPhase()).isEqualTo(phase);
     }
 
     @Test
-    @DisplayName("setter overrides phase value")
-    void setter_shouldOverridePhase() {
-        GamePhaseDTO dto = new GamePhaseDTO("lobby");
+    void setter_updatesPhase() {
+        GamePhaseDTO dto = new GamePhaseDTO(GamePhase.LOBBY.name().toLowerCase());
 
-        dto.setPhase("game");
+        dto.setPhase(GamePhase.GAME.name().toLowerCase());
 
-        assertThat(dto.getPhase()).isEqualTo("game");
+        assertThat(dto.getPhase())
+                .isEqualTo(GamePhase.GAME.name().toLowerCase());
     }
 }
