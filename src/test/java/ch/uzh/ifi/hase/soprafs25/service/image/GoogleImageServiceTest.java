@@ -63,4 +63,29 @@ class GoogleImageServiceTest {
         assertTrue(actualMessage.contains("No StreetView image available"),
                 "Expected cause message to contain 'No StreetView image available'");
     }
+
+    @Test
+    void testFetchImageWithRandomCoordinates() {
+        when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("OK");
+        byte[] expectedImage = new byte[]{1, 2, 3};
+        when(restTemplate.getForObject(any(URI.class), eq(byte[].class))).thenReturn(expectedImage);
+
+        byte[] result = googleImageService.fetchImage();
+
+        assertArrayEquals(expectedImage, result);
+    }
+
+    @Test
+    void testFetchImageByLocationWithRealLocation() {
+        String testLocation = "europe";
+
+        when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("OK");
+        byte[] expectedImage = new byte[]{4, 5, 6};
+        when(restTemplate.getForObject(any(URI.class), eq(byte[].class))).thenReturn(expectedImage);
+
+        byte[] result = googleImageService.fetchImageByLocation(testLocation);
+
+        assertArrayEquals(expectedImage, result);
+    }
+
 }
