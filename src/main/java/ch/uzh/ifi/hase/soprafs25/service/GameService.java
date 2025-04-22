@@ -39,10 +39,10 @@ public class GameService {
         }
         Game game = getGame(roomCode);
 
-        advancePhase(roomCode, GamePhase.GAME);
+        prepareImagesForRound(game);
         game.assignRoles(gameReadService.getNicknamesInRoom(roomCode));
         game.setHighlightedImageIndex(RANDOM.nextInt(game.getGameSettings().getImageCount()));
-        prepareImagesForRound(game);
+        advancePhase(roomCode, GamePhase.GAME);
     }
 
     public void createGame(String roomCode) {
