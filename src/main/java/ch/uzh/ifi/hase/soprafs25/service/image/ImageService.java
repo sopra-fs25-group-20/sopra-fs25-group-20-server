@@ -9,7 +9,6 @@ public interface ImageService {
     byte[] fetchImage();
     byte[] fetchImageByLocation(String location);
 
-    CompletableFuture<byte[]> fetchImageAsync();
     CompletableFuture<byte[]> fetchImageByLocationAsync(String location);
 
     default List<CompletableFuture<byte[]>> fetchImagesByLocationAsync(String location, int count) {

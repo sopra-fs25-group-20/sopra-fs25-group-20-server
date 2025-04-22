@@ -46,11 +46,6 @@ public class GoogleImageService implements ImageService {
     }
 
     @Override
-    public CompletableFuture<byte[]> fetchImageAsync() {
-        return CompletableFuture.supplyAsync(() -> fetchImageWithAttempts(null), executor);
-    }
-
-    @Override
     public CompletableFuture<byte[]> fetchImageByLocationAsync(String location) {
         return CompletableFuture.supplyAsync(() -> fetchImageWithAttempts(location), executor);
     }

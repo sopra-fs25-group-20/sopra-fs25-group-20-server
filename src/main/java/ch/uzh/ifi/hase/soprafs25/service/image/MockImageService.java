@@ -29,11 +29,6 @@ public class MockImageService implements ImageService {
     }
 
     @Override
-    public CompletableFuture<byte[]> fetchImageAsync() {
-        return CompletableFuture.completedFuture(fetchImage());
-    }
-
-    @Override
     public CompletableFuture<byte[]> fetchImageByLocationAsync(String location) {
         return CompletableFuture.completedFuture(fetchImageByLocation(location));
     }
