@@ -9,13 +9,20 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
 
 @Service("googleImageService")
 public class GoogleImageService implements ImageService {
 
-    private static final int MAX_ATTEMPTS = 100;
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    private static final int MAX_ATTEMPTS    = 100;
+    private static final SecureRandom RAND   = new SecureRandom();
+
+    private final Executor executor = Executors.newFixedThreadPool(10);
 
     private final StreetViewMetadataService metadataService;
     private final RestTemplate restTemplate;
@@ -24,52 +31,65 @@ public class GoogleImageService implements ImageService {
     private String apiKey;
 
     public GoogleImageService(StreetViewMetadataService metadataService, RestTemplate restTemplate) {
-        this.metadataService = metadataService;
-        this.restTemplate = restTemplate;
+        this.metadataService  = metadataService;
+        this.restTemplate     = restTemplate;
     }
 
-    /**
-     * Uses completely random coordinates worldwide.
-     */
     @Override
     public byte[] fetchImage() {
         return fetchImageWithAttempts(null);
     }
 
-    /**
-     * Uses bounding box from coordinates.json if location is provided.
-     */
     @Override
     public byte[] fetchImageByLocation(String location) {
         return fetchImageWithAttempts(location);
     }
 
+    @Override
+    public CompletableFuture<byte[]> fetchImageAsync() {
+        return CompletableFuture.supplyAsync(() -> fetchImageWithAttempts(null), executor);
+    }
+
+    @Override
+    public CompletableFuture<byte[]> fetchImageByLocationAsync(String location) {
+        return CompletableFuture.supplyAsync(() -> fetchImageWithAttempts(location), executor);
+    }
+
+
+    public List<CompletableFuture<byte[]>> fetchImagesByLocationAsync(String location, int count) {
+        List<Coordinate> coords = CoordinatesUtil.getRandomCoordinates(location, count * 2);
+        List<String> statuses    = metadataService.getStatuses(coords);
+        List<Coordinate> oks = IntStream.range(0, statuses.size())
+                .filter(i -> "OK".equals(statuses.get(i)))
+                .mapToObj(coords::get)
+                .limit(count)
+                .toList();
+        return oks.stream()
+                .map(c -> CompletableFuture.supplyAsync(
+                        () -> fetchStreetViewImage(c.lat(), c.lng()), executor))
+                .toList();
+    }
+
     private byte[] fetchImageWithAttempts(String location) {
         int attempt = 0;
-
         while (attempt < MAX_ATTEMPTS) {
-            double lat;
-            double lng;
-
+            double lat, lng;
             if (location != null) {
-                Map<String, Double> coords = CoordinatesUtil.getRandomCoordinate(location);
-                if (coords.isEmpty()) {
+                Map<String, Double> m = CoordinatesUtil.getRandomCoordinate(location);
+                if (m.isEmpty()) {
                     throw new ImageLoadingException(new Throwable("Invalid location: " + location));
                 }
-                lat = coords.get("lat");
-                lng = coords.get("lng");
+                lat = m.get("lat");
+                lng = m.get("lng");
             } else {
-                lat = -90.0 + 180.0 * SECURE_RANDOM.nextDouble();
-                lng = -180.0 + 360.0 * SECURE_RANDOM.nextDouble();
+                lat = -90.0 + 180.0 * RAND.nextDouble();
+                lng = -180.0 + 360.0 * RAND.nextDouble();
             }
-
-            String status = metadataService.getStatus(lat, lng);
-            if ("OK".equals(status)) {
+            if ("OK".equals(metadataService.getStatus(lat, lng))) {
                 return fetchStreetViewImage(lat, lng);
             }
             attempt++;
         }
-
         throw new ImageLoadingException(new Throwable("No StreetView image available after " + MAX_ATTEMPTS + " attempts."));
     }
 

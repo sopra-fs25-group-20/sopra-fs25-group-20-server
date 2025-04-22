@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class StreetViewMetadataService {
@@ -38,8 +42,39 @@ public class StreetViewMetadataService {
             String status = rootNode.path("status").asText();
             log.info("Metadata check for location ({}, {}): status={} | URL: {}", lat, lng, status, url);
             return status;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new ImageLoadingException(e);
         }
+    }
+
+        public List<String> getStatuses(List<Coordinate> coords) {
+            String locationsParam = coords.stream()
+                    .map(c -> c.lat() + "," + c.lng())
+                    .collect(Collectors.joining("|"));
+
+            String url = UriComponentsBuilder.newInstance()
+                    .scheme("https")
+                    .host("maps.googleapis.com")
+                    .path("/maps/api/streetview/metadata")
+                    .queryParam("locations", locationsParam)
+                    .queryParam("radius", 5000)
+                    .queryParam("source", "outdoor")
+                    .queryParam("key", apiKey)
+                    .toUriString();
+
+            try {
+                String response = restTemplate.getForObject(url, String.class);
+                JsonNode root = objectMapper.readTree(response);
+                JsonNode responses = root.path("responses");
+
+                List<String> statuses = new ArrayList<>();
+                for (JsonNode node : responses) {
+                    statuses.add(node.path("status").asText());
+                }
+                return statuses;
+            } catch (Exception e) {
+                throw new ImageLoadingException(e);
+            }
     }
 }

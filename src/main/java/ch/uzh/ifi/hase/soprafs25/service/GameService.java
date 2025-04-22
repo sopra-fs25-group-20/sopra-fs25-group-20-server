@@ -9,9 +9,9 @@ import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class GameService {
@@ -115,11 +115,16 @@ public class GameService {
             return;
         }
 
-        List<byte[]> imageList = new ArrayList<>();
-        for(int i = 0; i < game.getGameSettings().getImageCount(); i++) {
-            byte[] img = imageService.fetchImageByLocation(game.getGameSettings().getImageRegion());
-            imageList.add(img);
-        }
+        int count = game.getGameSettings().getImageCount();
+        String region = game.getGameSettings().getImageRegion();
+
+        List<CompletableFuture<byte[]>> futures =
+                imageService.fetchImagesByLocationAsync(region, count);
+
+        List<byte[]> imageList = futures.stream()
+                .map(CompletableFuture::join)
+                .toList();
+
         game.setImages(imageList);
     }
 
