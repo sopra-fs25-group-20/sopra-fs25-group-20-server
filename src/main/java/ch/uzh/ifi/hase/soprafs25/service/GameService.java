@@ -56,12 +56,8 @@ public class GameService {
 
     public void advancePhase(String roomCode, GamePhase newPhase) {
         Game game = getGame(roomCode);
-        GamePhase oldPhase = game.getPhase();
         game.setPhase(newPhase);
 
-        if (oldPhase == GamePhase.SUMMARY && newPhase == GamePhase.GAME) {
-            game.clearImages();
-        }
         gameBroadcastService.broadcastGamePhase(roomCode);
     }
 
