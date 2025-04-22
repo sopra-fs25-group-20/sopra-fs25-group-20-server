@@ -12,6 +12,7 @@ import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.*;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 class MockImageServiceTest {
 
     private final MockImageService imageService = new MockImageService();
