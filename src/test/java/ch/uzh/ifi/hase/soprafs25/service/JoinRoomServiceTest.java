@@ -9,11 +9,10 @@ import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JoinRoomServiceTest {
@@ -75,5 +74,62 @@ class JoinRoomServiceTest {
 
         assertThrows(NicknameAlreadyInRoomException.class, () ->
                 joinRoomService.joinRoom("ROOM99", player));
+    }
+
+    @Test
+    void joinRoomNicknameExistsAndDisconnected_reconnects() {
+        Room room = new Room();
+        room.setCode("ROOM10");
+
+        Player existing = new Player();
+        existing.setNickname("bob");
+        existing.setConnected(false);
+
+        when(roomRepository.findByCode("ROOM10")).thenReturn(room);
+        when(playerRepository.findByNicknameAndRoom("bob", room)).thenReturn(existing);
+        when(playerRepository.save(existing)).thenReturn(existing);
+
+        Player input = new Player();
+        input.setNickname("bob");
+
+        Player result = joinRoomService.joinRoom("ROOM10", input);
+
+        assertEquals("bob", result.getNickname());
+        verify(playerRepository).save(existing);
+    }
+
+    @Test
+    void validateJoin_nicknameAvailable_noException() {
+        Room room = new Room();
+        room.setCode("OPEN");
+
+        when(roomRepository.findByCode("OPEN")).thenReturn(room);
+        when(playerRepository.findByNicknameAndRoom("unique", room)).thenReturn(null);
+
+        assertDoesNotThrow(() -> joinRoomService.validateJoin("OPEN", "unique"));
+    }
+
+    @Test
+    void validateJoin_nicknameAlreadyConnected_throws() {
+        Room room = new Room();
+        room.setCode("DUP");
+
+        Player existing = new Player();
+        existing.setNickname("dup");
+        existing.setConnected(true);
+
+        when(roomRepository.findByCode("DUP")).thenReturn(room);
+        when(playerRepository.findByNicknameAndRoom("dup", room)).thenReturn(existing);
+
+        assertThrows(NicknameAlreadyInRoomException.class, () ->
+                joinRoomService.validateJoin("DUP", "dup"));
+    }
+
+    @Test
+    void validateJoin_roomNotFound_throws() {
+        when(roomRepository.findByCode("NOPE")).thenReturn(null);
+
+        assertThrows(RoomNotFoundException.class, () ->
+                joinRoomService.validateJoin("NOPE", "any"));
     }
 }
