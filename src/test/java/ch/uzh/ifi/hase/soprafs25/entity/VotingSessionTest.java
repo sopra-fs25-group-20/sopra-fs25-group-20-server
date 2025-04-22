@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.entity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
@@ -39,5 +36,18 @@ class VotingSessionTest {
         votingSession.castVote("testUser2", false);
         assertEquals(1, votingSession.getVoteState().getVotes().size());
         assertTrue(votingSession.getVoteState().getVotes().get("testUser2"));
+    }
+
+    @Test
+    void testSetAndGetActive() {
+        votingSession.setActive(false);
+        assertFalse(votingSession.isActive());
+        votingSession.setActive(true);
+        assertTrue(votingSession.isActive());
+    }
+
+    @Test
+    void testVoteSessionIdDefaultNull() {
+        assertNull(votingSession.getVoteSessionId());
     }
 }
