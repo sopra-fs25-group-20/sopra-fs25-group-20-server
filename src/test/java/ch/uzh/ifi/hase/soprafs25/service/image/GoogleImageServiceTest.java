@@ -2,15 +2,17 @@ package ch.uzh.ifi.hase.soprafs25.service.image;
 
 import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.*;
+import reactor.core.publisher.Mono;
 
-import java.net.URI;
+import java.util.concurrent.*;
+import java.util.function.Function;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 class GoogleImageServiceTest {
 
@@ -18,74 +20,91 @@ class GoogleImageServiceTest {
     private StreetViewMetadataService metadataService;
 
     @Mock
-    private RestTemplate restTemplate;
+    private WebClient webClient;
+
+    @SuppressWarnings("rawtypes")
+    @Mock
+    private WebClient.RequestHeadersUriSpec uriSpec;
+
+    @Mock
+    private WebClient.RequestHeadersSpec<?> headersSpec;
+
+    @Mock
+    private WebClient.ResponseSpec responseSpec;
 
     private GoogleImageService googleImageService;
-    private AutoCloseable closeable;
+    private AutoCloseable mocks;
 
     @BeforeEach
-    void setup() {
-        closeable = MockitoAnnotations.openMocks(this);
-        googleImageService = new GoogleImageService(metadataService, restTemplate);
-        ReflectionTestUtils.setField(googleImageService, "apiKey", "dummy-api-key");
+    void setUp() {
+        mocks = MockitoAnnotations.openMocks(this);
+        googleImageService = new GoogleImageService(metadataService, webClient);
+        ReflectionTestUtils.setField(googleImageService, "apiKey", "dummy-key");
     }
 
     @AfterEach
     void tearDown() throws Exception {
-        closeable.close();
+        mocks.close();
     }
 
     @Test
-    void testFetchImageByLocationWithValidLocation() {
-        String testLocation = "asia";
+    void fetchImage_whenStatusOk_returnsBytes() {
         when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("OK");
-        byte[] expectedImage = new byte[]{7, 8, 9};
-        when(restTemplate.getForObject(any(URI.class), eq(byte[].class))).thenReturn(expectedImage);
+        when(webClient.get()).thenReturn(uriSpec);
+        when(uriSpec.uri(any(Function.class))).thenReturn(headersSpec);
+        when(headersSpec.retrieve()).thenReturn(responseSpec);
+        byte[] expected = {1, 2, 3};
+        when(responseSpec.bodyToMono(byte[].class)).thenReturn(Mono.just(expected));
 
-        byte[] result = googleImageService.fetchImageByLocation(testLocation);
+        byte[] actual = googleImageService.fetchImage();
 
-        assertArrayEquals(expectedImage, result);
+        assertArrayEquals(expected, actual);
         verify(metadataService, atLeastOnce()).getStatus(anyDouble(), anyDouble());
-        verify(restTemplate).getForObject(any(URI.class), eq(byte[].class));
     }
 
     @Test
-    void testFetchImageByLocationNoSuccessfulAttempt() {
-        String testLocation = "asia";
+    void fetchImageByLocation_whenStatusOk_returnsBytes() {
+        when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("OK");
+        when(webClient.get()).thenReturn(uriSpec);
+        when(uriSpec.uri(any(Function.class))).thenReturn(headersSpec);
+        when(headersSpec.retrieve()).thenReturn(responseSpec);
+        byte[] expected = {4, 5, 6};
+        when(responseSpec.bodyToMono(byte[].class)).thenReturn(Mono.just(expected));
+
+        byte[] actual = googleImageService.fetchImageByLocation("europe");
+
+        assertArrayEquals(expected, actual);
+        verify(metadataService).getStatus(anyDouble(), anyDouble());
+    }
+
+    @Test
+    void fetchImageByLocationAsync_whenStatusOk_returnsBytes() throws Exception {
+        when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("OK");
+        when(webClient.get()).thenReturn(uriSpec);
+        when(uriSpec.uri(any(Function.class))).thenReturn(headersSpec);
+        when(headersSpec.retrieve()).thenReturn(responseSpec);
+        byte[] expected = {7, 8, 9};
+        when(responseSpec.bodyToMono(byte[].class)).thenReturn(Mono.just(expected));
+
+        CompletableFuture<byte[]> future = googleImageService.fetchImageByLocationAsync("asia");
+        byte[] actual = future.get(5, TimeUnit.SECONDS);
+
+        assertArrayEquals(expected, actual);
+        verify(metadataService).getStatus(anyDouble(), anyDouble());
+    }
+
+    @Test
+    void fetchImageByLocationAsync_whenNoOkStatus_completesExceptionallyWithImageLoadingException() {
         when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("ZERO_RESULTS");
 
-        ImageLoadingException exception = assertThrows(ImageLoadingException.class, () ->
-                googleImageService.fetchImageByLocation(testLocation)
+        CompletableFuture<byte[]> future = googleImageService.fetchImageByLocationAsync("nowhere");
+
+        CompletionException thrown = assertThrows(
+                CompletionException.class,
+                () -> future.join()
         );
-
-        String actualMessage = exception.getErrorMessage();
-        assertNotNull(actualMessage);
-        assertTrue(actualMessage.contains("No StreetView image available"),
-                "Expected cause message to contain 'No StreetView image available'");
+        assertTrue(thrown.getCause() instanceof ImageLoadingException,
+                "Cause should be ImageLoadingException");
+        assertTrue(thrown.getCause().getMessage().contains("Failed to load image"));
     }
-
-    @Test
-    void testFetchImageWithRandomCoordinates() {
-        when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("OK");
-        byte[] expectedImage = new byte[]{1, 2, 3};
-        when(restTemplate.getForObject(any(URI.class), eq(byte[].class))).thenReturn(expectedImage);
-
-        byte[] result = googleImageService.fetchImage();
-
-        assertArrayEquals(expectedImage, result);
-    }
-
-    @Test
-    void testFetchImageByLocationWithRealLocation() {
-        String testLocation = "europe";
-
-        when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("OK");
-        byte[] expectedImage = new byte[]{4, 5, 6};
-        when(restTemplate.getForObject(any(URI.class), eq(byte[].class))).thenReturn(expectedImage);
-
-        byte[] result = googleImageService.fetchImageByLocation(testLocation);
-
-        assertArrayEquals(expectedImage, result);
-    }
-
 }
