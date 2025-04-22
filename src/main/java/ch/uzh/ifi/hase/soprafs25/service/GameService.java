@@ -26,7 +26,7 @@ public class GameService {
     public GameService(AuthorizationService authorizationService,
                        GameReadService gameReadService,
                        GameBroadcastService gameBroadcastService,
-                       @Qualifier("mockImageService") ImageService mockImageService) {
+                       @Qualifier("googleImageService") ImageService mockImageService) {
         this.authorizationService = authorizationService;
         this.gameReadService = gameReadService;
         this.gameBroadcastService = gameBroadcastService;
