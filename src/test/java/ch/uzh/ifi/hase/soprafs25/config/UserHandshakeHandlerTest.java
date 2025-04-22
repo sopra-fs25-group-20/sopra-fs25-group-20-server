@@ -11,7 +11,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-public class UserHandshakeHandlerTest {
+class UserHandshakeHandlerTest {
     
     @Test
     void testDetermineUser() {

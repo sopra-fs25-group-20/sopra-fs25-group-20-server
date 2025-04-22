@@ -32,7 +32,7 @@ class GameBroadcastServiceTest {
         
         gameBroadcastService.broadcastGamePhase("ROOM123");
         
-        verify(messagingTemplate).convertAndSend(eq("/topic/phase/ROOM123"), eq(phaseDTO));
+        verify(messagingTemplate).convertAndSend("/topic/phase/ROOM123", phaseDTO);
 }
 
     @Test

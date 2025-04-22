@@ -5,7 +5,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RestTemplateConfigTest {
+class RestTemplateConfigTest {
     
     @Test
     void testRestTemplateBean() {
