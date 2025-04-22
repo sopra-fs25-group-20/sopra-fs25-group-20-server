@@ -7,7 +7,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.*;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,21 +19,11 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 class GoogleImageServiceTest {
 
-    @Mock
-    private StreetViewMetadataService metadataService;
-
-    @Mock
-    private WebClient webClient;
-
-    @SuppressWarnings("rawtypes")
-    @Mock
-    private WebClient.RequestHeadersUriSpec uriSpec;
-
-    @Mock
-    private WebClient.RequestHeadersSpec<?> headersSpec;
-
-    @Mock
-    private WebClient.ResponseSpec responseSpec;
+    @Mock private StreetViewMetadataService metadataService;
+    @Mock private WebClient webClient;
+    @Mock private WebClient.RequestHeadersUriSpec uriSpec;
+    @Mock private WebClient.RequestHeadersSpec<?> headersSpec;
+    @Mock private WebClient.ResponseSpec responseSpec;
 
     private GoogleImageService googleImageService;
     private AutoCloseable mocks;
@@ -102,7 +94,7 @@ class GoogleImageServiceTest {
 
         CompletionException thrown = assertThrows(
                 CompletionException.class,
-                () -> future.join()
+                future::join
         );
         assertTrue(thrown.getCause() instanceof ImageLoadingException,
                 "Cause should be ImageLoadingException");
