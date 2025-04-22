@@ -19,8 +19,8 @@ import java.util.stream.IntStream;
 @Service("googleImageService")
 public class GoogleImageService implements ImageService {
 
-    private static final int MAX_ATTEMPTS    = 100;
-    private static final SecureRandom RAND   = new SecureRandom();
+    private static final int MAX_ATTEMPTS = 100;
+    private static final Random RAND = new Random();    // NOSONAR
 
     private final Executor executor = Executors.newFixedThreadPool(10);
 
