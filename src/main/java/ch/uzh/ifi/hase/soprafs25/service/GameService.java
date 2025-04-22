@@ -111,15 +111,10 @@ public class GameService {
     }
 
     private void prepareImagesForRound(Game game) {
-        if(!game.getImages().isEmpty()) {
-            return;
-        }
-
         int count = game.getGameSettings().getImageCount();
         String region = game.getGameSettings().getImageRegion();
 
-        List<CompletableFuture<byte[]>> futures =
-                imageService.fetchImagesByLocationAsync(region, count);
+        List<CompletableFuture<byte[]>> futures = imageService.fetchImagesByLocationAsync(region, count);
 
         List<byte[]> imageList = futures.stream()
                 .map(CompletableFuture::join)
