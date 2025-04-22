@@ -2,15 +2,17 @@ package ch.uzh.ifi.hase.soprafs25.service.image;
 
 import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
 import ch.uzh.ifi.hase.soprafs25.util.CoordinatesUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.URI;
-import java.security.SecureRandom;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -21,18 +23,20 @@ public class GoogleImageService implements ImageService {
 
     private static final int MAX_ATTEMPTS = 100;
     private static final Random RAND = new Random();    // NOSONAR
+    private static final Logger log = LoggerFactory.getLogger(GoogleImageService.class);
 
     private final Executor executor = Executors.newFixedThreadPool(10);
 
     private final StreetViewMetadataService metadataService;
-    private final RestTemplate restTemplate;
+    private final WebClient googleMapsClient;
 
     @Value("${google.maps.api.key}")
     private String apiKey;
 
-    public GoogleImageService(StreetViewMetadataService metadataService, RestTemplate restTemplate) {
+    public GoogleImageService(StreetViewMetadataService metadataService,
+                              WebClient googleMapsClient) {
         this.metadataService  = metadataService;
-        this.restTemplate     = restTemplate;
+        this.googleMapsClient = googleMapsClient;
     }
 
     @Override
@@ -105,23 +109,19 @@ public class GoogleImageService implements ImageService {
     }
 
     private byte[] fetchStreetViewImage(double lat, double lng) {
-        URI uri = UriComponentsBuilder.newInstance()
-                .scheme("https")
-                .host("maps.googleapis.com")
-                .path("/maps/api/streetview")
-                .queryParam("size", "400x400")
-                .queryParam("location", lat + "," + lng)
-                .queryParam("radius", 5000)
-                .queryParam("source", "outdoor")
-                .queryParam("key", apiKey)
-                .build()
-                .encode()
-                .toUri();
+        log.info("[{}] fetching image for {},{}",
+                Thread.currentThread().getName(), lat, lng);
 
-        try {
-            return restTemplate.getForObject(uri, byte[].class);
-        } catch (Exception e) {
-            throw new ImageLoadingException(e);
-        }
+        return googleMapsClient.get()
+                .uri(u -> u.path("/streetview")
+                        .queryParam("size", "400x400")
+                        .queryParam("location", lat + "," + lng)
+                        .queryParam("radius", 5000)
+                        .queryParam("source", "outdoor")
+                        .queryParam("key", apiKey)
+                        .build())
+                .retrieve()
+                .bodyToMono(byte[].class)
+                .block();
     }
 }
