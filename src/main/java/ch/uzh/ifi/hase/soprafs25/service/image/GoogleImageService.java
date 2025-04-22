@@ -51,17 +51,33 @@ public class GoogleImageService implements ImageService {
     }
 
 
+    @Override
     public List<CompletableFuture<byte[]>> fetchImagesByLocationAsync(String location, int count) {
-        List<Coordinate> coords = CoordinatesUtil.getRandomCoordinates(location, count * 2);
-        List<String> statuses    = metadataService.getStatuses(coords);
-        List<Coordinate> oks = IntStream.range(0, statuses.size())
-                .filter(i -> "OK".equals(statuses.get(i)))
-                .mapToObj(coords::get)
-                .limit(count)
-                .toList();
-        return oks.stream()
-                .map(c -> CompletableFuture.supplyAsync(
-                        () -> fetchStreetViewImage(c.lat(), c.lng()), executor))
+        List<Coordinate> oks = new ArrayList<>();
+        while (oks.size() < count) {
+            // sample more coords to fill the remainder
+            int needed = count - oks.size();
+            List<Coordinate> batch = CoordinatesUtil.getRandomCoordinates(location, needed * 3);
+            List<String> statuses = metadataService.getStatuses(batch);
+            for (int i = 0; i < statuses.size() && oks.size() < count; i++) {
+                if ("OK".equals(statuses.get(i))) {
+                    oks.add(batch.get(i));
+                }
+            }
+            if (batch.isEmpty()) break;  // give up to avoid infinite loop
+        }
+        if (oks.size() < count) {
+            throw new ImageLoadingException(
+                    new Throwable("Couldn’t find enough StreetView points (“OK”) for region=" + location));
+        }
+
+        return IntStream.range(0, count)
+                .mapToObj(i ->
+                        CompletableFuture.supplyAsync(
+                                () -> fetchImageWithAttempts(location),
+                                executor
+                        )
+                )
                 .toList();
     }
 
