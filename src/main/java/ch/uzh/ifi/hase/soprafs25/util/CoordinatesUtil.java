@@ -11,9 +11,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+@SuppressWarnings("squid:S1192") // suppress duplicate string literal warnings for coordinate keys
 public class CoordinatesUtil {
 
     private static final String COORDINATES_FILE = "/coordinates.json";
+    private static final String LOCATIONS_KEY    = "locations";
+    private static final String MIN_LAT          = "minLat";
+    private static final String MAX_LAT          = "maxLat";
+    private static final String MIN_LNG          = "minLng";
+    private static final String MAX_LNG          = "maxLng";
+
     private static final JsonNode root;
     private static final Random random = new Random();  // NOSONAR
 
@@ -22,20 +29,19 @@ public class CoordinatesUtil {
     }
 
     static {
+        ObjectMapper mapper = new ObjectMapper();
         try (InputStream is = CoordinatesUtil.class.getResourceAsStream(COORDINATES_FILE)) {
-            ObjectMapper mapper = new ObjectMapper();
             root = mapper.readTree(is);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new CoordinatesLoadingException(e);
         }
     }
 
     private static JsonNode getRegionNode(String location) {
-        JsonNode locationsNode = root.path("locations");
+        JsonNode locationsNode = root.path(LOCATIONS_KEY);
         if (locationsNode.isMissingNode()) {
             throw new CoordinatesLoadingException(
-                    new IllegalArgumentException("Missing 'locations' key in JSON"));
+                    new IllegalArgumentException("Missing '" + LOCATIONS_KEY + "' key in JSON"));
         }
         JsonNode regionNode = locationsNode.path(location);
         if (regionNode.isMissingNode()) {
@@ -54,24 +60,21 @@ public class CoordinatesUtil {
             }
             int idx = random.nextInt(size);
             return regionNode.get(idx);
-        }
-        else if (regionNode.isObject()) {
+        } else if (regionNode.isObject()) {
             return regionNode;
-        }
-        else {
+        } else {
             throw new CoordinatesLoadingException(
                     new IllegalArgumentException("Unexpected JSON type for region"));
         }
     }
 
     public static Map<String, Double> getBoundingBox(String location) {
-        JsonNode regionNode = getRegionNode(location);
-        JsonNode box = pickBoxNode(regionNode);
+        JsonNode box = pickBoxNode(getRegionNode(location));
 
-        double minLat = box.path("minLat").asDouble(Double.NaN);
-        double maxLat = box.path("maxLat").asDouble(Double.NaN);
-        double minLng = box.path("minLng").asDouble(Double.NaN);
-        double maxLng = box.path("maxLng").asDouble(Double.NaN);
+        double minLat = box.path(MIN_LAT).asDouble(Double.NaN);
+        double maxLat = box.path(MAX_LAT).asDouble(Double.NaN);
+        double minLng = box.path(MIN_LNG).asDouble(Double.NaN);
+        double maxLng = box.path(MAX_LNG).asDouble(Double.NaN);
 
         if (Double.isNaN(minLat) || Double.isNaN(maxLat)
                 || Double.isNaN(minLng) || Double.isNaN(maxLng)) {
@@ -80,28 +83,27 @@ public class CoordinatesUtil {
         }
 
         return Map.of(
-                "minLat", minLat,
-                "maxLat", maxLat,
-                "minLng", minLng,
-                "maxLng", maxLng
+                MIN_LAT, minLat,
+                MAX_LAT, maxLat,
+                MIN_LNG, minLng,
+                MAX_LNG, maxLng
         );
     }
 
     public static Map<String, Double> getRandomCoordinate(String location) {
         Map<String, Double> box = getBoundingBox(location);
-        double lat = randomInRange(box.get("minLat"), box.get("maxLat"));
-        double lng = randomInRange(box.get("minLng"), box.get("maxLng"));
+        double lat = randomInRange(box.get(MIN_LAT), box.get(MAX_LAT));
+        double lng = randomInRange(box.get(MIN_LNG), box.get(MAX_LNG));
         return Map.of("lat", lat, "lng", lng);
     }
 
     public static List<Coordinate> getRandomCoordinates(String location, int count) {
         Map<String, Double> box = getBoundingBox(location);
         return IntStream.range(0, count)
-                .mapToObj(i -> {
-                    double lat = randomInRange(box.get("minLat"), box.get("maxLat"));
-                    double lng = randomInRange(box.get("minLng"), box.get("maxLng"));
-                    return new Coordinate(lat, lng);
-                })
+                .mapToObj(i -> new Coordinate(
+                        randomInRange(box.get(MIN_LAT), box.get(MAX_LAT)),
+                        randomInRange(box.get(MIN_LNG), box.get(MAX_LNG))
+                ))
                 .toList();
     }
 
