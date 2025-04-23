@@ -6,9 +6,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -16,7 +16,7 @@ public class CoordinatesUtil {
 
     private static final String COORDINATES_FILE = "/coordinates.json";
     private static final Map<String, Map<String, Map<String, Double>>> coordinates;
-    private static final SecureRandom secureRandom = new SecureRandom();
+    private static final Random random = new Random();  // NOSONAR
 
     private CoordinatesUtil() {
         throw new UnsupportedOperationException("Utility class");
@@ -67,7 +67,7 @@ public class CoordinatesUtil {
     }
 
     private static double randomInRange(double min, double max) {
-        double randomVal = min + (max - min) * secureRandom.nextDouble();
+        double randomVal = min + (max - min) * random.nextDouble();
         return Math.round(randomVal * 1_000_000d) / 1_000_000d;
     }
 }
