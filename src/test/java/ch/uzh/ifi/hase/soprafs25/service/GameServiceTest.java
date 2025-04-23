@@ -207,8 +207,12 @@ class GameServiceTest {
         GameSessionManager.addGameSession(new Game(code));
         when(authorizationService.isAdmin(code, user)).thenReturn(false);
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> gameService.changeGameSettings(code, user, new GameSettingsDTO(1,1,1,"x")));
+        GameSettingsDTO settings = new GameSettingsDTO(1, 1, 1, "x");
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
+                gameService.changeGameSettings(code, user, settings)
+        );
+
         assertTrue(ex.getMessage().contains("Only admin"));
     }
 
