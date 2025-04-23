@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.entity.VotingSession;
 import ch.uzh.ifi.hase.soprafs25.exceptions.VoteAlreadyInProgressException;
@@ -71,5 +72,30 @@ class VotingServiceTest {
 
         then(gameBroadcastService).should().broadcastVoteState("ROOM123", 1, 0);
         assertTrue(VotingSessionManager.isActive("ROOM123"));
+    }
+
+    @Test
+    void fullVotingSession_playersVoteSpyOut_completesVotingAndEvaluatesResult() {
+        when(gameReadService.getPlayerCount("ROOM123")).thenReturn(3);
+        Game game = GameSessionManager.getGameSession("ROOM123");
+        game.getRoles().clear();
+        game.getRoles().put("player0", PlayerRole.INNOCENT);
+        game.getRoles().put("player1", PlayerRole.INNOCENT);
+        game.getRoles().put("player2", PlayerRole.SPY);
+
+        votingService.initializeVotingSession("ROOM123", "player0", "player2");
+
+        reset(gameService, gameBroadcastService);
+
+        votingService.castVote("ROOM123", "player0", true);
+        votingService.castVote("ROOM123", "player1", true);
+        votingService.castVote("ROOM123", "player2", false);
+
+        assertFalse(VotingSessionManager.isActive("ROOM123"));
+
+        assertEquals(PlayerRole.INNOCENT, game.getGameResult().getWinnerRole());
+        assertEquals("player2", game.getGameResult().getVotedNickname());
+
+        then(gameService).should().advancePhase("ROOM123", GamePhase.SUMMARY);
     }
 }
