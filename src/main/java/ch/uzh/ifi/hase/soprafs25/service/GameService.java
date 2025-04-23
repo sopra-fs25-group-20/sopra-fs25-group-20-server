@@ -72,7 +72,6 @@ public class GameService {
         }
 
         advancePhase(roomCode, GamePhase.SUMMARY);
-        gameBroadcastService.broadcastGamePhase(roomCode);
     }
 
     public void changeGameSettings(String roomCode, String nickname, GameSettingsDTO gameSettings) {
