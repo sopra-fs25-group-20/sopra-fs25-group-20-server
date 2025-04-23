@@ -35,8 +35,10 @@ class MockImageServiceTest {
         CompletableFuture<byte[]> future = imageService.fetchImageByLocationAsync("europe");
         byte[] result = future.get(1, TimeUnit.SECONDS);
 
-        assertThat(result).isNotNull().isNotEmpty();
-        assertThat(result).isEqualTo(imageService.fetchImage());
+        assertThat(result)
+                .isNotNull()
+                .isNotEmpty()
+                .isEqualTo(imageService.fetchImage());
     }
 
     @Test
