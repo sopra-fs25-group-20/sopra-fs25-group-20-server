@@ -1,34 +1,119 @@
 {
   "locations": {
-    "europe": {
-      "minLat": 35.0,
-      "maxLat": 71.0,
-      "minLng": -25.0,
-      "maxLng": 40.0
-    },
-    "asia": {
-      "minLat": -10.0,
-      "maxLat": 81.0,
-      "minLng": 25.0,
-      "maxLng": 180.0
-    },
-    "north_america": {
-      "minLat": 5.0,
-      "maxLat": 83.0,
-      "minLng": -168.0,
-      "maxLng": -52.0
-    },
-    "south_america": {
-      "minLat": -56.0,
-      "maxLat": 13.0,
-      "minLng": -81.0,
-      "maxLng": -34.0
-    },
-    "africa": {
-      "minLat": -35.0,
-      "maxLat": 37.0,
-      "minLng": -18.0,
-      "maxLng": 51.0
-    }
+    "europe": [
+      {
+        "name": "london",
+        "minLat": 51.30,
+        "maxLat": 51.70,
+        "minLng": -0.50,
+        "maxLng": 0.20
+      },
+      {
+        "name": "paris",
+        "minLat": 48.80,
+        "maxLat": 49.00,
+        "minLng": 2.25,
+        "maxLng": 2.45
+      },
+      {
+        "name": "berlin",
+        "minLat": 52.35,
+        "maxLat": 52.65,
+        "minLng": 13.15,
+        "maxLng": 13.55
+      }
+    ],
+    "asia": [
+      {
+        "name": "tokyo",
+        "minLat": 35.60,
+        "maxLat": 35.80,
+        "minLng": 139.60,
+        "maxLng": 139.90
+      },
+      {
+        "name": "shanghai",
+        "minLat": 31.10,
+        "maxLat": 31.40,
+        "minLng": 121.30,
+        "maxLng": 121.60
+      },
+      {
+        "name": "delhi",
+        "minLat": 28.50,
+        "maxLat": 28.90,
+        "minLng": 77.00,
+        "maxLng": 77.40
+      }
+    ],
+    "north_america": [
+      {
+        "name": "new_york",
+        "minLat": 40.50,
+        "maxLat": 40.90,
+        "minLng": -74.25,
+        "maxLng": -73.70
+      },
+      {
+        "name": "los_angeles",
+        "minLat": 33.90,
+        "maxLat": 34.20,
+        "minLng": -118.50,
+        "maxLng": -118.20
+      },
+      {
+        "name": "chicago",
+        "minLat": 41.75,
+        "maxLat": 42.05,
+        "minLng": -87.90,
+        "maxLng": -87.55
+      }
+    ],
+    "south_america": [
+      {
+        "name": "sao_paulo",
+        "minLat": -23.70,
+        "maxLat": -23.50,
+        "minLng": -46.75,
+        "maxLng": -46.55
+      },
+      {
+        "name": "buenos_aires",
+        "minLat": -34.75,
+        "maxLat": -34.50,
+        "minLng": -58.55,
+        "maxLng": -58.30
+      },
+      {
+        "name": "rio_de_janeiro",
+        "minLat": -23.05,
+        "maxLat": -22.85,
+        "minLng": -43.30,
+        "maxLng": -43.00
+      }
+    ],
+    "africa": [
+      {
+        "name": "cairo",
+        "minLat": 30.00,
+        "maxLat": 30.10,
+        "minLng": 31.20,
+        "maxLng": 31.30
+      },
+      {
+        "name": "johannesburg",
+        "minLat": -26.25,
+        "maxLat": -26.00,
+        "minLng": 27.90,
+        "maxLng": 28.15
+      },
+      {
+        "name": "cape_town",
+        "minLat": -34.15,
+        "maxLat": -33.85,
+        "minLng": 18.35,
+        "maxLng": 18.65
+      }
+    ]
   }
 }
