@@ -4,11 +4,9 @@ import ch.uzh.ifi.hase.soprafs25.exceptions.CoordinatesLoadingException;
 import ch.uzh.ifi.hase.soprafs25.service.image.Coordinate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.security.SecureRandom;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,19 +34,20 @@ public class CoordinatesUtil {
 
 
     public static Map<String, Double> getBoundingBox(String location) {
-        Map<String, Map<String, Double>> locationsMap = coordinates.get("locations");
-        if (locationsMap == null) {
-            return Collections.emptyMap();
+        Map<String, Map<String, Double>> locations = coordinates.get("locations");
+        Map<String, Double> box = locations.get(location);
+
+        if (box == null || box.isEmpty()) {
+            throw new CoordinatesLoadingException(new IllegalArgumentException("Invalid region: " + location));
         }
-        return locationsMap.getOrDefault(location.toLowerCase(), Collections.emptyMap());
+
+        return box;
     }
 
 
     public static Map<String, Double> getRandomCoordinate(String location) {
         Map<String, Double> box = getBoundingBox(location);
-        if (box.isEmpty()) {
-            return Collections.emptyMap();
-        }
+
         double lat = randomInRange(box.get("minLat"), box.get("maxLat"));
         double lng = randomInRange(box.get("minLng"), box.get("maxLng"));
         return Map.of("lat", lat, "lng", lng);
@@ -56,11 +55,13 @@ public class CoordinatesUtil {
 
 
     public static List<Coordinate> getRandomCoordinates(String location, int count) {
+        Map<String, Double> box = getBoundingBox(location);
+
         return IntStream.range(0, count)
                 .mapToObj(i -> {
-                    Map<String, Double> m = getRandomCoordinate(location);
-                    // Eğer bounding box boşsa m.get(...) null dönebilir, onu kullanıcının filtrelemesi gerekebilir
-                    return new Coordinate(m.getOrDefault("lat", 0.0), m.getOrDefault("lng", 0.0));
+                    double lat = randomInRange(box.get("minLat"), box.get("maxLat"));
+                    double lng = randomInRange(box.get("minLng"), box.get("maxLng"));
+                    return new Coordinate(lat, lng);
                 })
                 .collect(Collectors.toList());
     }
