@@ -88,7 +88,8 @@ public class GoogleImageService implements ImageService {
     private byte[] fetchImageWithAttempts(String location) {
         int attempt = 0;
         while (attempt < MAX_ATTEMPTS) {
-            double lat, lng;
+            double lat;
+            double lng;
             if (location != null) {
                 Map<String, Double> m = CoordinatesUtil.getRandomCoordinate(location);
                 if (m.isEmpty()) {
