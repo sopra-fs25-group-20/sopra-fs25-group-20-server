@@ -17,7 +17,6 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-@SuppressWarnings({"rawtypes","unchecked"})
 class GameServiceTest {
 
     @Mock AuthorizationService authorizationService;
@@ -30,7 +29,7 @@ class GameServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.openMocks(this); //NO SONAR
         clearSessions();
     }
 
