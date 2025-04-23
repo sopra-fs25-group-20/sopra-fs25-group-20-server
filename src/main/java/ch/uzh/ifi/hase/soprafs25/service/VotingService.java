@@ -102,9 +102,9 @@ public class VotingService {
             Game game = getGame(roomCode);
 
             if (votedSpy(roomCode, targetNickname)) {
-                game.setGameResult(null, targetNickname, PlayerRole.SPY);
-            } else {
                 game.setGameResult(null, targetNickname, PlayerRole.INNOCENT);
+            } else {
+                game.setGameResult(null, targetNickname, PlayerRole.SPY);
             }
 
             gameService.advancePhase(roomCode, GamePhase.SUMMARY);

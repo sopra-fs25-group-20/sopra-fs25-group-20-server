@@ -1,13 +1,18 @@
 package ch.uzh.ifi.hase.soprafs25.util;
 
 import ch.uzh.ifi.hase.soprafs25.exceptions.CoordinatesLoadingException;
+import ch.uzh.ifi.hase.soprafs25.service.image.Coordinate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class CoordinatesUtil {
 
@@ -19,7 +24,6 @@ public class CoordinatesUtil {
         throw new UnsupportedOperationException("Utility class");
     }
 
-
     static {
         try (InputStream is = CoordinatesUtil.class.getResourceAsStream(COORDINATES_FILE)) {
             ObjectMapper mapper = new ObjectMapper();
@@ -30,13 +34,13 @@ public class CoordinatesUtil {
         }
     }
 
+
     public static Map<String, Double> getBoundingBox(String location) {
         Map<String, Map<String, Double>> locationsMap = coordinates.get("locations");
         if (locationsMap == null) {
             return Collections.emptyMap();
         }
-        Map<String, Double> box = locationsMap.get(location.toLowerCase());
-        return (box != null) ? box : Collections.emptyMap();
+        return locationsMap.getOrDefault(location.toLowerCase(), Collections.emptyMap());
     }
 
 
@@ -48,6 +52,17 @@ public class CoordinatesUtil {
         double lat = randomInRange(box.get("minLat"), box.get("maxLat"));
         double lng = randomInRange(box.get("minLng"), box.get("maxLng"));
         return Map.of("lat", lat, "lng", lng);
+    }
+
+
+    public static List<Coordinate> getRandomCoordinates(String location, int count) {
+        return IntStream.range(0, count)
+                .mapToObj(i -> {
+                    Map<String, Double> m = getRandomCoordinate(location);
+                    // Eğer bounding box boşsa m.get(...) null dönebilir, onu kullanıcının filtrelemesi gerekebilir
+                    return new Coordinate(m.getOrDefault("lat", 0.0), m.getOrDefault("lng", 0.0));
+                })
+                .collect(Collectors.toList());
     }
 
     private static double randomInRange(double min, double max) {

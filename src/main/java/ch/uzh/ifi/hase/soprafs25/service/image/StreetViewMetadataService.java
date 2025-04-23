@@ -1,45 +1,72 @@
 package ch.uzh.ifi.hase.soprafs25.service.image;
 
-import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
+
+import java.util.List;
+
 
 @Service
 public class StreetViewMetadataService {
 
     private static final Logger log = LoggerFactory.getLogger(StreetViewMetadataService.class);
+    private final WebClient googleMapsClient;
 
     @Value("${google.maps.api.key}")
     private String apiKey;
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public StreetViewMetadataService(WebClient googleMapsClient) {
+        this.googleMapsClient = googleMapsClient;
+    }
 
     public String getStatus(double lat, double lng) {
-        String url = UriComponentsBuilder.newInstance()
-                .scheme("https")
-                .host("maps.googleapis.com")
-                .path("/maps/api/streetview/metadata")
-                .queryParam("location", lat + "," + lng)
-                .queryParam("radius", 5000)
-                .queryParam("source", "outdoor")
-                .queryParam("key", apiKey)
-                .toUriString();
-
-        try {
-            String response = restTemplate.getForObject(url, String.class);
-            JsonNode rootNode = objectMapper.readTree(response);
-            String status = rootNode.path("status").asText();
-            log.info("Metadata check for location ({}, {}): status={} | URL: {}", lat, lng, status, url);
-            return status;
-        } catch (Exception e) {
-            throw new ImageLoadingException(e);
-        }
+        return googleMapsClient.get()
+                .uri(u -> u.path("/streetview/metadata")
+                        .queryParam("location", lat + "," + lng)
+                        .queryParam("radius", 5000)
+                        .queryParam("source", "outdoor")
+                        .queryParam("key", apiKey).build())
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .map(n -> n.path("status").asText())
+                .block();
     }
+
+    public List<String> getStatuses(List<Coordinate> coords) {
+        log.info(">>> getStatuses: fetching metadata for {} coords", coords.size());
+
+        List<String> statuses = Flux.fromIterable(coords)
+                .parallel()
+                .runOn(Schedulers.boundedElastic())
+                .flatMap(c ->
+                        googleMapsClient.get()
+                                .uri(u -> u.path("/streetview/metadata")
+                                        .queryParam("location", c.lat()+","+c.lng())
+                                        .queryParam("radius", 5000)
+                                        .queryParam("source", "outdoor")
+                                        .queryParam("key", apiKey).build())
+                                .retrieve()
+                                .bodyToMono(JsonNode.class)
+                                .map(n -> {
+                                    String status = n.path("status").asText();
+                                    log.info("[{}] metadata {} → {}",
+                                            Thread.currentThread().getName(), c, status);
+                                    return status;
+                                })
+                )
+                .sequential()
+                .collectList()
+                .block();
+
+        log.info("<<< getStatuses complete: {} statuses", statuses.size());
+        return statuses;
+    }
+
 }

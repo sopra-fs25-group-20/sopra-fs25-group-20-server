@@ -9,9 +9,9 @@ import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class GameService {
@@ -26,7 +26,7 @@ public class GameService {
     public GameService(AuthorizationService authorizationService,
                        GameReadService gameReadService,
                        GameBroadcastService gameBroadcastService,
-                       @Qualifier("mockImageService") ImageService mockImageService) {
+                       @Qualifier("googleImageService") ImageService mockImageService) {
         this.authorizationService = authorizationService;
         this.gameReadService = gameReadService;
         this.gameBroadcastService = gameBroadcastService;
@@ -39,10 +39,10 @@ public class GameService {
         }
         Game game = getGame(roomCode);
 
-        advancePhase(roomCode, GamePhase.GAME);
+        prepareImagesForRound(game);
         game.assignRoles(gameReadService.getNicknamesInRoom(roomCode));
         game.setHighlightedImageIndex(RANDOM.nextInt(game.getGameSettings().getImageCount()));
-        prepareImagesForRound(game);
+        advancePhase(roomCode, GamePhase.GAME);
     }
 
     public void createGame(String roomCode) {
@@ -56,12 +56,8 @@ public class GameService {
 
     public void advancePhase(String roomCode, GamePhase newPhase) {
         Game game = getGame(roomCode);
-        GamePhase oldPhase = game.getPhase();
         game.setPhase(newPhase);
 
-        if (oldPhase == GamePhase.SUMMARY && newPhase == GamePhase.GAME) {
-            game.clearImages();
-        }
         gameBroadcastService.broadcastGamePhase(roomCode);
     }
 
@@ -111,15 +107,15 @@ public class GameService {
     }
 
     private void prepareImagesForRound(Game game) {
-        if(!game.getImages().isEmpty()) {
-            return;
-        }
+        int count = game.getGameSettings().getImageCount();
+        String region = game.getGameSettings().getImageRegion();
 
-        List<byte[]> imageList = new ArrayList<>();
-        for(int i = 0; i < game.getGameSettings().getImageCount(); i++) {
-            byte[] img = imageService.fetchImageByLocation(game.getGameSettings().getImageRegion());
-            imageList.add(img);
-        }
+        List<CompletableFuture<byte[]>> futures = imageService.fetchImagesByLocationAsync(region, count);
+
+        List<byte[]> imageList = futures.stream()
+                .map(CompletableFuture::join)
+                .toList();
+
         game.setImages(imageList);
     }
 

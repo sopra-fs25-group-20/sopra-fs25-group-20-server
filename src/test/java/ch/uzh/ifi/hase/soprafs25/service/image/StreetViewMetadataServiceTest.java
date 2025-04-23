@@ -1,56 +1,101 @@
 package ch.uzh.ifi.hase.soprafs25.service.image;
 
-import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.*;
+import reactor.core.publisher.Mono;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
+import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 class StreetViewMetadataServiceTest {
 
+    @Mock
+    private WebClient webClient;
+
+    @SuppressWarnings("rawtypes")
+    @Mock
+    private WebClient.RequestHeadersUriSpec uriSpec;
+
+    @Mock
+    private WebClient.RequestHeadersSpec<?> headersSpec;
+
+    @Mock
+    private WebClient.ResponseSpec responseSpec;
+
+    @Mock
+    private JsonNode jsonNode;
+
     private StreetViewMetadataService service;
-    private RestTemplate restTemplate;
-    private ObjectMapper objectMapper;
+    private AutoCloseable mocks;
 
     @BeforeEach
-    void setup() {
-        service = new StreetViewMetadataService();
-
-        restTemplate = mock(RestTemplate.class);
-        objectMapper = mock(ObjectMapper.class);
-
-        ReflectionTestUtils.setField(service, "restTemplate", restTemplate);
-        ReflectionTestUtils.setField(service, "objectMapper", objectMapper);
+    void setUp() {
+        mocks = MockitoAnnotations.openMocks(this);
+        service = new StreetViewMetadataService(webClient);
         ReflectionTestUtils.setField(service, "apiKey", "dummy-key");
     }
 
-    @Test
-    void getStatus_returnsOkFromJson() throws Exception {
-        String fakeResponse = "{\"status\":\"OK\"}";
-        when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(fakeResponse);
-
-        JsonNode mockJson = mock(JsonNode.class);
-        when(objectMapper.readTree(fakeResponse)).thenReturn(mockJson);
-        when(mockJson.path("status")).thenReturn(mock(JsonNode.class));
-        when(mockJson.path("status").asText()).thenReturn("OK");
-
-        String result = service.getStatus(48.8584, 2.2945);
-        assertThat(result).isEqualTo("OK");
+    @AfterEach
+    void tearDown() throws Exception {
+        mocks.close();
     }
 
     @Test
-    void getStatus_throwsExceptionOnFailure() {
-        when(restTemplate.getForObject(anyString(), eq(String.class)))
-                .thenThrow(new RuntimeException("API call failed"));
+    void getStatus_whenStatusOk_returnsText() {
+        when(webClient.get()).thenReturn(uriSpec);
+        when(uriSpec.uri(any(Function.class))).thenReturn(headersSpec);
+        when(headersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(JsonNode.class)).thenReturn(Mono.just(jsonNode));
+        when(jsonNode.path("status")).thenReturn(jsonNode);
+        when(jsonNode.asText()).thenReturn("OK");
 
-        assertThatThrownBy(() -> service.getStatus(0.0, 0.0))
-                .isInstanceOf(ImageLoadingException.class)
-                .hasMessageContaining("Failed to load image");
+        String status = service.getStatus(48.8584, 2.2945);
+        assertEquals("OK", status);
+        verify(webClient).get();
+    }
+
+    @Test
+    void getStatus_whenBodyError_throwsException() {
+        when(webClient.get()).thenReturn(uriSpec);
+        when(uriSpec.uri(any(Function.class))).thenReturn(headersSpec);
+        when(headersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(JsonNode.class))
+                .thenReturn(Mono.error(new RuntimeException("timeout")));
+
+        RuntimeException ex = assertThrows(
+                RuntimeException.class,
+                () -> service.getStatus(0.0, 0.0)
+        );
+        assertTrue(ex.getMessage().contains("timeout"));
+    }
+
+    @Test
+    void getStatuses_returnsSameCountAndStatuses() {
+        when(webClient.get()).thenReturn(uriSpec);
+        when(uriSpec.uri(any(Function.class))).thenReturn(headersSpec);
+        when(headersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(JsonNode.class)).thenReturn(Mono.just(jsonNode));
+        when(jsonNode.path("status")).thenReturn(jsonNode);
+        when(jsonNode.asText()).thenReturn("ZERO_RESULTS");
+
+        List<Coordinate> coords = List.of(
+                new Coordinate(10, 20),
+                new Coordinate(30, 40),
+                new Coordinate(50, 60)
+        );
+
+        List<String> statuses = service.getStatuses(coords);
+        assertEquals(coords.size(), statuses.size());
+        statuses.forEach(s -> assertEquals("ZERO_RESULTS", s));
+
+        verify(webClient, times(coords.size())).get();
     }
 }

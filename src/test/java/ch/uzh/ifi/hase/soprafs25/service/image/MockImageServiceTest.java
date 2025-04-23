@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -24,6 +28,15 @@ class MockImageServiceTest {
         byte[] fromDefault = imageService.fetchImage();
 
         assertThat(fromLocation).isEqualTo(fromDefault);
+    }
+
+    @Test
+    void fetchImageByLocationAsync_returnsCompletableFuture() throws ExecutionException, InterruptedException, TimeoutException {
+        CompletableFuture<byte[]> future = imageService.fetchImageByLocationAsync("europe");
+        byte[] result = future.get(1, TimeUnit.SECONDS);
+
+        assertThat(result).isNotNull().isNotEmpty();
+        assertThat(result).isEqualTo(imageService.fetchImage());
     }
 
     @Test
