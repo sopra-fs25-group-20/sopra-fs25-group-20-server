@@ -107,7 +107,6 @@ public class CoordinatesUtil {
 
     private static double randomInRange(double min, double max) {
         double val = min + (max - min) * random.nextDouble();
-        // altı basamak noktasal hassasiyet
         return Math.round(val * 1_000_000d) / 1_000_000d;
     }
 }
