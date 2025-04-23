@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class CoordinatesUtil {
@@ -63,7 +62,7 @@ public class CoordinatesUtil {
                     double lng = randomInRange(box.get("minLng"), box.get("maxLng"));
                     return new Coordinate(lat, lng);
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static double randomInRange(double min, double max) {

@@ -3,6 +3,8 @@ package ch.uzh.ifi.hase.soprafs25.util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +18,16 @@ class RandomColorUtilTest {
     @BeforeEach
     void setup() {
         RandomColorUtil.clearRoom(testRoomId);
+    }
+
+    @Test
+    void constructor_throwsIllegalStateException() throws Exception {
+        Constructor<RandomColorUtil> constructor = RandomColorUtil.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        InvocationTargetException ex = assertThrows(InvocationTargetException.class, constructor::newInstance);
+        assertTrue(ex.getCause() instanceof IllegalStateException);
+        assertEquals("Utility class", ex.getCause().getMessage());
     }
 
     @Test

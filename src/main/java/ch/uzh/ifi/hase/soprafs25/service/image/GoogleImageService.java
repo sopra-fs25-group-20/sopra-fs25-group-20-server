@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 @Service("googleImageService")
 public class GoogleImageService implements ImageService {
 
-    private static final int MAX_ATTEMPTS = 100;
+    private static final int MAX_ATTEMPTS = 150;
     private static final Random RAND = new Random();    // NOSONAR
     private static final Logger log = LoggerFactory.getLogger(GoogleImageService.class);
 
@@ -88,7 +88,8 @@ public class GoogleImageService implements ImageService {
     private byte[] fetchImageWithAttempts(String location) {
         int attempt = 0;
         while (attempt < MAX_ATTEMPTS) {
-            double lat, lng;
+            double lat;
+            double lng;
             if (location != null) {
                 Map<String, Double> m = CoordinatesUtil.getRandomCoordinate(location);
                 if (m.isEmpty()) {

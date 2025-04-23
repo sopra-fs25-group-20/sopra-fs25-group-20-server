@@ -48,4 +48,12 @@ class VotingSessionManagerTest {
             VotingSessionManager.removeVotingSession("NON_EXISTENT_ROOM");
         });
     }
+
+    @Test
+    void testAddVotingSession_nullRoomCode_throwsException() {
+        VotingSession session = new VotingSession(null, "user1", "user2");
+        assertThrows(IllegalArgumentException.class, () -> {
+            VotingSessionManager.addVotingSession(session);
+        });
+    }
 }
