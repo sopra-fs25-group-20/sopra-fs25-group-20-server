@@ -65,7 +65,7 @@ public class StreetViewMetadataService {
                 .collectList()
                 .block();
 
-        log.info("<<< getStatuses complete: {} statuses", statuses.size());
+        log.info("<<< getStatuses complete: {} statuses", statuses != null ? statuses.size() : "null");
         return statuses;
     }
 
