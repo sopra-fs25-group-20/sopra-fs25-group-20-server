@@ -19,24 +19,22 @@ import static org.junit.jupiter.api.Assertions.*;
 class CoordinatesUtilTest {
 
     private static JsonNode locationsNode;
-    private static ObjectMapper mapper;
 
     @BeforeAll
     static void setup() throws Exception {
-        mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         try (InputStream is = CoordinatesUtil.class.getResourceAsStream("/coordinates.json")) {
             assertNotNull(is, "coordinates.json must be available on the classpath");
             JsonNode root = mapper.readTree(is);
             locationsNode = root.path("locations");
             assertTrue(locationsNode.isObject(), "The JSON must contain an object 'locations'");
-            assertTrue(locationsNode.size() > 0, "Need at least one location to test");
+            assertFalse(locationsNode.isEmpty(), "Need at least one location to test");
         }
     }
 
     @Test
     void constructor_throwsUnsupportedOperationException() throws Exception {
-        Constructor<CoordinatesUtil> ctor =
-                CoordinatesUtil.class.getDeclaredConstructor();
+        Constructor<CoordinatesUtil> ctor = CoordinatesUtil.class.getDeclaredConstructor();
         ctor.setAccessible(true);
 
         InvocationTargetException ex = assertThrows(
