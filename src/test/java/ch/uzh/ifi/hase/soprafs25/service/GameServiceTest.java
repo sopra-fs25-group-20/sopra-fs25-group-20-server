@@ -27,9 +27,10 @@ class GameServiceTest {
     @InjectMocks
     private GameService gameService;
 
+    @SuppressWarnings("resource")
     @BeforeEach
     void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this); //NO SONAR
+        MockitoAnnotations.openMocks(this);
         clearSessions();
     }
 
