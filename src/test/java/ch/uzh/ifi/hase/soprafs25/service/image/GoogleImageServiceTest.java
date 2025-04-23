@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.service.image;
 
-import ch.uzh.ifi.hase.soprafs25.exceptions.ImageLoadingException;
+import ch.uzh.ifi.hase.soprafs25.exceptions.CoordinatesLoadingException;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -87,17 +87,17 @@ class GoogleImageServiceTest {
     }
 
     @Test
-    void fetchImageByLocationAsync_whenNoOkStatus_completesExceptionallyWithImageLoadingException() {
-        when(metadataService.getStatus(anyDouble(), anyDouble())).thenReturn("ZERO_RESULTS");
-
+    void fetchImageByLocationAsync_whenInvalidLocation_completesExceptionallyWithCoordinatesLoadingException() {
         CompletableFuture<byte[]> future = googleImageService.fetchImageByLocationAsync("nowhere");
 
         CompletionException thrown = assertThrows(
                 CompletionException.class,
                 future::join
         );
-        assertTrue(thrown.getCause() instanceof ImageLoadingException,
-                "Cause should be ImageLoadingException");
-        assertTrue(thrown.getCause().getMessage().contains("Failed to load image"));
+
+        Throwable cause = thrown.getCause();
+        assertTrue(cause instanceof CoordinatesLoadingException);
+        assertTrue(cause.getCause() instanceof IllegalArgumentException);
+        assertTrue(cause.getCause().getMessage().contains("Invalid region"));
     }
 }
