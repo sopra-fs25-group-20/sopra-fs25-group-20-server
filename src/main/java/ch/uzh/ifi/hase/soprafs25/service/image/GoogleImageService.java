@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 @Service("googleImageService")
 public class GoogleImageService implements ImageService {
 
-    private static final int MAX_ATTEMPTS = 100;
+    private static final int MAX_ATTEMPTS = 150;
     private static final Random RAND = new Random();    // NOSONAR
     private static final Logger log = LoggerFactory.getLogger(GoogleImageService.class);
 
