@@ -8,7 +8,7 @@ public class VotingSession {
     private final String initiator;
     private final String target;
     private boolean isActive = true;
-    private final transient VoteState voteState = new VoteState();
+    private final VoteState voteState = new VoteState();
 
     public VotingSession(String roomCode, String initiator, String target) {
         this.roomCode = roomCode;
