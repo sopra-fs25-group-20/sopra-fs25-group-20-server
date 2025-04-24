@@ -45,9 +45,4 @@ class VotingSessionTest {
         votingSession.setActive(true);
         assertTrue(votingSession.isActive());
     }
-
-    @Test
-    void testVoteSessionIdDefaultNull() {
-        assertNull(votingSession.getVoteSessionId());
-    }
 }

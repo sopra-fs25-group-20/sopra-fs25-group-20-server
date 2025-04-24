@@ -1,35 +1,14 @@
 package ch.uzh.ifi.hase.soprafs25.entity;
 
-import javax.persistence.*;
-
 import ch.uzh.ifi.hase.soprafs25.session.VoteState;
 
-import java.io.Serializable;
+public class VotingSession {
 
-@Entity
-@Table(name = "VotingSession")
-public class VotingSession implements Serializable {
-    
-    @Id
-    @GeneratedValue
-    private Long voteSessionId;
-
-    @Column(nullable = false)
-    private String roomCode;
-
-    @Column(nullable = false)
-    private String initiator;
-
-    @Column(nullable = false)
-    private String target;
-
-    @Column(nullable = false)
+    private final String roomCode;
+    private final String initiator;
+    private final String target;
     private boolean isActive = true;
-
-    @Transient // in memory only
     private final transient VoteState voteState = new VoteState();
-
-    public VotingSession() {}
 
     public VotingSession(String roomCode, String initiator, String target) {
         this.roomCode = roomCode;
@@ -67,9 +46,5 @@ public class VotingSession implements Serializable {
 
     public void setActive(boolean active) {
         isActive = active;
-    }
-
-    public Long getVoteSessionId() {
-        return voteSessionId;
     }
 }
