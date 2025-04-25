@@ -30,16 +30,19 @@ class GameReadServiceTest {
         mockRoom.setCode("ROOM123");
 
         Player player1 = new Player();
+        player1.setId(1L);
         player1.setNickname("alice");
         player1.setColor("#FF6B6B");
         player1.setRoom(mockRoom);
 
         Player player2 = new Player();
+        player2.setId(2L);
         player2.setNickname("bob");
         player2.setColor("#6BCB77");
         player2.setRoom(mockRoom);
 
         mockRoom.setPlayers(List.of(player1, player2));
+        mockRoom.setAdminPlayerId(1L);
 
         when(roomRepository.findByCode("ROOM123")).thenReturn(mockRoom);
     }
@@ -94,6 +97,7 @@ class GameReadServiceTest {
         assertEquals(2, players.size());
         assertEquals("alice", players.get(0).getNickname());
         assertEquals("#FF6B6B", players.get(0).getColor());
+        assertTrue(players.get(0).isAdmin());
     }
 
     @Test

@@ -72,9 +72,15 @@ public class GameReadService {
             throw new IllegalStateException("Room not found: " + roomCode);
         }
 
+        Long adminId = room.getAdminPlayerId();
         List<Player> players = room.getPlayers();
+
         return players.stream()
-                .map(p -> new PlayerUpdateDTO(p.getNickname(), p.getColor()))
+                .map(p -> new PlayerUpdateDTO(
+                        p.getNickname(),
+                        p.getColor(),
+                        p.getId().equals(adminId)
+                ))
                 .toList();
     }
 
