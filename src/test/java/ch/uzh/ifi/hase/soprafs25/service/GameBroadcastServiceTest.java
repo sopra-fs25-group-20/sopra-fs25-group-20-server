@@ -47,7 +47,7 @@ class GameBroadcastServiceTest {
 
     @Test
     void testBroadcastPlayerList() {
-        List<PlayerUpdateDTO> list = List.of(new PlayerUpdateDTO("testUser", "#FF0000"));
+        List<PlayerUpdateDTO> list = List.of(new PlayerUpdateDTO("testUser", "#FF0000", true));
         when(gameReadService.getPlayerUpdateList("ROOM123")).thenReturn(list);
 
         gameBroadcastService.broadcastPlayerList("ROOM123");

@@ -8,10 +8,12 @@ class PlayerUpdateDTOTest {
 
     @Test
     void constructor_shouldSetFields() {
-        PlayerUpdateDTO dto = new PlayerUpdateDTO("alice", "#abcdef");
+        PlayerUpdateDTO dto = new PlayerUpdateDTO("alice", "#abcdef", true);
 
         assertThat(dto.getNickname()).isEqualTo("alice");
         assertThat(dto.getColor()).isEqualTo("#abcdef");
+        assertThat(dto.isAdmin()).isTrue();
+
     }
 
     @Test
@@ -19,8 +21,10 @@ class PlayerUpdateDTOTest {
         PlayerUpdateDTO dto = new PlayerUpdateDTO();
         dto.setNickname("bob");
         dto.setColor("#123456");
+        dto.setAdmin(true);
 
         assertThat(dto.getNickname()).isEqualTo("bob");
         assertThat(dto.getColor()).isEqualTo("#123456");
+        assertThat(dto.isAdmin()).isTrue();
     }
 }

@@ -39,6 +39,8 @@ class PlayerConnectionServiceTest {
         Player player = new Player();
         player.setConnected(false);
         player.setNickname("testUser");
+        player.setId(1L);
+        room.setAdminPlayerId(1L);
 
         when(roomRepository.findByCode("ROOM123")).thenReturn(room);
         when(playerRepository.findByNicknameAndRoom("testUser", room)).thenReturn(player);
@@ -93,6 +95,7 @@ class PlayerConnectionServiceTest {
         Player player = new Player();
         player.setNickname("testUser");
         player.setColor("red");
+        player.setId(2L);
         room.setPlayers(List.of(player));
 
         when(roomRepository.findByCode("ROOM123")).thenReturn(room);
@@ -102,6 +105,7 @@ class PlayerConnectionServiceTest {
         assertEquals(1, list.size());
         assertEquals("testUser", list.get(0).getNickname());
         assertEquals("red", list.get(0).getColor());
+        assertFalse(list.get(0).isAdmin());
     }
 
     @Test

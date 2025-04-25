@@ -44,9 +44,18 @@ public class PlayerConnectionService {
     }
 
     public List<PlayerUpdateDTO> getPlayerListDTO(String roomCode) {
+        Room room = roomRepository.findByCode(roomCode);
+        if (room == null) {
+            throw new IllegalStateException("Room not found: " + roomCode);
+        }
+
+        Long adminId = room.getAdminPlayerId();
         List<Player> players = getPlayers(roomCode);
         return players.stream()
-                .map(p -> new PlayerUpdateDTO(p.getNickname(), p.getColor()))
+                .map(p -> new PlayerUpdateDTO(
+                        p.getNickname(),
+                        p.getColor(),
+                        p.getId().equals(adminId)))
                 .toList();
     }
 
