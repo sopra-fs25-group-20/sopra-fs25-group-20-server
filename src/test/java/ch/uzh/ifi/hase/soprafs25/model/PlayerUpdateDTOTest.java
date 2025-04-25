@@ -12,7 +12,7 @@ class PlayerUpdateDTOTest {
 
         assertThat(dto.getNickname()).isEqualTo("alice");
         assertThat(dto.getColor()).isEqualTo("#abcdef");
-        assertThat(dto.isAdmin()).isEqualTo(true);
+        assertThat(dto.isAdmin()).isTrue();
 
     }
 
@@ -25,6 +25,6 @@ class PlayerUpdateDTOTest {
 
         assertThat(dto.getNickname()).isEqualTo("bob");
         assertThat(dto.getColor()).isEqualTo("#123456");
-        assertThat(dto.isAdmin()).isEqualTo(true);
+        assertThat(dto.isAdmin()).isTrue();
     }
 }
