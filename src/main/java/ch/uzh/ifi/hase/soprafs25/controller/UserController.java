@@ -23,4 +23,13 @@ public class UserController {
         String password = userPostDTO.getPassword();
         return userService.createUser(username, password);
     }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserRegisterDTO loginUser(@RequestBody UserPostDTO userPostDTO) {
+        String username = userPostDTO.getUsername();
+        String password = userPostDTO.getPassword();
+        return userService.loginUser(username, password);
+    }
 }
