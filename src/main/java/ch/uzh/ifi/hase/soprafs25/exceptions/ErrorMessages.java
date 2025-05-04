@@ -8,7 +8,8 @@ public enum ErrorMessages {
     COORDINATES_LOADING_FAILED("Failed to load coordinates"),
     USER_ALREADY_EXISTS("User with %s already exists"),
     USER_NOT_FOUND("User with %s not found"),
-    INVALID_PASSWORD("Invalid password for the user %s");
+    INVALID_PASSWORD("Invalid password for the user %s"),
+    TOKEN_NOT_FOUND("No token was provided");
 
     private final String message;
 
