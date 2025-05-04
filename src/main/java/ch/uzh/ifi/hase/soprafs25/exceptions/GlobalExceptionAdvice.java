@@ -58,4 +58,12 @@ public class GlobalExceptionAdvice {
         log.error("UserAlreadyExistsException -> caught:", ex);
         return new ErrorResponseDTO(ex.getMessage());
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND) // 404
+    @ResponseBody
+    public ErrorResponseDTO handleUserNotFoundException(UserNotFoundException ex) {
+        log.error("UserNotFoundException -> caught:", ex);
+        return new ErrorResponseDTO(ex.getMessage());
+    }
 }

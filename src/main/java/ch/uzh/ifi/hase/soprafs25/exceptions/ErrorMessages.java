@@ -6,7 +6,8 @@ public enum ErrorMessages {
     IMAGE_LOADING_FAILED("Failed to load image"),
     VOTE_ALREADY_IN_PROGRESS("A voting session is already in progress for room: %s"),
     COORDINATES_LOADING_FAILED("Failed to load coordinates"),
-    USER_ALREADY_EXISTS("User with %s already exists");
+    USER_ALREADY_EXISTS("User with %s already exists"),
+    USER_NOT_FOUND("User with %s not found");
 
     private final String message;
 
