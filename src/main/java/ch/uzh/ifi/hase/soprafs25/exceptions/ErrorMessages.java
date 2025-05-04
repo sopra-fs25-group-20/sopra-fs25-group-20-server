@@ -9,7 +9,8 @@ public enum ErrorMessages {
     USER_ALREADY_EXISTS("User with %s already exists"),
     USER_NOT_FOUND("User with %s not found"),
     INVALID_PASSWORD("Invalid password for the user %s"),
-    TOKEN_NOT_FOUND("No token was provided");
+    TOKEN_NOT_FOUND("No token was provided"),
+    USER_NOT_AUTHENTICATED("Not logged in: %s");
 
     private final String message;
 
