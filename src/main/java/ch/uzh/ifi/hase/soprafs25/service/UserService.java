@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -25,6 +26,7 @@ public class UserService {
     }
 
     public UserRegisterDTO createUser(String username, String password) {
+        username = username.toLowerCase(Locale.ROOT);
         checkIfUserExists(username);
 
         User newUser = new User();
