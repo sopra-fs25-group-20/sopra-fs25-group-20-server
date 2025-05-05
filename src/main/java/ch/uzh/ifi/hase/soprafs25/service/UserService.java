@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs25.entity.User;
 import ch.uzh.ifi.hase.soprafs25.exceptions.InvalidPasswordException;
 import ch.uzh.ifi.hase.soprafs25.exceptions.UserAlreadyExistsException;
 import ch.uzh.ifi.hase.soprafs25.exceptions.UserNotFoundException;
+import ch.uzh.ifi.hase.soprafs25.model.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs25.model.UserRegisterDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,6 +47,19 @@ public class UserService {
             throw new InvalidPasswordException(username);
         }
         return new UserRegisterDTO(user.getToken());
+    }
+
+    public UserGetDTO getUser(String username) {
+        User user = getUserByUsername(username);
+
+        return new UserGetDTO(
+                user.getUsername(),
+                user.getWins(),
+                user.getDefeats(),
+                user.getGames(),
+                user.getCurrentStreak(),
+                user.getHighestStreak()
+        );
     }
 
     private User getUserByUsername(String username) {
