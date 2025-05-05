@@ -29,6 +29,10 @@ public class Player implements Serializable {
     @Column(nullable = false)
     private boolean connected;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
+    private User user;
+
     public Long getId() {
         return id;
     }
@@ -75,5 +79,13 @@ public class Player implements Serializable {
 
     public void setConnected(boolean connected) {
         this.connected = connected;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -39,4 +39,17 @@ class RoomPlayerTests {
         assertEquals(1, room.getPlayers().size());
         assertEquals(room, player.getRoom());
     }
+
+    @Test
+    void testPlayerUserAssociation() {
+        Player player = new Player();
+        User user = new User();
+        user.setUsername("tester");
+        user.setToken("abc123");
+
+        player.setUser(user);
+
+        assertEquals(user, player.getUser());
+        assertEquals("tester", player.getUser().getUsername());
+    }
 }
