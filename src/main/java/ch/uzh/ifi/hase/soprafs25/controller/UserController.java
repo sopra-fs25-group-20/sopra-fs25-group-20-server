@@ -17,7 +17,6 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
     public UserRegisterDTO registerUser(@RequestBody UserPostDTO userPostDTO) {
         String username = userPostDTO.getUsername();
         String password = userPostDTO.getPassword();
@@ -26,7 +25,6 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public UserRegisterDTO loginUser(@RequestBody UserPostDTO userPostDTO) {
         String username = userPostDTO.getUsername();
         String password = userPostDTO.getPassword();
