@@ -82,4 +82,12 @@ public class GlobalExceptionAdvice {
         log.error("TokenNotFoundException -> caught:", ex);
         return new ErrorResponseDTO(ex.getMessage());
     }
+
+    @ExceptionHandler(UserNotAuthenticatedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // 401
+    @ResponseBody
+    public ErrorResponseDTO handleUserNotAuthenticatedException(UserNotAuthenticatedException ex) {
+        log.error("UserNotAuthenticatedException -> caught:", ex);
+        return new ErrorResponseDTO(ex.getMessage());
+    }
 }
