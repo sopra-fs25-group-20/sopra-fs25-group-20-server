@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
+import ch.uzh.ifi.hase.soprafs25.model.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs25.model.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs25.model.UserRegisterDTO;
 import ch.uzh.ifi.hase.soprafs25.service.UserService;
@@ -12,7 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
@@ -58,5 +59,21 @@ class UserControllerTest {
                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("loginToken"));
+    }
+
+    @Test
+    void testGetUser_success() throws Exception {
+        UserGetDTO userGetDTO = new UserGetDTO("existing", 10, 5, 15, 2, 4);
+
+        Mockito.when(userService.getUser("existing")).thenReturn(userGetDTO);
+
+        mockMvc.perform(get("/account/existing"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("existing"))
+                .andExpect(jsonPath("$.wins").value(10))
+                .andExpect(jsonPath("$.defeats").value(5))
+                .andExpect(jsonPath("$.games").value(15))
+                .andExpect(jsonPath("$.current_streak").value(2))
+                .andExpect(jsonPath("$.highest_streak").value(4));
     }
 }
