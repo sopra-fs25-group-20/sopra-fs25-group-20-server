@@ -50,4 +50,12 @@ public class GlobalExceptionAdvice {
         log.error("CoordinatesLoadingException-> caught:", ex.getCause());
         return new ErrorResponseDTO(ex.getErrorMessage());
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT) // 409
+    @ResponseBody
+    public ErrorResponseDTO handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        log.error("UserAlreadyExistsException -> caught:", ex);
+        return new ErrorResponseDTO(ex.getMessage());
+    }
 }
