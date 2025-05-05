@@ -21,6 +21,27 @@
         "maxLat": 52.65,
         "minLng": 13.15,
         "maxLng": 13.55
+      },
+      {
+        "name": "istanbul",
+        "minLat": 40.85,
+        "maxLat": 41.29,
+        "minLng": 28.56,
+        "maxLng": 29.25
+      },
+      {
+        "name": "zurich",
+        "minLat": 47.35,
+        "maxLat": 47.40,
+        "minLng": 8.50,
+        "maxLng": 8.60
+      },
+      {
+        "name": "basel",
+        "minLat": 47.54,
+        "maxLat": 47.58,
+        "minLng": 7.54,
+        "maxLng": 7.62
       }
     ],
     "asia": [
@@ -44,6 +65,20 @@
         "maxLat": 28.90,
         "minLng": 77.00,
         "maxLng": 77.40
+      },
+      {
+        "name": "beijing",
+        "minLat": 39.70,
+        "maxLat": 40.05,
+        "minLng": 116.10,
+        "maxLng": 116.75
+      },
+      {
+        "name": "mumbai",
+        "minLat": 18.90,
+        "maxLat": 19.20,
+        "minLng": 72.75,
+        "maxLng": 73.05
       }
     ],
     "north_america": [
@@ -67,6 +102,20 @@
         "maxLat": 42.05,
         "minLng": -87.90,
         "maxLng": -87.55
+      },
+      {
+        "name": "toronto",
+        "minLat": 43.65,
+        "maxLat": 43.80,
+        "minLng": -79.50,
+        "maxLng": -79.20
+      },
+      {
+        "name": "mexico_city",
+        "minLat": 19.20,
+        "maxLat": 19.50,
+        "minLng": -99.20,
+        "maxLng": -98.90
       }
     ],
     "south_america": [
@@ -90,6 +139,20 @@
         "maxLat": -22.85,
         "minLng": -43.30,
         "maxLng": -43.00
+      },
+      {
+        "name": "bogota",
+        "minLat": 4.50,
+        "maxLat": 4.80,
+        "minLng": -74.15,
+        "maxLng": -74.05
+      },
+      {
+        "name": "lima",
+        "minLat": -12.10,
+        "maxLat": -11.90,
+        "minLng": -77.10,
+        "maxLng": -76.90
       }
     ],
     "africa": [
@@ -113,6 +176,20 @@
         "maxLat": -33.85,
         "minLng": 18.35,
         "maxLng": 18.65
+      },
+      {
+        "name": "nairobi",
+        "minLat": -1.40,
+        "maxLat": -1.15,
+        "minLng": 36.70,
+        "maxLng": 36.90
+      },
+      {
+        "name": "lagos",
+        "minLat": 6.40,
+        "maxLat": 6.65,
+        "minLng": 3.30,
+        "maxLng": 3.60
       }
     ]
   }
