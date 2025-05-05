@@ -1,27 +1,26 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.entity.User;
-import ch.uzh.ifi.hase.soprafs25.exceptions.InvalidPasswordException;
-import ch.uzh.ifi.hase.soprafs25.exceptions.UserAlreadyExistsException;
-import ch.uzh.ifi.hase.soprafs25.exceptions.UserNotFoundException;
+import ch.uzh.ifi.hase.soprafs25.exceptions.*;
 import ch.uzh.ifi.hase.soprafs25.model.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs25.model.UserRegisterDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
 @Transactional
 public class UserService {
 
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
@@ -47,6 +46,13 @@ public class UserService {
             throw new InvalidPasswordException(username);
         }
         return new UserRegisterDTO(user.getToken());
+    }
+
+    public void updateUser(String targetUsername, String username, String password, String token) {
+        User authenticatedUser = authenticateAndAuthorize(token, targetUsername);
+
+        updateUsernameIfChanged(authenticatedUser, username);
+        updatePasswordIfProvided(authenticatedUser, password);
     }
 
     public UserGetDTO getUser(String username) {
@@ -76,6 +82,50 @@ public class UserService {
 
         if (userByUsername != null) {
             throw new UserAlreadyExistsException("username: " + username);
+        }
+    }
+
+    private void checkUsernameAvailability(String username) {
+        if (userRepository.findByUsername(username) != null) {
+            throw new UserAlreadyExistsException("username: " + username);
+        }
+    }
+
+    private User authenticateAndAuthorize(String token, String targetUsername) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new TokenNotFoundException();
+        }
+
+        User authenticatedUser = userRepository.findByToken(token);
+        if (authenticatedUser == null) {
+            throw new UserNotAuthenticatedException("Invalid token. Please log in again.");
+        }
+
+        // When trying to update another user
+        User targetUser = getUserByUsername(targetUsername);
+        if (!Objects.equals(authenticatedUser.getUserId(), targetUser.getUserId())) {
+            throw new UserNotAuthorizedException(authenticatedUser.getUsername(), targetUser.getUsername());
+        }
+
+        return authenticatedUser;
+    }
+
+    private void updateUsernameIfChanged(User user, String newUsername) {
+        if (newUsername == null || newUsername.trim().isEmpty()) {
+            return;
+        }
+
+        String normalizedNewUsername = newUsername.toLowerCase(Locale.ROOT);
+
+        if (!user.getUsername().equals(normalizedNewUsername)) {
+            checkUsernameAvailability(normalizedNewUsername);
+            user.setUsername(normalizedNewUsername);
+        }
+    }
+
+    private void updatePasswordIfProvided(User user, String newPassword) {
+        if (newPassword != null && !newPassword.trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(newPassword));
         }
     }
 }
