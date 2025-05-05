@@ -50,4 +50,28 @@ public class GlobalExceptionAdvice {
         log.error("CoordinatesLoadingException-> caught:", ex.getCause());
         return new ErrorResponseDTO(ex.getErrorMessage());
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT) // 409
+    @ResponseBody
+    public ErrorResponseDTO handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        log.error("UserAlreadyExistsException -> caught:", ex);
+        return new ErrorResponseDTO(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND) // 404
+    @ResponseBody
+    public ErrorResponseDTO handleUserNotFoundException(UserNotFoundException ex) {
+        log.error("UserNotFoundException -> caught:", ex);
+        return new ErrorResponseDTO(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // 401
+    @ResponseBody
+    public ErrorResponseDTO handleInvalidPasswordException(InvalidPasswordException ex) {
+        log.error("InvalidPasswordException -> caught:", ex);
+        return new ErrorResponseDTO(ex.getMessage());
+    }
 }
