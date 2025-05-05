@@ -17,6 +17,7 @@ public class UserPutDTO {
         return password;
     }
 
+    @SuppressWarnings("unused")
     public void setPassword(String password) {
         this.password = password;
     }

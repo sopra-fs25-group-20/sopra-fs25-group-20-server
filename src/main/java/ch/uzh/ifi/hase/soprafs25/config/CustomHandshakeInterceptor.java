@@ -86,16 +86,12 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     private boolean isValidHandshakeParams(String nickname, String code) {
-        if (nickname == null || nickname.isBlank()) {
-            return false;
-        }
-
-        if (code == null || !code.matches("^[A-Z0-9]{6}$")) {
-            return false;
-        }
-
-        return true;
+        return nickname != null
+                && !nickname.isBlank()
+                && code != null
+                && code.matches("^[A-Z0-9]{6}$");
     }
+
 
     private Player joinPlayer(String nickname, String code, User associatedUser) {
         Player player = new Player();
