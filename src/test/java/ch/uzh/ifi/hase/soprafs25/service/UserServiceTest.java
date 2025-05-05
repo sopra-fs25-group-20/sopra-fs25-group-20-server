@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs25.entity.User;
 import ch.uzh.ifi.hase.soprafs25.exceptions.InvalidPasswordException;
 import ch.uzh.ifi.hase.soprafs25.exceptions.UserAlreadyExistsException;
 import ch.uzh.ifi.hase.soprafs25.exceptions.UserNotFoundException;
+import ch.uzh.ifi.hase.soprafs25.model.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs25.model.UserRegisterDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +53,11 @@ class UserServiceTest {
         testUser.setUsername(lowercase);
         testUser.setPassword(encoded);
         testUser.setToken(token);
+        testUser.setWins(10);
+        testUser.setDefeats(5);
+        testUser.setGames(15);
+        testUser.setCurrentStreak(2);
+        testUser.setHighestStreak(4);
     }
 
     @Test
@@ -115,5 +121,19 @@ class UserServiceTest {
 
         assertThrows(InvalidPasswordException.class,
                 () -> userService.loginUser("bob", "wrong"));
+    }
+
+    @Test
+    void getUserReturnsStats() {
+        when(userRepository.findByUsername(lowercase)).thenReturn(testUser);
+
+        UserGetDTO dto = userService.getUser(rawUsername);
+
+        assertEquals(lowercase, dto.getUsername());
+        assertEquals(10, dto.getWins());
+        assertEquals(5, dto.getDefeats());
+        assertEquals(15, dto.getGames());
+        assertEquals(2, dto.getCurrentStreak());
+        assertEquals(4, dto.getHighestStreak());
     }
 }
