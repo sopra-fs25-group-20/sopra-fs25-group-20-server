@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.model.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs25.model.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs25.model.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs25.model.UserRegisterDTO;
 import ch.uzh.ifi.hase.soprafs25.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -76,4 +78,25 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.current_streak").value(2))
                 .andExpect(jsonPath("$.highest_streak").value(4));
     }
+
+    @Test
+    void testUpdateUser_success() throws Exception {
+        UserPutDTO requestDTO = new UserPutDTO();
+        requestDTO.setUsername("updatedUser");
+        requestDTO.setPassword("newPass");
+        requestDTO.setToken("theToken");
+
+        doNothing().when(userService)
+                .updateUser("existing", "updatedUser", "newPass", "theToken");
+
+        mockMvc.perform(put("/account/existing")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
+
+        Mockito.verify(userService)
+                .updateUser("existing", "updatedUser", "newPass", "theToken");
+    }
+
 }

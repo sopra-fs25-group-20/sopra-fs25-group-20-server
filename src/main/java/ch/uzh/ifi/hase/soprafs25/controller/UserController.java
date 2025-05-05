@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.model.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs25.model.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs25.model.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs25.model.UserRegisterDTO;
 import ch.uzh.ifi.hase.soprafs25.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,16 @@ public class UserController {
         String username = userPostDTO.getUsername();
         String password = userPostDTO.getPassword();
         return userService.loginUser(username, password);
+    }
+
+    @PutMapping("/account/{username}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUser(@PathVariable("username") String targetUsername,
+                           @RequestBody UserPutDTO userPutDTO) {
+        String username = userPutDTO.getUsername();
+        String password = userPutDTO.getPassword();
+        String token = userPutDTO.getToken();
+        userService.updateUser(targetUsername, username, password, token);
     }
 
     @GetMapping("/account/{username}")
