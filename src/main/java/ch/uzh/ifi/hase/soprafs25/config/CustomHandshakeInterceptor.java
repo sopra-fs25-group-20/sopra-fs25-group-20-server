@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs25.config;
 
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
+import ch.uzh.ifi.hase.soprafs25.entity.User;
+import ch.uzh.ifi.hase.soprafs25.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs25.service.JoinRoomService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
 import org.springframework.context.annotation.Configuration;
@@ -20,11 +22,14 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
     private final JoinRoomService joinRoomService;
     private final PlayerConnectionService playerConnectionService;
+    private final UserRepository userRepository;
 
     public CustomHandshakeInterceptor(@Lazy JoinRoomService joinRoomService,
-                                      @Lazy PlayerConnectionService playerConnectionService) {
+                                      @Lazy PlayerConnectionService playerConnectionService,
+                                      UserRepository userRepository) {
         this.joinRoomService = joinRoomService;
         this.playerConnectionService = playerConnectionService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -40,10 +45,21 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
         HttpServletRequest servletRequest = servletRequestWrapper.getServletRequest();
         String nickname = servletRequest.getParameter("nickname");
         String code = servletRequest.getParameter("code");
+        String token = servletRequest.getParameter("token");
 
         if (!isValidHandshakeParams(nickname, code)) {
             response.setStatusCode(HttpStatus.BAD_REQUEST);
             return false;
+        }
+
+        User associatedUser = null;
+        if (token != null && !token.isBlank()) {
+            associatedUser = userRepository.findByToken(token);
+
+            if (associatedUser == null) {
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                return false;
+            }
         }
 
         if (playerConnectionService.isOnline(nickname, code)) {
@@ -51,7 +67,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
             return false;
         }
 
-        Player createdPlayer = joinPlayer(nickname, code);
+        Player createdPlayer = joinPlayer(nickname, code, associatedUser);
 
         attributes.put("nickname", nickname);
         attributes.put("code", code);
@@ -81,9 +97,12 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
         return true;
     }
 
-    private Player joinPlayer(String nickname, String code) {
+    private Player joinPlayer(String nickname, String code, User associatedUser) {
         Player player = new Player();
         player.setNickname(nickname);
+        if (associatedUser != null) {
+            player.setUser(associatedUser);
+        }
         return joinRoomService.joinRoom(code, player);
     }
 }
