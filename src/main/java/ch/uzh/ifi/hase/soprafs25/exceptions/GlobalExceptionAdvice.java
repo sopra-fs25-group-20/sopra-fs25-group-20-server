@@ -74,4 +74,12 @@ public class GlobalExceptionAdvice {
         log.error("InvalidPasswordException -> caught:", ex);
         return new ErrorResponseDTO(ex.getMessage());
     }
+
+    @ExceptionHandler(TokenNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // 401
+    @ResponseBody
+    public ErrorResponseDTO handleTokenNotFoundException(TokenNotFoundException ex) {
+        log.error("TokenNotFoundException -> caught:", ex);
+        return new ErrorResponseDTO(ex.getMessage());
+    }
 }
