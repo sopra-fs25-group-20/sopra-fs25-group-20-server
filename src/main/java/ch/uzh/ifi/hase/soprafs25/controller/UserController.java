@@ -19,7 +19,6 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
     public UserRegisterDTO registerUser(@RequestBody UserPostDTO userPostDTO) {
         String username = userPostDTO.getUsername();
         String password = userPostDTO.getPassword();
@@ -28,7 +27,6 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public UserRegisterDTO loginUser(@RequestBody UserPostDTO userPostDTO) {
         String username = userPostDTO.getUsername();
         String password = userPostDTO.getPassword();
@@ -37,7 +35,6 @@ public class UserController {
 
     @PutMapping("/account/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ResponseBody
     public void updateUser(@PathVariable("username") String targetUsername,
                            @RequestBody UserPutDTO userPutDTO) {
         String username = userPutDTO.getUsername();
@@ -48,7 +45,6 @@ public class UserController {
 
     @GetMapping("/account/{username}")
     @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
     public UserGetDTO getUser(@PathVariable String username) {
         return userService.getUser(username);
     }
