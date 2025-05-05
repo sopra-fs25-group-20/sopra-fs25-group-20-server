@@ -10,7 +10,8 @@ public enum ErrorMessages {
     USER_NOT_FOUND("User with %s not found"),
     INVALID_PASSWORD("Invalid password for the user %s"),
     TOKEN_NOT_FOUND("No token was provided"),
-    USER_NOT_AUTHENTICATED("Not logged in: %s");
+    USER_NOT_AUTHENTICATED("Not logged in: %s"),
+    USER_NOT_AUTHORIZED("User with username %s is not authorized to change the user with username %s");
 
     private final String message;
 
