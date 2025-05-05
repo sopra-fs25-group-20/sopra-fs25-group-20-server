@@ -62,6 +62,7 @@ sonar {
          property "sonar.projectName", "sopra-fs25-group-20-server"
         property "sonar.organization", "sopra-fs25-group-20"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.cpd.exclusions", "src/main/java/ch/uzh/ifi/hase/soprafs25/model/UserGetDTO.java"
     }
 }
 
