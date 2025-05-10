@@ -7,6 +7,8 @@ import ch.uzh.ifi.hase.soprafs25.exceptions.RoomNotFoundException;
 import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.util.RandomColorUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JoinRoomService {
 
+    private static final Logger log = LoggerFactory.getLogger(JoinRoomService.class);
     private final PlayerRepository playerRepository;
     private final RoomRepository roomRepository;
     private final GameBroadcastService gameBroadcastService;
@@ -54,6 +57,7 @@ public class JoinRoomService {
         room.addPlayer(playerInput);
         playerInput.setColor(RandomColorUtil.assignColor(room.getCode()));
         playerInput.setConnected(false);
+        log.info("Player account: '{}'", playerInput.getUser());
         return playerRepository.save(playerInput);
     }
 
