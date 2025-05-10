@@ -1,17 +1,31 @@
 package ch.uzh.ifi.hase.soprafs25.model;
 
+import ch.uzh.ifi.hase.soprafs25.entity.User;
+
 public class PlayerUpdateDTO {
 
     private String nickname;
     private String color;
     private boolean isAdmin;
+    private UserGetDTO user;
 
     public PlayerUpdateDTO() {}
 
-    public PlayerUpdateDTO(String nickname, String color, boolean isAdmin) {
+    public PlayerUpdateDTO(String nickname, String color, boolean isAdmin, User user) {
         this.nickname = nickname;
         this.color = color;
         this.isAdmin = isAdmin;
+
+        if (user != null) {
+            this.user = new UserGetDTO(
+                    user.getUsername(),
+                    user.getWins(),
+                    user.getDefeats(),
+                    user.getGames(),
+                    user.getCurrentStreak(),
+                    user.getHighestStreak()
+            );
+        }
     }
 
     public String getNickname() {
@@ -36,5 +50,13 @@ public class PlayerUpdateDTO {
 
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public UserGetDTO getUser() {
+        return user;
+    }
+
+    public void setUser(UserGetDTO user) {
+        this.user = user;
     }
 }
