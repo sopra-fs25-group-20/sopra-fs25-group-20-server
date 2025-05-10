@@ -1,12 +1,11 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.model.*;
 import ch.uzh.ifi.hase.soprafs25.service.GameReadService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
 import ch.uzh.ifi.hase.soprafs25.service.VotingService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,5 +52,10 @@ public class GameRestController {
     @GetMapping("/game/vote/state/{code}")
     public VoteStateDTO getVoteState(@PathVariable String code) {
         return votingService.getVoteState(code);
+    }
+
+    @GetMapping("/game/timer/{code}")
+    public TimerDTO getTimer(@PathVariable String code, @RequestParam GamePhase phase) {
+        return gameReadService.getTimer(code, phase);
     }
 }
