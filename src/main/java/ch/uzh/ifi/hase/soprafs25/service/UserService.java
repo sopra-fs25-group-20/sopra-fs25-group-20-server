@@ -55,6 +55,25 @@ public class UserService {
         updatePasswordIfProvided(authenticatedUser, password);
     }
 
+    public void updateUserStatsAfterGame(User user, boolean hasWon) {
+        user.incrementGames();
+
+        if (hasWon) {
+            user.incrementWins();
+            user.incrementCurrentStreak();
+
+            if (user.getCurrentStreak() > user.getHighestStreak()) {
+                user.setHighestStreak(user.getCurrentStreak());
+            }
+        } else {
+            user.incrementDefeats();
+            user.setCurrentStreak(0);
+        }
+
+        userRepository.save(user);
+        userRepository.flush();
+    }
+
     public UserGetDTO getUser(String username) {
         User user = getUserByUsername(username);
 

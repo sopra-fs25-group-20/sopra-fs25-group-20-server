@@ -56,6 +56,9 @@ public class GameService {
 
     public void advancePhase(String roomCode, GamePhase newPhase) {
         Game game = getGame(roomCode);
+        if (newPhase == GamePhase.SUMMARY) {
+            updatePlayerStatsInRoom(roomCode);
+        }
         game.setPhase(newPhase);
 
         gameBroadcastService.broadcastGamePhase(roomCode);
@@ -94,6 +97,33 @@ public class GameService {
 
     public void broadcastPersonalizedImageIndex(String roomCode, String nickname) {
         gameBroadcastService.broadcastPersonalizedImageIndex(roomCode, nickname);
+    }
+
+    private void updatePlayerStatsInRoom(String roomCode) {
+        Game game = getGame(roomCode);
+
+        List<Player> playersInRoom = gameReadService.getPlayersInRoom(roomCode);
+        log.info("Players in the room '{}'", playersInRoom);
+        List<Player> playersWithAccount = playersInRoom.stream()
+                                                .filter(player -> player.getUser() != null)
+                                                .toList();
+        log.info("Players with account: {}", playersWithAccount);
+        boolean hasWon;
+        for (Player player : playersWithAccount) {
+            if (game.getRole(player.getNickname()) == game.getGameResult().getWinnerRole()) {
+                hasWon = true;
+            } else {
+                hasWon = false;
+            }
+            log.info("Player '{}' has won: {}", player.getNickname(), hasWon);
+            userService.updateUserStatsAfterGame(player.getUser(), hasWon);
+        }
+    }
+
+    private void handleRoundTimeOut(String roomCode) {
+        Game game = getGame(roomCode);
+        game.setGameResult(null, null, PlayerRole.SPY);
+        advancePhase(roomCode, GamePhase.SUMMARY);
     }
 
     private boolean checkSpyGuess(String roomCode, String nickname, int spyGuessIndex) {

@@ -35,6 +35,22 @@ public class User implements Serializable {
     @Column(nullable = false)
     private int highestStreak;
 
+    public void incrementWins() {
+        this.wins++;
+    }
+
+    public void incrementDefeats() {
+        this.defeats++;
+    }
+
+    public void incrementGames() {
+        this.games++;
+    }
+
+    public void incrementCurrentStreak() {
+        this.currentStreak++;
+    }
+
     public Long getUserId() {
         return userId;
     }
