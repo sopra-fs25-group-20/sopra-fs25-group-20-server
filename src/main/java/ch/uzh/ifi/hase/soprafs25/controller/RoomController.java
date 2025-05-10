@@ -26,7 +26,7 @@ public class RoomController {
         Player player = new Player();
         player.setNickname(roomPostDTO.getNickname());
 
-        Player createdPlayer = createRoomService.createRoom(player);
+        Player createdPlayer = createRoomService.createRoom(player, roomPostDTO.getToken());
 
         return new CreateRoomDTO(
                 createdPlayer.getNickname(),
