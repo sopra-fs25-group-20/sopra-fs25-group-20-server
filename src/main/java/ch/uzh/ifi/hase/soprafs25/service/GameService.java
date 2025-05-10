@@ -3,9 +3,12 @@ package ch.uzh.ifi.hase.soprafs25.service;
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
+import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +20,27 @@ import java.util.concurrent.CompletableFuture;
 public class GameService {
 
     private static final Random RANDOM = new Random(); // NOSONAR
+    private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
     private final AuthorizationService authorizationService;
     private final GameReadService gameReadService;
     private final GameBroadcastService gameBroadcastService;
     private final ImageService imageService;
+    private final GameTimerService gameTimerService;
+    private final UserService userService;
 
     public GameService(AuthorizationService authorizationService,
                        GameReadService gameReadService,
                        GameBroadcastService gameBroadcastService,
-                       @Qualifier("googleImageService") ImageService mockImageService) {
+                       @Qualifier("googleImageService") ImageService mockImageService,
+                       GameTimerService gameTimerService,
+                       UserService userService) {
         this.authorizationService = authorizationService;
         this.gameReadService = gameReadService;
         this.gameBroadcastService = gameBroadcastService;
         this.imageService = mockImageService;
+        this.gameTimerService = gameTimerService;
+        this.userService = userService;
     }
 
     public void startRound(String roomCode, String nickname) {
@@ -43,6 +53,9 @@ public class GameService {
         game.assignRoles(gameReadService.getNicknamesInRoom(roomCode));
         game.setHighlightedImageIndex(RANDOM.nextInt(game.getGameSettings().getImageCount()));
         advancePhase(roomCode, GamePhase.GAME);
+
+        Runnable taskForRoundTimeOut = () -> handleRoundTimeOut(roomCode);
+        gameTimerService.scheduleTask(roomCode + "_game", game.getGameSettings().getGameTimer(), taskForRoundTimeOut);
     }
 
     public void createGame(String roomCode) {
@@ -57,10 +70,11 @@ public class GameService {
     public void advancePhase(String roomCode, GamePhase newPhase) {
         Game game = getGame(roomCode);
         if (newPhase == GamePhase.SUMMARY) {
+            gameTimerService.cancelTask(roomCode + "_game", "Round ended");
+            gameTimerService.cancelTask(roomCode + "_vote", "Round ended");
             updatePlayerStatsInRoom(roomCode);
         }
         game.setPhase(newPhase);
-
         gameBroadcastService.broadcastGamePhase(roomCode);
     }
 
