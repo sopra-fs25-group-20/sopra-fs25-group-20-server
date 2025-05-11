@@ -52,4 +52,14 @@ public class UserController {
     public UserGetDTO getUser(@PathVariable String username) {
         return userService.getUser(username);
     }
+
+    @GetMapping("/account/validate")
+    @ResponseStatus(HttpStatus.OK)
+    public void validateToken(@RequestHeader(value = "Authorization", required = false) String tokenHeader) {
+        String token = (tokenHeader != null && tokenHeader.startsWith("Bearer "))
+                ? tokenHeader.substring(7)
+                : null;
+
+        userService.validateToken(token);
+    }
 }

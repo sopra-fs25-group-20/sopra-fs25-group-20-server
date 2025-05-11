@@ -87,6 +87,17 @@ public class UserService {
         );
     }
 
+    public void validateToken(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new TokenNotFoundException();
+        }
+
+        User authenticatedUser = userRepository.findByToken(token);
+        if (authenticatedUser == null) {
+            throw new UserNotAuthenticatedException("Invalid token. Please log in again.");
+        }
+    }
+
     private User getUserByUsername(String username) {
         username = username.toLowerCase(Locale.ROOT);
         User user = userRepository.findByUsername(username);
