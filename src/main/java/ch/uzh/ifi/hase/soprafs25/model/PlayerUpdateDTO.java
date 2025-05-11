@@ -1,12 +1,15 @@
 package ch.uzh.ifi.hase.soprafs25.model;
 
 import ch.uzh.ifi.hase.soprafs25.entity.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PlayerUpdateDTO {
 
     private String nickname;
     private String color;
     private boolean isAdmin;
+
+    @JsonProperty("account")
     private UserGetDTO user;
 
     public PlayerUpdateDTO() {}
