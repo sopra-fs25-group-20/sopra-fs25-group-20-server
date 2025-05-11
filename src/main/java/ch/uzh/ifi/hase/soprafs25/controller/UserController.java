@@ -35,11 +35,15 @@ public class UserController {
 
     @PutMapping("/account/{username}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUser(@RequestHeader(value = "Authorization", required = false) String token,
+    public void updateUser(@RequestHeader(value = "Authorization", required = false) String tokenHeader,
                            @PathVariable("username") String targetUsername,
                            @RequestBody UserPutDTO userPutDTO) {
         String username = userPutDTO.getUsername();
         String password = userPutDTO.getPassword();
+        String token = (tokenHeader != null && tokenHeader.startsWith("Bearer "))
+                ? tokenHeader.substring(7)
+                : null;
+
         userService.updateUser(targetUsername, username, password, token);
     }
 
