@@ -4,16 +4,14 @@ public class RoomPostDTO {
 
     private String nickname;
     private String code;
-    private String token;
 
     public RoomPostDTO() {
 
     }
     
-    public RoomPostDTO(String nickname, String code, String token) {
+    public RoomPostDTO(String nickname, String code) {
         this.nickname = nickname;
         this.code = code;
-        this.token = token;
     }
 
     public String getNickname() {
@@ -30,13 +28,5 @@ public class RoomPostDTO {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 }

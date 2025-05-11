@@ -22,11 +22,12 @@ public class RoomController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateRoomDTO createRoom(@RequestBody RoomPostDTO roomPostDTO) {
+    public CreateRoomDTO createRoom(@RequestHeader(value = "Authorization", required = false) String token,
+                                    @RequestBody RoomPostDTO roomPostDTO) {
         Player player = new Player();
         player.setNickname(roomPostDTO.getNickname());
 
-        Player createdPlayer = createRoomService.createRoom(player, roomPostDTO.getToken());
+        Player createdPlayer = createRoomService.createRoom(player, token);
 
         return new CreateRoomDTO(
                 createdPlayer.getNickname(),
