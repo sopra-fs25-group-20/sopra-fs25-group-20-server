@@ -73,6 +73,9 @@ public class GameService {
             if (gameTimerService.isTimerActive(roomCode + "_game")) {
                 gameTimerService.cancelTask(roomCode + "_game", "Round ended early");
             }
+            if (gameTimerService.isTimerActive(roomCode + "_vote")) {
+                gameTimerService.cancelTask(roomCode + "_vote", "Round ended early");
+            }
             updatePlayerStatsInRoom(roomCode);
         }
         game.setPhase(newPhase);
