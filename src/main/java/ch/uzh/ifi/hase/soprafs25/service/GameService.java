@@ -27,17 +27,20 @@ public class GameService {
     private final GameBroadcastService gameBroadcastService;
     private final ImageService imageService;
     private final UserService userService;
+    private final GameTimerService gameTimerService;
 
     public GameService(AuthorizationService authorizationService,
                        GameReadService gameReadService,
                        GameBroadcastService gameBroadcastService,
                        @Qualifier("googleImageService") ImageService mockImageService,
-                       UserService userService) {
+                       UserService userService,
+                       GameTimerService gameTimerService) {
         this.authorizationService = authorizationService;
         this.gameReadService = gameReadService;
         this.gameBroadcastService = gameBroadcastService;
         this.imageService = mockImageService;
         this.userService = userService;
+        this.gameTimerService = gameTimerService;
     }
 
     public void startRound(String roomCode, String nickname) {
@@ -50,6 +53,9 @@ public class GameService {
         game.assignRoles(gameReadService.getNicknamesInRoom(roomCode));
         game.setHighlightedImageIndex(RANDOM.nextInt(game.getGameSettings().getImageCount()));
         advancePhase(roomCode, GamePhase.GAME);
+
+        Runnable taskForRoundTimeOut = () -> handleRoundTimeOut(roomCode);
+        gameTimerService.scheduleTask(roomCode + "_game", game.getGameSettings().getGameTimer(), taskForRoundTimeOut);
     }
 
     public void createGame(String roomCode) {
@@ -64,6 +70,9 @@ public class GameService {
     public void advancePhase(String roomCode, GamePhase newPhase) {
         Game game = getGame(roomCode);
         if (newPhase == GamePhase.SUMMARY) {
+            if (gameTimerService.isTimerActive(roomCode + "_game")) {
+                gameTimerService.cancelTask(roomCode + "_game", "Round ended early");
+            }
             updatePlayerStatsInRoom(roomCode);
         }
         game.setPhase(newPhase);
@@ -121,6 +130,12 @@ public class GameService {
             log.info("Player '{}' has won: {}", player.getNickname(), hasWon);
             userService.updateUserStatsAfterGame(player.getUser(), hasWon);
         }
+    }
+
+    private void handleRoundTimeOut(String roomCode) {
+        Game game = getGame(roomCode);
+        game.setGameResult(null, null, PlayerRole.SPY);
+        advancePhase(roomCode, GamePhase.SUMMARY);
     }
 
     private boolean checkSpyGuess(String roomCode, String nickname, int spyGuessIndex) {
