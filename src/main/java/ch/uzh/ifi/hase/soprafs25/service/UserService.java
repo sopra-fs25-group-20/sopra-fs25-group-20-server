@@ -55,6 +55,17 @@ public class UserService {
         updatePasswordIfProvided(authenticatedUser, password);
     }
 
+    public void updateUserStatsAfterGame(User user, boolean hasWon) {
+        if (hasWon) {
+            user.recordWin();
+        } else {
+            user.recordDefeat();
+        }
+
+        userRepository.save(user);
+        userRepository.flush();
+    }
+
     public UserGetDTO getUser(String username) {
         User user = getUserByUsername(username);
 

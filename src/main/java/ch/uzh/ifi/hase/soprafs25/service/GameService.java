@@ -3,9 +3,12 @@ package ch.uzh.ifi.hase.soprafs25.service;
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
+import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +20,24 @@ import java.util.concurrent.CompletableFuture;
 public class GameService {
 
     private static final Random RANDOM = new Random(); // NOSONAR
+    private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
     private final AuthorizationService authorizationService;
     private final GameReadService gameReadService;
     private final GameBroadcastService gameBroadcastService;
     private final ImageService imageService;
+    private final UserService userService;
 
     public GameService(AuthorizationService authorizationService,
                        GameReadService gameReadService,
                        GameBroadcastService gameBroadcastService,
-                       @Qualifier("googleImageService") ImageService mockImageService) {
+                       @Qualifier("googleImageService") ImageService mockImageService,
+                       UserService userService) {
         this.authorizationService = authorizationService;
         this.gameReadService = gameReadService;
         this.gameBroadcastService = gameBroadcastService;
         this.imageService = mockImageService;
+        this.userService = userService;
     }
 
     public void startRound(String roomCode, String nickname) {
@@ -56,6 +63,9 @@ public class GameService {
 
     public void advancePhase(String roomCode, GamePhase newPhase) {
         Game game = getGame(roomCode);
+        if (newPhase == GamePhase.SUMMARY) {
+            updatePlayerStatsInRoom(roomCode);
+        }
         game.setPhase(newPhase);
 
         gameBroadcastService.broadcastGamePhase(roomCode);
@@ -94,6 +104,23 @@ public class GameService {
 
     public void broadcastPersonalizedImageIndex(String roomCode, String nickname) {
         gameBroadcastService.broadcastPersonalizedImageIndex(roomCode, nickname);
+    }
+
+    private void updatePlayerStatsInRoom(String roomCode) {
+        Game game = getGame(roomCode);
+
+        List<Player> playersInRoom = gameReadService.getPlayersInRoom(roomCode);
+        log.info("Players in the room '{}'", playersInRoom);
+        List<Player> playersWithAccount = playersInRoom.stream()
+                .filter(player -> player.getUser() != null)
+                .toList();
+        log.info("Players with account: {}", playersWithAccount);
+        boolean hasWon;
+        for (Player player : playersWithAccount) {
+            hasWon = game.getRole(player.getNickname()) == game.getGameResult().getWinnerRole();
+            log.info("Player '{}' has won: {}", player.getNickname(), hasWon);
+            userService.updateUserStatsAfterGame(player.getUser(), hasWon);
+        }
     }
 
     private boolean checkSpyGuess(String roomCode, String nickname, int spyGuessIndex) {

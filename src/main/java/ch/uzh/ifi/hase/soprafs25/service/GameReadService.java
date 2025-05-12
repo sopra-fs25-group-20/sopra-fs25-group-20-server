@@ -108,6 +108,14 @@ public class GameReadService {
                 : -1;
     }
 
+    public List<Player> getPlayersInRoom(String roomCode) {
+        Room room = roomRepository.findByCode(roomCode);
+        if (room == null) {
+            throw new IllegalStateException("Room not found: " + roomCode);
+        }
+        return room.getPlayers();
+    }
+
     private Game getGame(String roomCode) {
         return GameSessionManager.getGameSession(roomCode);
     }
