@@ -79,6 +79,21 @@ public class UserService {
         );
     }
 
+    public void validateToken(String tokenHeader) {
+        if (tokenHeader == null || tokenHeader.trim().isEmpty()) {
+            throw new TokenNotFoundException();
+        }
+        if (!tokenHeader.startsWith("Bearer ")) {
+            throw new UserNotAuthenticatedException("Invalid token. Please log in again.");
+        }
+
+        String token = tokenHeader.substring(7);
+        User authenticatedUser = userRepository.findByToken(token);
+        if (authenticatedUser == null) {
+            throw new UserNotAuthenticatedException("Invalid token. Please log in again.");
+        }
+    }
+
     private User getUserByUsername(String username) {
         username = username.toLowerCase(Locale.ROOT);
         User user = userRepository.findByUsername(username);

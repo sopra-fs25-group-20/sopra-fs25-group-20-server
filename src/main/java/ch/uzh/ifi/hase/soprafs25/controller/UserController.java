@@ -48,4 +48,10 @@ public class UserController {
     public UserGetDTO getUser(@PathVariable String username) {
         return userService.getUser(username);
     }
+
+    @GetMapping("/account/validate")
+    @ResponseStatus(HttpStatus.OK)
+    public void validateToken(@RequestHeader(value = "Authorization", required = false) String tokenHeader) {
+        userService.validateToken(tokenHeader);
+    }
 }
