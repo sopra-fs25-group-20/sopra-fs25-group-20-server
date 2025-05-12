@@ -79,7 +79,8 @@ public class GameReadService {
                 .map(p -> new PlayerUpdateDTO(
                         p.getNickname(),
                         p.getColor(),
-                        p.getId().equals(adminId)
+                        p.getId().equals(adminId),
+                        p.getUser()
                 ))
                 .toList();
     }
