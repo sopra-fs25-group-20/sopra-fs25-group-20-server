@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledFuture;
 @Service
 public class GameTimerService {
 
+    private static final String SAFE_ID_PATTERN = "[^A-Za-z0-9_\\-]";
     private static final Logger log = LoggerFactory.getLogger(GameTimerService.class);
     private final Map<String, ScheduledFuture<?>> activeScheduledTasks = new ConcurrentHashMap<>();
     private final Map<String, Instant> timerEndInstants = new ConcurrentHashMap<>();
@@ -44,7 +45,11 @@ public class GameTimerService {
 
         ScheduledFuture<?> scheduledTask = taskScheduler.schedule(completeTaskWrapper, executionTime);
         activeScheduledTasks.put(timerId, scheduledTask);
-        log.info("Task scheduled for ID: '{}'. Will execute at: {}.", timerId, executionTime);
+
+        if (log.isInfoEnabled()) {
+            String safeId = timerId.replaceAll(SAFE_ID_PATTERN,"");
+            log.info("Task scheduled for ID: '{}'. Will execute at: {}.", safeId, executionTime);
+        }
     }
 
     public void cancelTask(String timerId, String reason) {
@@ -53,9 +58,17 @@ public class GameTimerService {
         timerEndInstants.remove(timerId);
         if (timer != null) {
             boolean wasCancelled = timer.cancel(true); // true: allows interrupting even if it runs
-            log.info("Canceled timer for ID: '{}'. Success: {}. Reason: {}", timerId, wasCancelled, reason);
+            if (log.isInfoEnabled()) {
+                String safeId = timerId.replaceAll(SAFE_ID_PATTERN, "");
+                String safeReason = reason.replaceAll(SAFE_ID_PATTERN, "");
+                log.info("Canceled timer for ID: '{}'. Success: {}. Reason: {}", safeId, wasCancelled, safeReason);
+            }
         } else {
-            log.info("No active timer found for ID: '{}' to cancel. Reason: {}", timerId, reason);
+            if (log.isInfoEnabled()) {
+                String safeId = timerId.replaceAll(SAFE_ID_PATTERN, "");
+                String safeReason = reason.replaceAll(SAFE_ID_PATTERN, "");
+                log.info("No active timer found for ID: '{}' to cancel. Reason: {}", safeId, safeReason);
+            }
         }
     }
 

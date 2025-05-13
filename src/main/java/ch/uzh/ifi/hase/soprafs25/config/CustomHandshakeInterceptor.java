@@ -57,7 +57,9 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
         User associatedUser = null;
         if (token != null && !token.isBlank()) {
-            log.info("User with token '{}' is being searched", token);
+            if (log.isInfoEnabled()) {
+                log.info("User with token '{}' is being searched", token.replaceAll("[^A-Za-z0-9_\\-]", ""));
+            }
             associatedUser = userRepository.findByToken(token);
             log.info("Associated user is '{}': ", associatedUser);
             if (associatedUser == null) {
