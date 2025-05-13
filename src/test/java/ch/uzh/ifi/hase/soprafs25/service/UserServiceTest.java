@@ -251,4 +251,17 @@ class UserServiceTest {
     void validateTokenBlankString() {
         assertThrows(TokenNotFoundException.class, () -> userService.validateToken("   "));
     }
+
+    @Test @DisplayName("validateToken: invalid structure - missing Bearer prefix")
+    void validateTokenInvalidPrefixThrows() {
+        assertThrows(UserNotAuthenticatedException.class, () ->
+                userService.validateToken("InvalidPrefix tokenString"));
+    }
+
+    @Test @DisplayName("validateToken: token not found in DB")
+    void validateTokenMissingUserThrows() {
+        when(userRepository.findByToken("badToken")).thenReturn(null);
+        assertThrows(UserNotAuthenticatedException.class, () ->
+                userService.validateToken("Bearer badToken"));
+    }
 }
