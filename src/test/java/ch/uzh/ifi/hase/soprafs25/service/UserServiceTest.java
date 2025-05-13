@@ -246,4 +246,9 @@ class UserServiceTest {
         verify(userRepository).save(testUser);
         verify(userRepository).flush();
     }
+
+    @Test @DisplayName("validateToken: blank string")
+    void validateTokenBlankString() {
+        assertThrows(TokenNotFoundException.class, () -> userService.validateToken("   "));
+    }
 }
