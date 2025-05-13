@@ -53,7 +53,9 @@ class GameTimerServiceTest {
 
     @Test
     void testCancelTask_noExistingTimer() {
-        timerService.cancelTask("non_existent", "no-op");
+        String id = "non_existent";
+        timerService.cancelTask(id, "no-op");
+        assertFalse(timerService.isTimerActive(id));
     }
 
     @Test
