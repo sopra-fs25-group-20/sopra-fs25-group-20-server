@@ -2,14 +2,20 @@ package ch.uzh.ifi.hase.soprafs25.service;
 
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.entity.Room;
+import ch.uzh.ifi.hase.soprafs25.entity.User;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
+import ch.uzh.ifi.hase.soprafs25.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CreateRoomServiceTest {
@@ -23,32 +29,63 @@ class CreateRoomServiceTest {
     @Mock
     private GameService gameService;
 
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private CreateRoomService createRoomService;
 
-    @Test
-    void testCreateRoom() {
-        Player player = new Player();
-        Room room = new Room();
+    private Player player;
+    private Room room;
+
+    @BeforeEach
+    void setUp() {
+        player = new Player();
+        player.setNickname("TestUser");
+
+        room = new Room();
         room.setCode("ROOM1");
 
-        Player joinedPlayer = new Player();
-        joinedPlayer.setId(1L);
-        joinedPlayer.setNickname("TestUser");
-        Room joinedRoom = new Room();
-        joinedRoom.setCode("ROOM1");
-        joinedPlayer.setRoom(joinedRoom);
-
         when(roomRepository.save(any(Room.class))).thenReturn(room);
-        when(joinRoomService.joinRoom(eq("ROOM1"), any(Player.class))).thenReturn(joinedPlayer);
+        doNothing().when(gameService).createGame(eq("ROOM1"));
+    }
 
-        doNothing().when(gameService).createGame("ROOM1");
+    @Test
+    void createRoom_withoutToken_savesAndJoins() {
+        Player joined = new Player();
+        joined.setId(42L);
+        joined.setNickname("TestUser");
 
-        Player result = createRoomService.createRoom(player);
+        when(joinRoomService.joinRoom(eq("ROOM1"), any(Player.class))).thenReturn(joined);
+
+        Player result = createRoomService.createRoom(player, null);
 
         assertEquals("TestUser", result.getNickname());
         verify(roomRepository, times(2)).save(any(Room.class));
         verify(joinRoomService).joinRoom("ROOM1", player);
-        verify(gameService).createGame("ROOM1"); // ✅ kontrol
+        verify(gameService).createGame("ROOM1");
+    }
+
+    @Test
+    void createRoom_withBearerToken_attachesUser() {
+        User user = new User();                    // no setId(), just use the object
+        when(userRepository.findByToken("token123"))
+                .thenReturn(user);
+
+        Player joined = new Player();
+        joined.setId(99L);
+        joined.setNickname("TestUser");
+        joined.setUser(user);
+
+        when(joinRoomService.joinRoom(eq("ROOM1"), any(Player.class)))
+                .thenReturn(joined);
+
+        Player result = createRoomService.createRoom(player, "Bearer token123");
+
+        assertSame(user, result.getUser());
+        verify(userRepository).findByToken("token123");
+        verify(roomRepository, times(2)).save(any(Room.class));
+        verify(joinRoomService).joinRoom("ROOM1", player);
+        verify(gameService).createGame("ROOM1");
     }
 }

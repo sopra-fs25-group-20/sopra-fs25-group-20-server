@@ -41,8 +41,8 @@ class GameRestControllerTest {
     @Test
     void getPlayerList_ReturnsPlayerListDTOs() throws Exception {
         List<PlayerUpdateDTO> players = List.of(
-                new PlayerUpdateDTO("Alice", "Red", true),
-                new PlayerUpdateDTO("Bob", "Blue", false)
+                new PlayerUpdateDTO("Alice", "Red", true, null),
+                new PlayerUpdateDTO("Bob", "Blue", false, null)
         );
         when(playerConnectionService.getPlayerListDTO("room123")).thenReturn(players);
 

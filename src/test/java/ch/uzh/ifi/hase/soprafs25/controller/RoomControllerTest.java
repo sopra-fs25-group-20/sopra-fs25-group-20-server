@@ -1,19 +1,22 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
+import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.model.CreateRoomDTO;
 import ch.uzh.ifi.hase.soprafs25.model.RoomPostDTO;
 import ch.uzh.ifi.hase.soprafs25.service.CreateRoomService;
 import ch.uzh.ifi.hase.soprafs25.service.JoinRoomService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(MockitoExtension.class)
 class RoomControllerTest {
@@ -32,12 +35,13 @@ class RoomControllerTest {
         RoomPostDTO dto = new RoomPostDTO("testUser", null);
         Player player = new Player();
         player.setNickname("testUser");
-        player.setRoom(new ch.uzh.ifi.hase.soprafs25.entity.Room());
-        player.getRoom().setCode("ABC123");
+        Room room = new Room();
+        room.setCode("ABC123");
+        player.setRoom(room);
 
-        when(createRoomService.createRoom(any(Player.class))).thenReturn(player);
+        when(createRoomService.createRoom(any(Player.class), any(String.class))).thenReturn(player);
 
-        CreateRoomDTO result = roomController.createRoom(dto);
+        CreateRoomDTO result = roomController.createRoom(null, dto);
 
         assertEquals("testUser", result.getNickname());
         assertEquals("ABC123", result.getRoomCode());
