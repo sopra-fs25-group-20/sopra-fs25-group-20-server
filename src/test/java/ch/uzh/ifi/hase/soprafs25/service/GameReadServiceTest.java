@@ -1,99 +1,202 @@
-// src/test/java/ch/uzh/ifi/hase/soprafs25/service/GameReadServiceTest.java
 package ch.uzh.ifi.hase.soprafs25.service;
 
-import ch.uzh.ifi.hase.soprafs25.entity.Player;
-import ch.uzh.ifi.hase.soprafs25.entity.Room;
-import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
-import ch.uzh.ifi.hase.soprafs25.model.TimerDTO;
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
+import ch.uzh.ifi.hase.soprafs25.entity.*;
+import ch.uzh.ifi.hase.soprafs25.model.*;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
+import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class GameReadServiceTest {
 
-    private static final String ROOM_CODE  = "ROOM123";
-    private static final long   REMAIN_SEC = 30L;
-
-    private GameReadService service;
+    private RoomRepository roomRepository;
+    private GameTimerService gameTimerService;
+    private GameReadService gameReadService;
+    private Room mockRoom;
 
     @BeforeEach
-    void setUp() {
-        RoomRepository roomRepo       = mock(RoomRepository.class);
-        GameTimerService timerService = mock(GameTimerService.class);
-        service                       = new GameReadService(roomRepo, timerService);
+    void setup() {
+        roomRepository = mock(RoomRepository.class);
+        gameTimerService = mock(GameTimerService.class);
+        gameReadService = new GameReadService(roomRepository, gameTimerService);
 
-        Room room = new Room();
-        room.setCode(ROOM_CODE);
+        mockRoom = new Room();
+        mockRoom.setCode("ROOM123");
 
-        Player p1 = new Player();
-        p1.setId(1L);
-        p1.setNickname("alice");
-        p1.setColor("#FF6B6B");
+        User user1 = new User();
+        user1.setUsername("alice123");
+        user1.setToken("token");
+        user1.setWins(10);
+        user1.setDefeats(9);
+        user1.setGames(19);
+        user1.setCurrentStreak(5);
+        user1.setHighestStreak(8);
 
-        Player p2 = new Player();
-        p2.setId(2L);
-        p2.setNickname("bob");
-        p2.setColor("#00FF00");
+        Player player1 = new Player();
+        player1.setId(1L);
+        player1.setNickname("alice");
+        player1.setColor("#FF6B6B");
+        player1.setRoom(mockRoom);
+        player1.setUser(user1);
 
-        room.setAdminPlayerId(1L);
-        room.setPlayers(List.of(p1, p2));
+        Player player2 = new Player();
+        player2.setId(2L);
+        player2.setNickname("bob");
+        player2.setColor("#6BCB77");
+        player2.setRoom(mockRoom);
+        player2.setUser(null);          // Guest
 
-        when(roomRepo.findByCode(ROOM_CODE)).thenReturn(room);
+        mockRoom.setPlayers(List.of(player1, player2));
+        mockRoom.setAdminPlayerId(1L);
+
+        when(roomRepository.findByCode("ROOM123")).thenReturn(mockRoom);
     }
 
     @Test
-    void getNicknamesInRoom_returnsNicknames() {
-        assertEquals(List.of("alice", "bob"), service.getNicknamesInRoom(ROOM_CODE));
+    void testGetGamePhase() {
+        Game game = new Game("ROOM123");
+        game.setPhase(GamePhase.VOTE);
+        GameSessionManager.addGameSession(game);
+
+        GamePhaseDTO dto = gameReadService.getGamePhase("ROOM123");
+        assertEquals("vote", dto.getPhase());
     }
 
     @Test
-    void getPlayerCount_returnsSize() {
-        assertEquals(2, service.getPlayerCount(ROOM_CODE));
+    void testGetGameSettings() {
+        Game game = new Game("ROOM123");
+        GameSessionManager.addGameSession(game);
+
+        GameSettingsDTO dto = gameReadService.getGameSettings("ROOM123");
+        assertEquals(30, dto.getVotingTimer());
+        assertEquals(300, dto.getGameTimer());
+        assertEquals(9, dto.getImageCount());
+        assertEquals("europe", dto.getImageRegion());
     }
 
     @Test
-    void getPlayersInRoom_returnsPlayers() {
-        assertEquals(2, service.getPlayersInRoom(ROOM_CODE).size());
+    void testGetGameResult() {
+        Game game = new Game("ROOM123");
+        game.setPhase(GamePhase.SUMMARY);
+        game.setGameResult(1, "alice", PlayerRole.SPY);
+        game.assignRoles(List.of("alice", "bob"));
+        game.setHighlightedImageIndex(2);
+
+        GameSessionManager.addGameSession(game);
+
+        GameResultDTO dto = gameReadService.getGameResult("ROOM123");
+        assertEquals(2, dto.getHighlightedImageIndex());
+        assertEquals("alice", dto.getVotedNickname());
+        assertEquals(PlayerRole.SPY, dto.getWinnerRole());
     }
 
     @Test
-    void getPlayerUpdateList_marksAdminCorrectly() {
-        List<PlayerUpdateDTO> updates = service.getPlayerUpdateList(ROOM_CODE);
-        assertAll(
-                () -> assertEquals("alice", updates.get(0).getNickname()),
-                () -> assertEquals("#FF6B6B", updates.get(0).getColor()),
-                () -> assertTrue(updates.get(0).isAdmin()),
-                () -> assertEquals("bob", updates.get(1).getNickname()),
-                () -> assertEquals("#00FF00", updates.get(1).getColor()),
-                () -> assertFalse(updates.get(1).isAdmin())
-        );
+    void testGetNicknamesInRoom() {
+        List<String> nicknames = gameReadService.getNicknamesInRoom("ROOM123");
+        assertEquals(List.of("alice", "bob"), nicknames);
     }
 
     @Test
-    void getTimer_whenActive_returnsRemaining() {
-        GameTimerService timerSvc = mock(GameTimerService.class);
-        when(timerSvc.isTimerActive(anyString())).thenReturn(true);
-        when(timerSvc.getRemainingSeconds(anyString())).thenReturn(Optional.of(REMAIN_SEC));
+    void testGetPlayerUpdateList() {
+        List<PlayerUpdateDTO> players = gameReadService.getPlayerUpdateList("ROOM123");
 
-        service = new GameReadService(mock(RoomRepository.class), timerSvc);
-        TimerDTO timer = service.getTimer(ROOM_CODE, GamePhase.GAME);
-        assertEquals((int) REMAIN_SEC, timer.getRemainingSeconds());
+        PlayerUpdateDTO p1 = players.get(0);
+        assertEquals("alice", p1.getNickname());
+        assertEquals("#FF6B6B", p1.getColor());
+        assertTrue(p1.isAdmin());
+        assertNotNull(p1.getUser());
+        assertEquals("alice123", p1.getUser().getUsername());
+
+        PlayerUpdateDTO p2 = players.get(1);
+        assertEquals("bob", p2.getNickname());
+        assertEquals("#6BCB77", p2.getColor());
+        assertFalse(p2.isAdmin());
+        assertNull(p2.getUser());
     }
 
     @Test
-    void getTimer_whenInactive_returnsNull() {
-        GameTimerService timerSvc = mock(GameTimerService.class);
-        when(timerSvc.isTimerActive(anyString())).thenReturn(false);
+    void testGetPlayerCount() {
+        int count = gameReadService.getPlayerCount("ROOM123");
+        assertEquals(2, count);
+    }
 
-        service = new GameReadService(mock(RoomRepository.class), timerSvc);
-        assertNull(service.getTimer(ROOM_CODE, GamePhase.LOBBY).getRemainingSeconds());
+    @Test
+    void testGetPlayerRole() {
+        Game game = new Game("ROOM123");
+        game.assignRoles(List.of("alice", "bob"));
+        GameSessionManager.addGameSession(game);
+
+        PlayerRole role = gameReadService.getPlayerRole("ROOM123", "alice");
+        assertNotNull(role);
+    }
+
+    @Test
+    void testGetPersonalizedImageIndex() {
+        Game game = new Game("ROOM123");
+        game.assignRoles(List.of("alice", "bob"));
+        game.setHighlightedImageIndex(3);
+        GameSessionManager.addGameSession(game);
+
+        Map<String, PlayerRole> roles = game.getRoles();
+
+        roles.forEach((nickname, role) -> {
+            Integer result = gameReadService.getPersonalizedImageIndex("ROOM123", nickname);
+            if (role == PlayerRole.INNOCENT) {
+                assertEquals(3, result, "Expected highlighted index for INNOCENT player");
+            } else {
+                assertEquals(-1, result, "Expected -1 for SPY player");
+            }
+        });
+    }
+
+    @Test
+    void testGetTimerInactive() {
+        when(gameTimerService.isTimerActive("ROOM123_vote")).thenReturn(false);
+
+        TimerDTO dto = gameReadService.getTimer("ROOM123", GamePhase.VOTE);
+        assertNull(dto.getRemainingSeconds());
+
+        verify(gameTimerService).isTimerActive("ROOM123_vote");
+        verify(gameTimerService, never()).getRemainingSeconds(any());
+    }
+
+    @Test
+    void testGetTimerActiveWithRemaining() {
+        when(gameTimerService.isTimerActive("ROOM123_game")).thenReturn(true);
+        when(gameTimerService.getRemainingSeconds("ROOM123_game"))
+                .thenReturn(Optional.of(42L));
+
+        TimerDTO dto = gameReadService.getTimer("ROOM123", GamePhase.GAME);
+        assertEquals(42, dto.getRemainingSeconds());
+
+        verify(gameTimerService).getRemainingSeconds("ROOM123_game");
+    }
+
+    @Test
+    void testGetTimerActiveNoRemaining() {
+        // Normally inactive timers would be caught here, but we test the 2nd check
+        when(gameTimerService.isTimerActive("ROOM123_game")).thenReturn(true);
+        when(gameTimerService.getRemainingSeconds("ROOM123_game"))
+                .thenReturn(Optional.empty());
+
+        TimerDTO dto = gameReadService.getTimer("ROOM123", GamePhase.GAME);
+        assertEquals(0, dto.getRemainingSeconds());
+
+        verify(gameTimerService).getRemainingSeconds("ROOM123_game");
+    }
+
+    @Test
+    void testGetPlayersInRoom() {
+        List<Player> players = gameReadService.getPlayersInRoom("ROOM123");
+        assertSame(mockRoom.getPlayers(), players);
     }
 }
