@@ -99,4 +99,20 @@ class UserControllerTest {
                 .updateUser("existing", "updatedUser", "newPass", "theToken");
     }
 
+    @Test
+    void testValidateToken_success() throws Exception {
+        UserGetDTO userGetDTO = new UserGetDTO("existing", 10, 5, 15, 2, 4);
+
+        Mockito.when(userService.validateToken("Bearer theToken")).thenReturn(userGetDTO);
+
+        mockMvc.perform(get("/account/validate")
+                        .header("Authorization", "Bearer theToken"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("existing"))
+                .andExpect(jsonPath("$.wins").value(10))
+                .andExpect(jsonPath("$.defeats").value(5))
+                .andExpect(jsonPath("$.games").value(15))
+                .andExpect(jsonPath("$.current_streak").value(2))
+                .andExpect(jsonPath("$.highest_streak").value(4));
+    }
 }
