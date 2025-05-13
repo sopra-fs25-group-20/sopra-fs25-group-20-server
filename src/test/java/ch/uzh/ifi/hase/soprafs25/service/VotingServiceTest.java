@@ -21,14 +21,13 @@ class VotingServiceTest {
     private GameService gameService;
     private GameBroadcastService gameBroadcastService;
     private GameReadService gameReadService;
-    private GameTimerService gameTimerService;
 
     @BeforeEach
     void setup() {
         gameService = mock(GameService.class);
         gameBroadcastService = mock(GameBroadcastService.class);
         gameReadService = mock(GameReadService.class);
-        gameTimerService = mock(GameTimerService.class);
+        GameTimerService gameTimerService = mock(GameTimerService.class);
 
         votingService = new VotingService(gameService, gameBroadcastService, gameReadService, gameTimerService);
 

@@ -36,14 +36,13 @@ class CreateRoomServiceTest {
     private CreateRoomService createRoomService;
 
     private Player player;
-    private Room room;
 
     @BeforeEach
     void setUp() {
         player = new Player();
         player.setNickname("TestUser");
 
-        room = new Room();
+        Room room = new Room();
         room.setCode("ROOM1");
 
         when(roomRepository.save(any(Room.class))).thenReturn(room);

@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,12 +40,13 @@ class RoomControllerTest {
         room.setCode("ABC123");
         player.setRoom(room);
 
-        when(createRoomService.createRoom(any(Player.class), any(String.class))).thenReturn(player);
+        when(createRoomService.createRoom(any(Player.class), isNull()))
+                .thenReturn(player);
 
         CreateRoomDTO result = roomController.createRoom(null, dto);
 
         assertEquals("testUser", result.getNickname());
-        assertEquals("ABC123", result.getRoomCode());
+        assertEquals("ABC123",  result.getRoomCode());
     }
 
     @Test
