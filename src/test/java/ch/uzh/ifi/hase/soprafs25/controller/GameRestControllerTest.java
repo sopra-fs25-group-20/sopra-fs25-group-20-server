@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.GameResult;
 import ch.uzh.ifi.hase.soprafs25.model.*;
@@ -99,6 +100,16 @@ class GameRestControllerTest {
         when(votingService.getVoteState("room123")).thenReturn(dto);
 
         mockMvc.perform(get("/game/vote/state/room123"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(dto)));
+    }
+
+    @Test
+    void getTimer_ReturnsTimerDTO() throws Exception {
+        TimerDTO dto = new TimerDTO(25);
+        when(gameReadService.getTimer("room123", GamePhase.GAME)).thenReturn(dto);
+
+        mockMvc.perform(get("/game/timer/room123?phase=GAME"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));
     }
