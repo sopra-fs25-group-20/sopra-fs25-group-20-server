@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +45,7 @@ class CreateRoomServiceTest {
         room.setCode("ROOM1");
 
         when(roomRepository.save(any(Room.class))).thenReturn(room);
-        doNothing().when(gameService).createGame(eq("ROOM1"));
+        doNothing().when(gameService).createGame("ROOM1");
     }
 
     @Test
@@ -55,7 +54,7 @@ class CreateRoomServiceTest {
         joined.setId(42L);
         joined.setNickname("TestUser");
 
-        when(joinRoomService.joinRoom(eq("ROOM1"), any(Player.class))).thenReturn(joined);
+        when(joinRoomService.joinRoom(matches("ROOM1"), any(Player.class))).thenReturn(joined);
 
         Player result = createRoomService.createRoom(player, null);
 
@@ -76,8 +75,7 @@ class CreateRoomServiceTest {
         joined.setNickname("TestUser");
         joined.setUser(user);
 
-        when(joinRoomService.joinRoom(eq("ROOM1"), any(Player.class)))
-                .thenReturn(joined);
+        when(joinRoomService.joinRoom(matches("ROOM1"), any(Player.class))).thenReturn(joined);
 
         Player result = createRoomService.createRoom(player, "Bearer token123");
 
