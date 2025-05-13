@@ -21,6 +21,8 @@ public class GameService {
 
     private static final Random RANDOM = new Random(); // NOSONAR
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
+    private static final String GAME_SUFFIX = "_game";
+    private static final String VOTE_SUFFIX = "_vote";
 
     private final AuthorizationService authorizationService;
     private final GameReadService gameReadService;
@@ -55,7 +57,7 @@ public class GameService {
         advancePhase(roomCode, GamePhase.GAME);
 
         Runnable taskForRoundTimeOut = () -> handleRoundTimeOut(roomCode);
-        gameTimerService.scheduleTask(roomCode + "_game", game.getGameSettings().getGameTimer(), taskForRoundTimeOut);
+        gameTimerService.scheduleTask(roomCode + GAME_SUFFIX, game.getGameSettings().getGameTimer(), taskForRoundTimeOut);
     }
 
     public void createGame(String roomCode) {
@@ -70,11 +72,11 @@ public class GameService {
     public void advancePhase(String roomCode, GamePhase newPhase) {
         Game game = getGame(roomCode);
         if (newPhase == GamePhase.SUMMARY) {
-            if (gameTimerService.isTimerActive(roomCode + "_game")) {
-                gameTimerService.cancelTask(roomCode + "_game", "Round ended early");
+            if (gameTimerService.isTimerActive(roomCode + GAME_SUFFIX)) {
+                gameTimerService.cancelTask(roomCode + GAME_SUFFIX, "Round ended early");
             }
-            if (gameTimerService.isTimerActive(roomCode + "_vote")) {
-                gameTimerService.cancelTask(roomCode + "_vote", "Round ended early");
+            if (gameTimerService.isTimerActive(roomCode + VOTE_SUFFIX)) {
+                gameTimerService.cancelTask(roomCode + VOTE_SUFFIX, "Round ended early");
             }
             updatePlayerStatsInRoom(roomCode);
         }
