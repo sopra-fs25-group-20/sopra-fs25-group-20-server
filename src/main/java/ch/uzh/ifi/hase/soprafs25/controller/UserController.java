@@ -51,7 +51,7 @@ public class UserController {
 
     @GetMapping("/account/validate")
     @ResponseStatus(HttpStatus.OK)
-    public void validateToken(@RequestHeader(value = "Authorization", required = false) String tokenHeader) {
-        userService.validateToken(tokenHeader);
+    public UserGetDTO validateToken(@RequestHeader(value = "Authorization", required = false) String tokenHeader) {
+        return userService.validateToken(tokenHeader);
     }
 }

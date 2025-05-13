@@ -79,7 +79,7 @@ public class UserService {
         );
     }
 
-    public void validateToken(String tokenHeader) {
+    public UserGetDTO validateToken(String tokenHeader) {
         if (tokenHeader == null || tokenHeader.trim().isEmpty()) {
             throw new TokenNotFoundException();
         }
@@ -92,6 +92,8 @@ public class UserService {
         if (authenticatedUser == null) {
             throw new UserNotAuthenticatedException("Invalid token. Please log in again.");
         }
+
+        return getUser(authenticatedUser.getUsername());
     }
 
     private User getUserByUsername(String username) {
