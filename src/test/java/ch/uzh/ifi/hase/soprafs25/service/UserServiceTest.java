@@ -221,4 +221,29 @@ class UserServiceTest {
 
         assertEquals(encoded, testUser.getPassword());
     }
+
+    @Test @DisplayName("updateUserStatsAfterGame: win")
+    void updateUserStatsAfterGame_win() {
+        userService.updateUserStatsAfterGame(testUser, true);
+
+        assertEquals(11, testUser.getWins());
+        assertEquals(16, testUser.getGames());
+        assertEquals(3, testUser.getCurrentStreak());
+        assertEquals(4, testUser.getHighestStreak());
+
+        verify(userRepository).save(testUser);
+        verify(userRepository).flush();
+    }
+
+    @Test @DisplayName("updateUserStatsAfterGame: defeat")
+    void updateUserStatsAfterGame_defeat() {
+        userService.updateUserStatsAfterGame(testUser, false);
+
+        assertEquals(6, testUser.getDefeats());
+        assertEquals(16, testUser.getGames());
+        assertEquals(0, testUser.getCurrentStreak());
+
+        verify(userRepository).save(testUser);
+        verify(userRepository).flush();
+    }
 }
