@@ -27,8 +27,9 @@ class VotingServiceTest {
         gameService = mock(GameService.class);
         gameBroadcastService = mock(GameBroadcastService.class);
         gameReadService = mock(GameReadService.class);
+        GameTimerService gameTimerService = mock(GameTimerService.class);
 
-        votingService = new VotingService(gameService, gameBroadcastService, gameReadService);
+        votingService = new VotingService(gameService, gameBroadcastService, gameReadService, gameTimerService);
 
         if (VotingSessionManager.isActive("ROOM123")) {
             VotingSessionManager.removeVotingSession("ROOM123");

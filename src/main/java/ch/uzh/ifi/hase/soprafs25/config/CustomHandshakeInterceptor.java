@@ -5,6 +5,8 @@ import ch.uzh.ifi.hase.soprafs25.entity.User;
 import ch.uzh.ifi.hase.soprafs25.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs25.service.JoinRoomService;
 import ch.uzh.ifi.hase.soprafs25.service.PlayerConnectionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.Map;
 @Configuration
 public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
+    private static final Logger log = LoggerFactory.getLogger(CustomHandshakeInterceptor.class);
     private final JoinRoomService joinRoomService;
     private final PlayerConnectionService playerConnectionService;
     private final UserRepository userRepository;
@@ -54,8 +57,11 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
         User associatedUser = null;
         if (token != null && !token.isBlank()) {
+            if (log.isInfoEnabled()) {
+                log.info("User with token '{}' is being searched", token.replaceAll("[^A-Za-z0-9_\\-]", ""));
+            }
             associatedUser = userRepository.findByToken(token);
-
+            log.info("Associated user is '{}': ", associatedUser);
             if (associatedUser == null) {
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return false;

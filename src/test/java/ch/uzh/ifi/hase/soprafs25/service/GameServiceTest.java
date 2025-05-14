@@ -30,6 +30,8 @@ class GameServiceTest {
     @Mock private GameReadService gameReadService;
     @Mock private GameBroadcastService gameBroadcastService;
     @Mock private ImageService imageService;
+    @SuppressWarnings("unused")
+    @Mock private GameTimerService gameTimerService;
 
     @InjectMocks private GameService gameService;
     private AutoCloseable mocks;

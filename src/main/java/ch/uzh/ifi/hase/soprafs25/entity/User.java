@@ -35,6 +35,19 @@ public class User implements Serializable {
     @Column(nullable = false)
     private int highestStreak;
 
+    public void recordWin() {
+        this.wins ++;
+        this.games++;
+        this.currentStreak++;
+        this.highestStreak = Math.max(this.highestStreak, this.currentStreak);
+    }
+
+    public void recordDefeat() {
+        this.defeats++;
+        this.games++;
+        this.currentStreak = 0;
+    }
+
     public Long getUserId() {
         return userId;
     }

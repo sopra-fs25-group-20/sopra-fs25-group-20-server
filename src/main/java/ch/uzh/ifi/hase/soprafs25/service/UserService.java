@@ -55,6 +55,17 @@ public class UserService {
         updatePasswordIfProvided(authenticatedUser, password);
     }
 
+    public void updateUserStatsAfterGame(User user, boolean hasWon) {
+        if (hasWon) {
+            user.recordWin();
+        } else {
+            user.recordDefeat();
+        }
+
+        userRepository.save(user);
+        userRepository.flush();
+    }
+
     public UserGetDTO getUser(String username) {
         User user = getUserByUsername(username);
 
@@ -66,6 +77,23 @@ public class UserService {
                 user.getCurrentStreak(),
                 user.getHighestStreak()
         );
+    }
+
+    public UserGetDTO validateToken(String tokenHeader) {
+        if (tokenHeader == null || tokenHeader.trim().isEmpty()) {
+            throw new TokenNotFoundException();
+        }
+        if (!tokenHeader.startsWith("Bearer ")) {
+            throw new UserNotAuthenticatedException("Invalid token. Please log in again.");
+        }
+
+        String token = tokenHeader.substring(7);
+        User authenticatedUser = userRepository.findByToken(token);
+        if (authenticatedUser == null) {
+            throw new UserNotAuthenticatedException("Invalid token. Please log in again.");
+        }
+
+        return getUser(authenticatedUser.getUsername());
     }
 
     private User getUserByUsername(String username) {

@@ -18,13 +18,16 @@ public class VotingService {
     private final GameService gameService;
     private final GameBroadcastService gameBroadcastService;
     private final GameReadService gameReadService;
+    private final GameTimerService gameTimerService;
 
     public VotingService(GameService gameService,
                          GameBroadcastService gameBroadcastService,
-                         GameReadService gameReadService) {
+                         GameReadService gameReadService,
+                         GameTimerService gameTimerService) {
         this.gameService = gameService;
         this.gameBroadcastService = gameBroadcastService;
         this.gameReadService = gameReadService;
+        this.gameTimerService = gameTimerService;
     }
 
     public void initializeVotingSession(String roomCode, String initiator, String target) {
@@ -78,6 +81,18 @@ public class VotingService {
         }
         VotingSession session = new VotingSession(roomCode, initiator, target);
         VotingSessionManager.addVotingSession(session);
+        scheduleVotingTimer(roomCode);
+    }
+
+    private void scheduleVotingTimer(String roomCode) {
+        Game game = getGame(roomCode);
+        Runnable taskForVoteTimeOut = () -> {
+            handleVotingResults(roomCode);
+            endVotingSession(roomCode);
+        };
+        String timerId = roomCode + "_vote";
+        int votingTimer = game.getGameSettings().getVotingTimer();
+        gameTimerService.scheduleTask(timerId, votingTimer, taskForVoteTimeOut);
     }
 
     private VotingSession getActiveVotingSession(String roomCode) {
@@ -86,6 +101,7 @@ public class VotingService {
 
     private void endVotingSession(String roomCode) {
         VotingSessionManager.removeVotingSession(roomCode);
+        gameTimerService.cancelTask(roomCode + "_vote", "Vote ended");
     }
 
     private boolean isVoteComplete(String roomCode) {

@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs25.controller;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.GameResult;
 import ch.uzh.ifi.hase.soprafs25.model.*;
@@ -41,8 +42,8 @@ class GameRestControllerTest {
     @Test
     void getPlayerList_ReturnsPlayerListDTOs() throws Exception {
         List<PlayerUpdateDTO> players = List.of(
-                new PlayerUpdateDTO("Alice", "Red", true),
-                new PlayerUpdateDTO("Bob", "Blue", false)
+                new PlayerUpdateDTO("Alice", "Red", true, null),
+                new PlayerUpdateDTO("Bob", "Blue", false, null)
         );
         when(playerConnectionService.getPlayerListDTO("room123")).thenReturn(players);
 
@@ -99,6 +100,16 @@ class GameRestControllerTest {
         when(votingService.getVoteState("room123")).thenReturn(dto);
 
         mockMvc.perform(get("/game/vote/state/room123"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(dto)));
+    }
+
+    @Test
+    void getTimer_ReturnsTimerDTO() throws Exception {
+        TimerDTO dto = new TimerDTO(25);
+        when(gameReadService.getTimer("room123", GamePhase.GAME)).thenReturn(dto);
+
+        mockMvc.perform(get("/game/timer/room123?phase=GAME"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));
     }

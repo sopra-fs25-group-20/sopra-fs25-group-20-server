@@ -3,23 +3,26 @@ package ch.uzh.ifi.hase.soprafs25.service;
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.*;
-import ch.uzh.ifi.hase.soprafs25.model.GamePhaseDTO;
-import ch.uzh.ifi.hase.soprafs25.model.GameResultDTO;
-import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
-import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
+import ch.uzh.ifi.hase.soprafs25.model.*;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GameReadService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameReadService.class);
     private final RoomRepository roomRepository;
+    private final GameTimerService gameTimerService;
 
-    public GameReadService(RoomRepository roomRepository) {
+    public GameReadService(RoomRepository roomRepository, GameTimerService gameTimerService) {
         this.roomRepository = roomRepository;
+        this.gameTimerService = gameTimerService;
     }
 
     public GamePhaseDTO getGamePhase(String roomCode) {
@@ -79,7 +82,8 @@ public class GameReadService {
                 .map(p -> new PlayerUpdateDTO(
                         p.getNickname(),
                         p.getColor(),
-                        p.getId().equals(adminId)
+                        p.getId().equals(adminId),
+                        p.getUser()
                 ))
                 .toList();
     }
@@ -105,6 +109,30 @@ public class GameReadService {
         return (role == PlayerRole.INNOCENT)
                 ? getGame(roomCode).getHighlightedImageIndex()
                 : -1;
+    }
+
+    public TimerDTO getTimer(String roomCode, GamePhase phase) {
+        String timerId = roomCode + "_" + phase.name().toLowerCase();
+        if (!gameTimerService.isTimerActive(timerId)) {
+            log.warn("Timer ID '{}' is not active.", timerId);
+            return new TimerDTO(null);
+        }
+
+        Optional<Long> remainingSecondsOpt = gameTimerService.getRemainingSeconds(timerId);
+        Long remainingSecondsLong = remainingSecondsOpt.orElseGet(() -> {
+            log.warn("Timer ID '{}' returned no remaining seconds", timerId);
+            return 0L;
+        });
+        int remainingSeconds = remainingSecondsLong.intValue();
+        return new TimerDTO(remainingSeconds);
+    }
+
+    public List<Player> getPlayersInRoom(String roomCode) {
+        Room room = roomRepository.findByCode(roomCode);
+        if (room == null) {
+            throw new IllegalStateException("Room not found: " + roomCode);
+        }
+        return room.getPlayers();
     }
 
     private Game getGame(String roomCode) {

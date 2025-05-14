@@ -8,7 +8,7 @@ class PlayerUpdateDTOTest {
 
     @Test
     void constructor_shouldSetFields() {
-        PlayerUpdateDTO dto = new PlayerUpdateDTO("alice", "#abcdef", true);
+        PlayerUpdateDTO dto = new PlayerUpdateDTO("alice", "#abcdef", true, null);
 
         assertThat(dto.getNickname()).isEqualTo("alice");
         assertThat(dto.getColor()).isEqualTo("#abcdef");

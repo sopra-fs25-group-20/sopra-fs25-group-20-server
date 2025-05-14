@@ -28,4 +28,36 @@ class UserEntityTest {
         assertEquals(3, user.getCurrentStreak());
         assertEquals(7, user.getHighestStreak());
     }
+
+    @Test
+    void testRecordWinAndStreaks() {
+        User user = new User();
+        user.setCurrentStreak(2);
+        user.setHighestStreak(3);
+        user.setWins(5);
+        user.setGames(7);
+
+        user.recordWin();
+        assertEquals(6, user.getWins());
+        assertEquals(8, user.getGames());
+        assertEquals(3, user.getCurrentStreak());
+        assertEquals(3, user.getHighestStreak());
+
+        user.recordWin();
+        assertEquals(4, user.getCurrentStreak());
+        assertEquals(4, user.getHighestStreak());
+    }
+
+    @Test
+    void testRecordDefeat() {
+        User user = new User();
+        user.setDefeats(2);
+        user.setGames(5);
+        user.setCurrentStreak(4);
+
+        user.recordDefeat();
+        assertEquals(3, user.getDefeats());
+        assertEquals(6, user.getGames());
+        assertEquals(0, user.getCurrentStreak());
+    }
 }
