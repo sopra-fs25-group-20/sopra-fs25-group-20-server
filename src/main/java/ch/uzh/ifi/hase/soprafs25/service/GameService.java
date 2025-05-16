@@ -56,6 +56,7 @@ public class GameService {
 
         prepareImagesForRound(game);
         game.assignRoles(gameReadService.getNicknamesInRoom(roomCode));
+        game.setColors(gameReadService.getNicknameAndColor(roomCode));
         game.setHighlightedImageIndex(RANDOM.nextInt(game.getGameSettings().getImageCount()));
         advancePhase(roomCode, GamePhase.GAME);
 
