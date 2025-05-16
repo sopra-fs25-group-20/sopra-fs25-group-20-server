@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
+import ch.uzh.ifi.hase.soprafs25.util.RandomColorUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -77,6 +78,7 @@ public class PlayerConnectionService {
         if (kickedPlayer == null) {
             throw new IllegalStateException("Player with nickname " + kickedNickname + " not found");
         }
+        RandomColorUtil.releaseColor(roomCode, kickedPlayer.getColor());
         playerRepository.delete(kickedPlayer);
         gameBroadcastService.broadcastPlayerList(roomCode);
     }
