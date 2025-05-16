@@ -1,10 +1,13 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
+import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,6 +68,10 @@ public class PlayerConnectionService {
             throw new IllegalStateException("Only admin can kick a player");
         }
 
+        removePlayer(kickedNickname, roomCode);
+    }
+
+    public void removePlayer(String kickedNickname, String roomCode) {
         Room room = roomRepository.findByCode(roomCode);
         Player kickedPlayer = playerRepository.findByNicknameAndRoom(kickedNickname, room);
         if (kickedPlayer == null) {
@@ -82,6 +89,15 @@ public class PlayerConnectionService {
         return room.getPlayers();
     }
 
+    public void handleDisconnection(String nickname, String roomCode) {
+        GamePhase gamePhase = getGame(roomCode).getPhase();
+        if (gamePhase == GamePhase.LOBBY || gamePhase == GamePhase.SUMMARY) {
+            removePlayer(nickname, roomCode);
+        } else {
+            markDisconnected(nickname, roomCode);
+        }
+    }
+
     private Player getPlayer(String nickname, String roomCode) {
         Room room = roomRepository.findByCode(roomCode);
         return playerRepository.findByNicknameAndRoom(nickname, room);
@@ -94,5 +110,9 @@ public class PlayerConnectionService {
             player.setConnected(isConnected);
             playerRepository.save(player);
         }
+    }
+
+    private Game getGame(String roomCode) {
+        return GameSessionManager.getGameSession(roomCode);
     }
 }

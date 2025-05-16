@@ -30,19 +30,22 @@ public class GameService {
     private final ImageService imageService;
     private final UserService userService;
     private final GameTimerService gameTimerService;
+    private final PlayerConnectionService playerConnectionService;
 
     public GameService(AuthorizationService authorizationService,
                        GameReadService gameReadService,
                        GameBroadcastService gameBroadcastService,
                        @Qualifier("googleImageService") ImageService mockImageService,
                        UserService userService,
-                       GameTimerService gameTimerService) {
+                       GameTimerService gameTimerService,
+                       PlayerConnectionService playerConnectionService) {
         this.authorizationService = authorizationService;
         this.gameReadService = gameReadService;
         this.gameBroadcastService = gameBroadcastService;
         this.imageService = mockImageService;
         this.userService = userService;
         this.gameTimerService = gameTimerService;
+        this.playerConnectionService = playerConnectionService;
     }
 
     public void startRound(String roomCode, String nickname) {
@@ -79,6 +82,7 @@ public class GameService {
                 gameTimerService.cancelTask(roomCode + VOTE_SUFFIX, "Round ended early");
             }
             updatePlayerStatsInRoom(roomCode);
+            removeDisconnectedPlayers(roomCode);
         }
         game.setPhase(newPhase);
 
@@ -150,6 +154,15 @@ public class GameService {
         }
 
         return game.getHighlightedImageIndex() == spyGuessIndex;
+    }
+
+    private void removeDisconnectedPlayers(String roomCode) {
+        List<Player> playersInRoom = gameReadService.getPlayersInRoom(roomCode);
+        for (Player player : playersInRoom) {
+            if (!player.isConnected()) {
+                playerConnectionService.removePlayer(player.getNickname(), roomCode);
+            }
+        }
     }
 
     private void prepareImagesForRound(Game game) {
