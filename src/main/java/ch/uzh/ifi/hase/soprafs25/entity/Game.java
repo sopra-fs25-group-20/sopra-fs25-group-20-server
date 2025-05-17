@@ -17,6 +17,7 @@ public class Game {
     private GameResult gameResult;
     private final GameSettings gameSettings;
     private final Map<String, PlayerRole> roles = new HashMap<>();
+    private final Map<String, String> colors = new HashMap<>();
     private final List<byte[]> images = new ArrayList<>();
 
     public Game(String roomCode) {
@@ -71,6 +72,15 @@ public class Game {
     public void assignRoles(List<String> nicknames) {
         roles.clear();
         roles.putAll(RoleUtil.assignRoles(nicknames, gameSettings.getSpyCount()));
+    }
+
+    public Map<String, String> getColors() {
+        return colors;
+    }
+
+    public void setColors(Map<String, String> colors) {
+        this.colors.clear();
+        this.colors.putAll(colors);
     }
 
     public List<byte[]> getImages() {

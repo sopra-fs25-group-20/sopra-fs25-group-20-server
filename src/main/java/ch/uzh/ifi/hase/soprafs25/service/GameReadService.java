@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GameReadService {
@@ -53,6 +55,7 @@ public class GameReadService {
 
         return new GameResultDTO(
                 game.getRoles(),
+                game.getColors(),
                 game.getHighlightedImageIndex(),
                 result
         );
@@ -133,6 +136,14 @@ public class GameReadService {
             throw new IllegalStateException("Room not found: " + roomCode);
         }
         return room.getPlayers();
+    }
+
+    public Map<String, String> getNicknameAndColor(String roomCode) {
+        return getPlayersInRoom(roomCode).stream()
+                .collect(Collectors.toMap(
+                        Player::getNickname,
+                        Player::getColor
+                ));
     }
 
     private Game getGame(String roomCode) {

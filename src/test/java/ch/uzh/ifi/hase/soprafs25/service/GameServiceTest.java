@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs25.service;
 import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
 import ch.uzh.ifi.hase.soprafs25.constant.PlayerRole;
 import ch.uzh.ifi.hase.soprafs25.entity.Game;
+import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
@@ -30,6 +31,7 @@ class GameServiceTest {
     @Mock private GameReadService gameReadService;
     @Mock private GameBroadcastService gameBroadcastService;
     @Mock private ImageService imageService;
+    @Mock private PlayerConnectionService playerConnectionService;
     @SuppressWarnings("unused")
     @Mock private GameTimerService gameTimerService;
 
@@ -228,5 +230,28 @@ class GameServiceTest {
     void broadcastPersonalizedImageIndex_delegatesToService() {
         gameService.broadcastPersonalizedImageIndex("R9", "V");
         then(gameBroadcastService).should().broadcastPersonalizedImageIndex("R9", "V");
+    }
+
+    @Test
+    void testRemoveDisconnectedPlayers_removesOnlyDisconnected() throws Exception {
+        Player alice = new Player();
+        alice.setNickname("alice");
+        alice.setConnected(false);
+
+        Player bob = new Player();
+        bob.setNickname("bob");
+        bob.setConnected(true);
+
+        when(gameReadService.getPlayersInRoom("ROOM123"))
+                .thenReturn(List.of(alice, bob));
+
+        Method m = GameService.class
+                .getDeclaredMethod("removeDisconnectedPlayers", String.class);
+        m.setAccessible(true);
+
+        m.invoke(gameService, "ROOM123");
+
+        verify(playerConnectionService).removePlayer("alice", "ROOM123");
+        verify(playerConnectionService, never()).removePlayer("bob", "ROOM123");
     }
 }

@@ -36,7 +36,7 @@ public class WebSocketDisconnectListener {
             String color = (String) sessionAttributes.get("color");
 
             log.info("User disconnected: nickname={}, code={}, color={}", nickname, code, color);
-            playerConnectionService.markDisconnected(nickname, code);
+            playerConnectionService.handleDisconnection(nickname, code);
             gameBroadcastService.broadcastPlayerList(code);
         } else {
             log.warn("Disconnect with no session attributes found");

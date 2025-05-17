@@ -199,4 +199,13 @@ class GameReadServiceTest {
         List<Player> players = gameReadService.getPlayersInRoom("ROOM123");
         assertSame(mockRoom.getPlayers(), players);
     }
+
+    @Test
+    void testGetNicknameAndColor_returnsCorrectMap() {
+        Map<String, String> map = gameReadService.getNicknameAndColor("ROOM123");
+
+        assertEquals(2, map.size());
+        assertEquals("#FF6B6B", map.get("alice"));
+        assertEquals("#6BCB77", map.get("bob"));
+    }
 }

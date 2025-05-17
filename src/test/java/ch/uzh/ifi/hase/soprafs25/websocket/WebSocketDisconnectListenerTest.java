@@ -48,7 +48,7 @@ class WebSocketDisconnectListenerTest {
 
         listener.handleWebSocketDisconnectListener(event);
 
-        verify(playerConnectionService).markDisconnected("user1", "ROOM42");
+        verify(playerConnectionService).handleDisconnection("user1", "ROOM42");
         verify(gameBroadcastService).broadcastPlayerList("ROOM42");
         verifyNoMoreInteractions(playerConnectionService, gameBroadcastService);
     }
