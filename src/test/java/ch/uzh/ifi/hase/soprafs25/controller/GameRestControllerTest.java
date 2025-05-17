@@ -75,8 +75,9 @@ class GameRestControllerTest {
     @Test
     void getResults_ReturnsGameResultDTO() throws Exception {
         Map<String, PlayerRole> roles = Map.of("Alice", PlayerRole.INNOCENT, "Bob", PlayerRole.SPY);
+        Map<String, String> colors = Map.of("Alice", "#FF6B6B", "Bob", "#6BCB77");
         GameResult fakeResult = new GameResult(2, null, PlayerRole.SPY);
-        GameResultDTO dto = new GameResultDTO(roles, 1, fakeResult);
+        GameResultDTO dto = new GameResultDTO(roles, colors,1, fakeResult);
         when(gameReadService.getGameResult("room123")).thenReturn(dto);
 
         mockMvc.perform(get("/game/result/room123"))
