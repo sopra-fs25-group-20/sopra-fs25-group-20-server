@@ -27,7 +27,7 @@ class RoomPlayerTests {
         Room room = new Room();
         room.setRoomId(1L);
         room.setCode("TESTCODE");
-        room.setAdminPlayerId(2L);
+        room.setAdminPlayerNickname("testUser");
 
         Player player = new Player();
         player.setNickname("testUser");
@@ -35,7 +35,7 @@ class RoomPlayerTests {
 
         assertEquals(1L, room.getRoomId());
         assertEquals("TESTCODE", room.getCode());
-        assertEquals(2L, room.getAdminPlayerId());
+        assertEquals("testUser", room.getAdminPlayerNickname());
         assertEquals(1, room.getPlayers().size());
         assertEquals(room, player.getRoom());
     }

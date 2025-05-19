@@ -17,7 +17,7 @@ public class Room implements Serializable {
     private String code;
 
     @Column
-    private Long adminPlayerId;
+    private String adminPlayerNickname;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.EAGER)
     private List<Player> players = new ArrayList<>();
@@ -43,12 +43,12 @@ public class Room implements Serializable {
         this.code = code;
     }
 
-    public Long getAdminPlayerId() {
-        return adminPlayerId;
+    public String getAdminPlayerNickname() {
+        return adminPlayerNickname;
     }
 
-    public void setAdminPlayerId(Long adminPlayerID) {
-        this.adminPlayerId = adminPlayerID;
+    public void setAdminPlayerNickname(String adminPlayerNickname) {
+        this.adminPlayerNickname = adminPlayerNickname;
     }
 
     public List<Player> getPlayers() {

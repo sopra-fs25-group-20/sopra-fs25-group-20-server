@@ -46,7 +46,7 @@ public class CreateRoomService {
 
         Player savedPlayer = joinRoomService.joinRoom(createdRoom.getCode(), player);
 
-        createdRoom.setAdminPlayerId(savedPlayer.getId());
+        createdRoom.setAdminPlayerNickname(savedPlayer.getNickname());
         roomRepository.save(createdRoom);
 
         gameService.createGame(createdRoom.getCode());
