@@ -43,7 +43,7 @@ class PlayerConnectionServiceTest {
         player.setConnected(false);
         player.setNickname("testUser");
         player.setId(1L);
-        room.setAdminPlayerId(1L);
+        room.setAdminPlayerNickname("testUser");
 
         when(roomRepository.findByCode("ROOM123")).thenReturn(room);
         when(playerRepository.findByNicknameAndRoom("testUser", room)).thenReturn(player);

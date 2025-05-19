@@ -25,9 +25,9 @@ class AuthorizationServiceTest {
     @Test
     void testIsAdmin_true() {
         Room room = new Room();
-        room.setAdminPlayerId(1L);
+        room.setAdminPlayerNickname("admin");
         Player player = new Player();
-        player.setId(1L);
+        player.setNickname("admin");
 
         when(roomRepository.findByCode("ROOM123")).thenReturn(room);
         when(playerRepository.findByNicknameAndRoom("admin", room)).thenReturn(player);
@@ -38,7 +38,7 @@ class AuthorizationServiceTest {
     @Test
     void testIsAdmin_false() {
         Room room = new Room();
-        room.setAdminPlayerId(2L);
+        room.setAdminPlayerNickname("admin");
         Player player = new Player();
         player.setId(1L);
 

@@ -56,7 +56,7 @@ class GameReadServiceTest {
         player2.setUser(null);          // Guest
 
         mockRoom.setPlayers(List.of(player1, player2));
-        mockRoom.setAdminPlayerId(1L);
+        mockRoom.setAdminPlayerNickname("alice");
 
         when(roomRepository.findByCode("ROOM123")).thenReturn(mockRoom);
     }
