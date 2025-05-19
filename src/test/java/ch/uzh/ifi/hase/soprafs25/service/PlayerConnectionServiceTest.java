@@ -1,10 +1,13 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
+import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -160,5 +163,49 @@ class PlayerConnectionServiceTest {
 
         verify(playerRepository).delete(kicked);
         verify(gameBroadcastService).broadcastPlayerList("ROOM123");
+    }
+
+    @Test
+    void handleDisconnection_inLobby_shouldRemoveAndBroadcast() {
+        Room room = new Room();
+
+        Player p = new Player();
+        p.setNickname("Alice");
+
+        Game lobby = new Game("ROOM");
+        lobby.setPhase(GamePhase.LOBBY);
+
+        when(roomRepository.findByCode("ROOM")).thenReturn(room);
+        when(playerRepository.findByNicknameAndRoom("Alice", room)).thenReturn(p);
+
+        GameSessionManager.addGameSession(lobby);
+        playerConnectionService.handleDisconnection("Alice", "ROOM");
+
+        verify(playerRepository).delete(p);
+        verify(gameBroadcastService).broadcastPlayerList("ROOM");
+        GameSessionManager.removeGameSession("ROOM");
+    }
+
+    @Test
+    void handleDisconnection_inOtherPhase_shouldMarkDisconnected() {
+        Room room = new Room();
+
+        Player p = new Player();
+        p.setNickname("Alice2");
+        p.setConnected(true);
+
+        when(roomRepository.findByCode("ROOM2")).thenReturn(room);
+        when(playerRepository.findByNicknameAndRoom("Alice2", room)).thenReturn(p);
+
+        Game game = new Game("ROOM2");
+        game.setPhase(GamePhase.GAME);
+        GameSessionManager.addGameSession(game);
+
+        playerConnectionService.handleDisconnection("Alice2", "ROOM2");
+
+        assertFalse(p.isConnected(), "Player should be marked disconnected");
+        verify(playerRepository).save(p);
+        verify(gameBroadcastService, never()).broadcastPlayerList(any());
+        GameSessionManager.removeGameSession("ROOM2");
     }
 }

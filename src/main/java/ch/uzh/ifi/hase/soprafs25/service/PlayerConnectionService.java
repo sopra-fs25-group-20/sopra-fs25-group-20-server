@@ -1,10 +1,14 @@
 package ch.uzh.ifi.hase.soprafs25.service;
 
+import ch.uzh.ifi.hase.soprafs25.constant.GamePhase;
+import ch.uzh.ifi.hase.soprafs25.entity.Game;
 import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.entity.Room;
 import ch.uzh.ifi.hase.soprafs25.model.PlayerUpdateDTO;
 import ch.uzh.ifi.hase.soprafs25.repository.PlayerRepository;
 import ch.uzh.ifi.hase.soprafs25.repository.RoomRepository;
+import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
+import ch.uzh.ifi.hase.soprafs25.util.RandomColorUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,11 +69,16 @@ public class PlayerConnectionService {
             throw new IllegalStateException("Only admin can kick a player");
         }
 
+        removePlayer(kickedNickname, roomCode);
+    }
+
+    public void removePlayer(String kickedNickname, String roomCode) {
         Room room = roomRepository.findByCode(roomCode);
         Player kickedPlayer = playerRepository.findByNicknameAndRoom(kickedNickname, room);
         if (kickedPlayer == null) {
             throw new IllegalStateException("Player with nickname " + kickedNickname + " not found");
         }
+        RandomColorUtil.releaseColor(roomCode, kickedPlayer.getColor());
         playerRepository.delete(kickedPlayer);
         gameBroadcastService.broadcastPlayerList(roomCode);
     }
@@ -80,6 +89,15 @@ public class PlayerConnectionService {
             throw new IllegalStateException("Room not found: " + roomCode);
         }
         return room.getPlayers();
+    }
+
+    public void handleDisconnection(String nickname, String roomCode) {
+        GamePhase gamePhase = getGame(roomCode).getPhase();
+        if (gamePhase == GamePhase.LOBBY || gamePhase == GamePhase.SUMMARY) {
+            removePlayer(nickname, roomCode);
+        } else {
+            markDisconnected(nickname, roomCode);
+        }
     }
 
     private Player getPlayer(String nickname, String roomCode) {
@@ -94,5 +112,9 @@ public class PlayerConnectionService {
             player.setConnected(isConnected);
             playerRepository.save(player);
         }
+    }
+
+    private Game getGame(String roomCode) {
+        return GameSessionManager.getGameSession(roomCode);
     }
 }
