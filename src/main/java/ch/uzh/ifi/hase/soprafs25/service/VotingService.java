@@ -100,7 +100,9 @@ public class VotingService {
     }
 
     private void endVotingSession(String roomCode) {
-        VotingSessionManager.removeVotingSession(roomCode);
+        if (VotingSessionManager.isActive(roomCode)){
+            VotingSessionManager.removeVotingSession(roomCode);
+        }
         gameTimerService.cancelTask(roomCode + "_vote", "Vote ended");
     }
 

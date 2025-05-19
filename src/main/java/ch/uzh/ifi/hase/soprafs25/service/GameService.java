@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs25.entity.Player;
 import ch.uzh.ifi.hase.soprafs25.model.GameSettingsDTO;
 import ch.uzh.ifi.hase.soprafs25.service.image.ImageService;
 import ch.uzh.ifi.hase.soprafs25.session.GameSessionManager;
+import ch.uzh.ifi.hase.soprafs25.session.VotingSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -80,6 +81,9 @@ public class GameService {
                 gameTimerService.cancelTask(roomCode + GAME_SUFFIX, "Round ended early");
             }
             if (gameTimerService.isTimerActive(roomCode + VOTE_SUFFIX)) {
+                if (VotingSessionManager.isActive(roomCode)) {
+                    VotingSessionManager.removeVotingSession(roomCode);
+                }
                 gameTimerService.cancelTask(roomCode + VOTE_SUFFIX, "Round ended early");
             }
             updatePlayerStatsInRoom(roomCode);
