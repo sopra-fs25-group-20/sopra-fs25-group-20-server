@@ -31,7 +31,7 @@ public class AuthorizationService {
             throw new IllegalStateException("Player '" + nickname + "' not found in room '" + roomCode + "'");
         }
 
-        if (!room.getAdminPlayerId().equals(player.getId())) {
+        if (!room.getAdminPlayerNickname().equals(player.getNickname())) {
             log.warn("Only admin can do this action");
             return false;
         }

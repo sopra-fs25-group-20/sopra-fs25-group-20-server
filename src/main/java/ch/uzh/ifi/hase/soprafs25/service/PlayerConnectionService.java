@@ -53,13 +53,13 @@ public class PlayerConnectionService {
             throw new IllegalStateException("Room not found: " + roomCode);
         }
 
-        Long adminId = room.getAdminPlayerId();
+        String adminPlayerNickname = room.getAdminPlayerNickname();
         List<Player> players = getPlayers(roomCode);
         return players.stream()
                 .map(p -> new PlayerUpdateDTO(
                         p.getNickname(),
                         p.getColor(),
-                        p.getId().equals(adminId),
+                        p.getNickname().equals(adminPlayerNickname),
                         p.getUser()))
                 .toList();
     }
