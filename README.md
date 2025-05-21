@@ -80,7 +80,6 @@ Manages user accounts and profiles, allowing players to save and view their game
 
 -   Registering a user
 -   Logging in through token or credentials
--   Updating user information
 -   Update and get user's stats
 
 ## Launch & Deployment
