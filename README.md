@@ -1,4 +1,4 @@
-## SpyQuest
+## SpyQuest &middot; [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=sopra-fs25-group-20-server&metric=coverage)](https://sonarcloud.io/summary/new_code?id=sopra-fs25-group-20-server)
 
 Welcome to SpyQuest, a web-based multiplayer deduction game that combines strategic thinking with real-time communication. Players can create or enter game rooms using unique room codes and participate in image-based deduction rounds supported by a live chat and voting system. The game features customisable settings and permanent stat tracking.
 
