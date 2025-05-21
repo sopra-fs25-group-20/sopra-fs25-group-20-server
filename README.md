@@ -4,7 +4,7 @@ Welcome to SpyQuest, a web-based multiplayer deduction game that combines strate
 
 ## Table of Contents
 
--   [Introduction](#introduction): Project Goal & Motivation
+-   [Introduction](#introduction)
 -   [Technologies](#technologies)
 -   [High-level components](#high-level-components)
 -   [Launch & Deployment](#launch--deployment)
@@ -21,7 +21,8 @@ SpyQuest is a multiplayer social deduction game that delivers a strategic gamepl
 
 ### Motivation
 
-We wanted to make a social deduction game that feels more immersive and fun than just reading plain text or talking in circles as the most games are this way. That is why SpyQuest uses real Street View images, making the game feel more real and give players something visible to talk about. Playing the game right in the browser means no installs or setup, so anyone can jump in quickly. The built-in chat (with handy @ mentions) helps keep the game organized and fair, especially when playing remotely or with new people. It keeps things flowing without needing voice calls or external tools.
+SpyQuest was inspired by the hidden-role party game SpyFall, in which the spy must guess the hidden target text-based location by asking questions, while everyone else tries to identify the spy. In SpyFall, players must manage the game themselves, including the timer, voting, and spy guess, often via a separate voice or video call. 
+With SpyQuest, we’ve built on the core idea of asking and deducing by adding image-driven gameplay and integrated game management.
 
 ## Technologies
 
