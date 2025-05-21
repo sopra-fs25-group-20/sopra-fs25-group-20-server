@@ -1,6 +1,6 @@
 ## SpyQuest
 
-Welcome to SpyQuest, a web-based multiplayer deduction game that combines strategic thinking with real-time communication. Players can create or enter game rooms using unique room codes and participate in image-based deduction rounds supported by a live chat and voting system. The game features customisable settings, permanent stat tracking and a seamless cross-platform experience.
+Welcome to SpyQuest, a web-based multiplayer deduction game that combines strategic thinking with real-time communication. Players can create or enter game rooms using unique room codes and participate in image-based deduction rounds supported by a live chat and voting system. The game features customisable settings and permanent stat tracking.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ Welcome to SpyQuest, a web-based multiplayer deduction game that combines strate
 
 ### Project Goal
 
-SpyQuest is a multiplayer social deduction game that delivers a strategic gameplay experience through real-time interaction and deduction challenges. Among all players, one is secretly assigned the role of the spy, while the others play as innocents, where none knowing each other's roles. The spy's objective is to correctly identify the target image from a grid of nine possibilities without being detected before the round timer expires. Meanwhile, the innocents aim to uncover and vote out the spy. Players must ask each other questions to gather information but innocents must be careful not to reveal too much about the target picture, while the spy must avoid sounding too vague and arousing suspicion.
+SpyQuest is a multiplayer social deduction game that delivers a strategic gameplay experience through real-time interaction and deduction challenges. Among all players, one is secretly assigned the role of the spy, while the others play as innocents, where none knowing each other's roles. The spy's objective is to correctly identify the target image from a grid of nine possibilities without being detected before the round timer expires. Meanwhile, the innocents aim to uncover and vote out the spy. Players must ask each other questions to gather information but innocents must be careful not to reveal too much about the target image, while the spy must avoid sounding too vague and arousing suspicion.
 
 ### Motivation
 
@@ -228,7 +228,7 @@ Suggested Implementation:
 
 ## Authors & Acknowledgement
 
--   [dreamfarer](https://github.com/dreamfarer)
+-   [Gianluca Imbiscuso](https://github.com/dreamfarer)
 -   [Ceyhun Emre Acikmese](https://github.com/Agravlin)
 -   [Mischa Jampen](https://github.com/JMischa)
 -   [Baran Özgür Tas](https://github.com/baranozgurtas)
