@@ -238,4 +238,4 @@ And a special thank you to our Teaching Assistant [Nils Reusch](https://github.c
 
 ## License
 
-This Project SpyQuest is licensed under Apache License 2.0 -see the [LICENCE](https://github.com/sopra-fs25-group-20/sopra-fs25-group-20-client/blob/main/LICENSE) file for further details.
+This Project SpyQuest is licensed under Apache License 2.0 -see the [LICENSE](https://github.com/sopra-fs25-group-20/sopra-fs25-group-20-client/blob/main/LICENSE) file for further details.
