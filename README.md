@@ -21,7 +21,7 @@ SpyQuest is a multiplayer social deduction game that delivers a strategic gamepl
 
 ### Motivation
 
-SpyQuest was inspired by the hidden-role party game SpyFall, in which the spy must guess the hidden target text-based location by asking questions, while everyone else tries to identify the spy. In SpyFall, players must manage the game themselves, including the timer, voting, and spy guess, often via a separate voice or video call. 
+SpyQuest was inspired by the hidden-role party game SpyFall, in which the spy must guess the hidden target text-based location by asking questions, while everyone else tries to identify the spy. In SpyFall, players must manage the game themselves, including the timer, voting, and spy guess, often via a separate voice or video call.
 With SpyQuest, we’ve built on the core idea of asking and deducing by adding image-driven gameplay and integrated game management.
 
 ## Technologies
@@ -139,7 +139,7 @@ You can run the tests using the following command:
 
 ### How to Run
 
-You can either play the [live version](https://spyquest.whtvr.ch/) of SpyQuest or deploy the frontend using Docker.
+Deploy the frontend using Docker.
 
 ### **Run with Default Backend**
 
@@ -163,7 +163,7 @@ docker run -p 3000:3000 -e BACKEND_URL=https://your-backend-url.com -e BROKER_UR
 	<img src="figures/home.png">
 </p>
 
-This is the `Home` page you see when visiting our [website](https://spyquest.whtvr.ch/) SpyQuest.
+This is the `Home` page you see when visiting SpyQuest.
 
 ---
 
