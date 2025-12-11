@@ -228,7 +228,7 @@ Suggested Implementation:
 
 ## Authors & Acknowledgement
 
--   [Gianluca Imbiscuso](https://github.com/dreamfarer)
+-   [dreamfarer](https://github.com/dreamfarer)
 -   [Ceyhun Emre Acikmese](https://github.com/Agravlin)
 -   [Mischa Jampen](https://github.com/JMischa)
 -   [Baran Özgür Tas](https://github.com/baranozgurtas)
